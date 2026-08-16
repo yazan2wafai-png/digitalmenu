@@ -32,8 +32,11 @@ async function bootstrap() {
   // This guarantees instant HTTP 200 OK responses to Railway health checks
   if (process.env.DATABASE_URL) {
     execAsync('npx prisma migrate deploy && npx prisma db seed')
-      .then(({ stdout }) => console.log('🌱 Production DB Migration & Seed:', stdout))
-      .catch((err) => console.error('⚠️ DB Migration & Seed warning:', err.message));
+      .then(({ stdout, stderr }) => {
+        if (stdout) console.log('🌱 Production DB Migration & Seed:', stdout);
+        if (stderr) console.log('ℹ️ DB Migration & Seed info:', stderr);
+      })
+      .catch((err) => console.error('⚠️ DB Migration & Seed warning:', err.message || err));
   }
 }
 bootstrap();
