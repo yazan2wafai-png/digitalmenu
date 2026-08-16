@@ -8,7 +8,7 @@ import { useSearchParams } from 'next/navigation';
 import { ProductDetailModal } from '@/components/ProductDetailModal';
 
 const DEFAULT_LOCALE = process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'tr';
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://digitalmenu-backend-production.up.railway.app';
 
 interface ProductCardProps {
   product: Product;

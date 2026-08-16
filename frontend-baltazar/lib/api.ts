@@ -1,7 +1,7 @@
 import type { Restaurant } from '@/types/menu';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-const SLUG = process.env.NEXT_PUBLIC_RESTAURANT_SLUG || '';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://digitalmenu-backend-production.up.railway.app';
+const SLUG = process.env.NEXT_PUBLIC_RESTAURANT_SLUG || 'baltazar';
 
 if (!SLUG) {
   console.warn('[api] NEXT_PUBLIC_RESTAURANT_SLUG is not set.');
