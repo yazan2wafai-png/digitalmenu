@@ -29,6 +29,15 @@ export class RestaurantsService {
       ? locale
       : restaurant.defaultLocale;
 
+    const publicBase = process.env.PUBLIC_URL || 'https://b44caa267d667c.lhr.life';
+    const formatUrl = (url: string | null) => {
+      if (!url) return null;
+      if (url.startsWith('http://localhost:3001')) {
+        return url.replace('http://localhost:3001', publicBase);
+      }
+      return url;
+    };
+
     return {
       id: restaurant.id,
       slug: restaurant.slug,
@@ -39,7 +48,7 @@ export class RestaurantsService {
         restaurant.defaultLocale,
       ),
       themeColor: restaurant.themeColor,
-      logoUrl: restaurant.logoUrl,
+      logoUrl: formatUrl(restaurant.logoUrl),
       defaultLocale: restaurant.defaultLocale,
       supportedLocales: restaurant.supportedLocales,
       locale: effectiveLocale,
@@ -52,7 +61,7 @@ export class RestaurantsService {
           restaurant.defaultLocale,
         ),
         sortOrder: cat.sortOrder,
-        photoUrl: cat.photoUrl,
+        photoUrl: formatUrl(cat.photoUrl),
         products: cat.products.map((prod) => ({
           id: prod.id,
           name: resolveTranslation(
@@ -70,7 +79,7 @@ export class RestaurantsService {
               )
             : null,
           price: prod.price.toString(),
-          photoUrl: prod.photoUrl,
+          photoUrl: formatUrl(prod.photoUrl),
           sortOrder: prod.sortOrder,
         })),
       })),
