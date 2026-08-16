@@ -7,6 +7,7 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
 import { CategoriesModule } from './categories/categories.module';
 import { ProductsModule } from './products/products.module';
 import { UploadModule } from './upload/upload.module';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -19,5 +20,6 @@ import { UploadModule } from './upload/upload.module';
     ProductsModule,
     UploadModule,
   ],
+  controllers: [AppController],
 })
 export class AppModule {}
