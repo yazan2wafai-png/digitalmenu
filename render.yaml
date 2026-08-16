@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: digitalmenu-backend
+    env: node
+    rootDir: backend
+    buildCommand: npm install && npx prisma generate && npm run build
+    startCommand: npx prisma migrate deploy && npx prisma db seed && npm run start:prod
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: digitalmenu-postgres
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: NODE_ENV
+        value: production
+
+databases:
+  - name: digitalmenu-postgres
+    databaseName: digitalmenu
+    user: digitalmenu

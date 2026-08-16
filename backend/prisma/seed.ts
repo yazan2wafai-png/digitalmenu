@@ -5,9 +5,9 @@
  * keyed by locale: { "tr": "...", "en": "...", "ar": "..." }
  *
  * Non-translatable fields (slug, price, photoUrl, sortOrder) are plain values.
- * Photo URLs use the pattern /seed-images/placeholder-XX.jpg as stand-ins for real photos.
+ * Photo URLs use direct high-resolution food photos from Unsplash CDN.
  *
- * This script is idempotent — safe to run multiple times.
+ * This script is idempotent — safe to run multiple times in development & production.
  */
 
 import { PrismaClient } from '@prisma/client';
@@ -27,13 +27,13 @@ async function main() {
       supportedLocales: ['tr', 'en', 'ar'],
       defaultLocale: 'tr',
       themeColor: '#C0392B',
-      logoUrl: '/seed-images/placeholder-logo.png',
+      logoUrl: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=300&auto=format&fit=crop&q=80',
     },
     create: {
       name: { tr: 'Baltazar Burger', en: 'Baltazar Burger', ar: 'بالتازار برغر' },
       slug: 'baltazar',
       themeColor: '#C0392B',
-      logoUrl: '/seed-images/placeholder-logo.png',
+      logoUrl: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=300&auto=format&fit=crop&q=80',
       supportedLocales: ['tr', 'en', 'ar'],
       defaultLocale: 'tr',
     },
@@ -46,23 +46,26 @@ async function main() {
   const categoriesData = [
     {
       name: { tr: 'Burgerler', en: 'Burgers', ar: 'برغر' },
+      photoUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&auto=format&fit=crop&q=80',
       sortOrder: 1,
     },
     {
       name: { tr: 'Atıştırmalıklar', en: 'Sides', ar: 'مقبلات' },
+      photoUrl: 'https://images.unsplash.com/photo-1576107232684-1279f390859f?w=800&auto=format&fit=crop&q=80',
       sortOrder: 2,
     },
     {
       name: { tr: 'İçecekler', en: 'Drinks', ar: 'مشروبات' },
+      photoUrl: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=800&auto=format&fit=crop&q=80',
       sortOrder: 3,
     },
     {
       name: { tr: 'Tatlılar', en: 'Desserts', ar: 'حلويات' },
+      photoUrl: 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=800&auto=format&fit=crop&q=80',
       sortOrder: 4,
     },
   ];
 
-  // We key categories by their Turkish name for product lookup below
   const categoryIds: Record<string, string> = {};
 
   for (const cat of categoriesData) {
@@ -73,10 +76,10 @@ async function main() {
     const record = existing
       ? await prisma.category.update({
           where: { id: existing.id },
-          data: { name: cat.name, sortOrder: cat.sortOrder },
+          data: { name: cat.name, photoUrl: cat.photoUrl, sortOrder: cat.sortOrder },
         })
       : await prisma.category.create({
-          data: { name: cat.name, sortOrder: cat.sortOrder, restaurantId: restaurant.id },
+          data: { name: cat.name, photoUrl: cat.photoUrl, sortOrder: cat.sortOrder, restaurantId: restaurant.id },
         });
     categoryIds[trName] = record.id;
     console.log(`  📂 Category [${cat.sortOrder}]: ${trName}`);
@@ -96,7 +99,7 @@ async function main() {
         ar: '180 غرام لحم بقري، طماطم، خس، بصل، صوص خاص.',
       },
       price: '220.00',
-      photoUrl: '/seed-images/placeholder-01.jpg',
+      photoUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&auto=format&fit=crop&q=80',
       sortOrder: 1,
     },
     {
@@ -108,7 +111,7 @@ async function main() {
         ar: 'باتي سماش مزدوج، جبنة كاشكافال مذابة، مخلل، مايونيز بالثوم.',
       },
       price: '260.00',
-      photoUrl: '/seed-images/placeholder-02.jpg',
+      photoUrl: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=600&auto=format&fit=crop&q=80',
       sortOrder: 2,
     },
     {
@@ -120,7 +123,7 @@ async function main() {
         ar: '200 غرام لحم مشوي، صوص باربيكيو، بصل مكرمل، شيدر.',
       },
       price: '280.00',
-      photoUrl: '/seed-images/placeholder-03.jpg',
+      photoUrl: 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=600&auto=format&fit=crop&q=80',
       sortOrder: 3,
     },
     {
@@ -132,7 +135,7 @@ async function main() {
         ar: 'صدر دجاج مقرمش، كولسلو، هالابينيو، صوص تشيبوتلي.',
       },
       price: '200.00',
-      photoUrl: '/seed-images/placeholder-04.jpg',
+      photoUrl: 'https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?w=600&auto=format&fit=crop&q=80',
       sortOrder: 4,
     },
     {
@@ -144,7 +147,7 @@ async function main() {
         ar: 'لحم بقري، فطر مقلي، مايونيز الكمأة، جرجير.',
       },
       price: '300.00',
-      photoUrl: '/seed-images/placeholder-05.jpg',
+      photoUrl: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=600&auto=format&fit=crop&q=80',
       sortOrder: 5,
     },
     // ── Atıştırmalıklar ────────────────────────────────────────────────────────
@@ -157,7 +160,7 @@ async function main() {
         ar: 'ذهبية ومقرمشة.',
       },
       price: '80.00',
-      photoUrl: '/seed-images/placeholder-06.jpg',
+      photoUrl: 'https://images.unsplash.com/photo-1576107232684-1279f390859f?w=600&auto=format&fit=crop&q=80',
       sortOrder: 1,
     },
     {
@@ -169,7 +172,7 @@ async function main() {
         ar: 'مغطاة بعجينة البيرة، مع صوص راونش.',
       },
       price: '90.00',
-      photoUrl: '/seed-images/placeholder-07.jpg',
+      photoUrl: 'https://images.unsplash.com/photo-1639024471283-03518883512d?w=600&auto=format&fit=crop&q=80',
       sortOrder: 2,
     },
     {
@@ -181,7 +184,7 @@ async function main() {
         ar: 'مقرمشة، مع صوص مارينارا.',
       },
       price: '100.00',
-      photoUrl: '/seed-images/placeholder-08.jpg',
+      photoUrl: 'https://images.unsplash.com/photo-1531749668029-2db88e4276c7?w=600&auto=format&fit=crop&q=80',
       sortOrder: 3,
     },
     // ── İçecekler ──────────────────────────────────────────────────────────────
@@ -194,7 +197,7 @@ async function main() {
         ar: 'شوكولاتة أو فراولة أو فانيليا.',
       },
       price: '120.00',
-      photoUrl: '/seed-images/placeholder-09.jpg',
+      photoUrl: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=600&auto=format&fit=crop&q=80',
       sortOrder: 1,
     },
     {
@@ -206,7 +209,7 @@ async function main() {
         ar: 'طازجة، بالنعناع أو سادة.',
       },
       price: '70.00',
-      photoUrl: '/seed-images/placeholder-10.jpg',
+      photoUrl: 'https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=600&auto=format&fit=crop&q=80',
       sortOrder: 2,
     },
     {
@@ -218,7 +221,7 @@ async function main() {
         ar: 'منقوعة 24 ساعة، خفيفة الحلاوة.',
       },
       price: '90.00',
-      photoUrl: '/seed-images/placeholder-11.jpg',
+      photoUrl: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=600&auto=format&fit=crop&q=80',
       sortOrder: 3,
     },
     // ── Tatlılar ───────────────────────────────────────────────────────────────
@@ -231,7 +234,7 @@ async function main() {
         ar: 'براوني شوكولاتة ساخن مع كرة آيس كريم.',
       },
       price: '130.00',
-      photoUrl: '/seed-images/placeholder-12.jpg',
+      photoUrl: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=600&auto=format&fit=crop&q=80',
       sortOrder: 1,
     },
     {
@@ -243,7 +246,7 @@ async function main() {
         ar: 'على الطريقة النيويوركية، مع صوص الفراولة.',
       },
       price: '120.00',
-      photoUrl: '/seed-images/placeholder-13.jpg',
+      photoUrl: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=600&auto=format&fit=crop&q=80',
       sortOrder: 2,
     },
   ];

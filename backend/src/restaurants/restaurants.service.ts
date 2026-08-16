@@ -29,11 +29,14 @@ export class RestaurantsService {
       ? locale
       : restaurant.defaultLocale;
 
-    const publicBase = process.env.PUBLIC_URL || 'https://5cb1d4ec34fa76.lhr.life';
+    const publicBase = (process.env.PUBLIC_URL || '').replace(/\/$/, '');
     const formatUrl = (url: string | null) => {
       if (!url) return null;
       if (url.startsWith('http://localhost:3001')) {
-        return url.replace('http://localhost:3001', publicBase);
+        return publicBase ? url.replace('http://localhost:3001', publicBase) : url;
+      }
+      if (url.startsWith('/') && publicBase) {
+        return `${publicBase}${url}`;
       }
       return url;
     };
