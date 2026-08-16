@@ -3,6 +3,10 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+
+const execAsync = promisify(exec);
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -24,5 +28,12 @@ async function bootstrap() {
   await app.listen(port, '0.0.0.0');
   console.log(`Backend running on port ${port}`);
 
+  // Run Prisma migrations and seed after server starts listening on $PORT
+  // This guarantees instant HTTP 200 OK responses to Railway health checks
+  if (process.env.DATABASE_URL) {
+    execAsync('npx prisma migrate deploy && npx prisma db seed')
+      .then(({ stdout }) => console.log('🌱 Production DB Migration & Seed:', stdout))
+      .catch((err) => console.error('⚠️ DB Migration & Seed warning:', err.message));
+  }
 }
 bootstrap();
