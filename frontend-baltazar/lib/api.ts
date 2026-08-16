@@ -10,7 +10,12 @@ if (!SLUG) {
 export async function fetchRestaurant(locale: string): Promise<Restaurant> {
   const res = await fetch(
     `${API_URL}/restaurants/${SLUG}?locale=${encodeURIComponent(locale)}`,
-    { cache: 'no-store' },
+    {
+      cache: 'no-store',
+      headers: {
+        'bypass-tunnel-reminder': 'true',
+      },
+    },
   );
   if (!res.ok) {
     throw new Error(`Failed to fetch restaurant "${SLUG}" (${res.status})`);
