@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Restaurant {
+  id               String   @id @default(cuid())
+  name             Json     // { "tr": "...", "en": "...", "ar": "..." }
+  slug             String   @unique
+  themeColor       String   @default("#E63946")
+  logoUrl          String?
+  supportedLocales String[] // e.g. ["tr", "en", "ar"]
+  defaultLocale    String   @default("tr")
+  createdAt        DateTime @default(now())
+
+  categories Category[]
+  adminUsers AdminUser[]
+}
+
+model Category {
+  id           String   @id @default(cuid())
+  restaurantId String
+  name         Json     // { "tr": "...", "en": "...", "ar": "..." }
+  photoUrl     String?
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  products   Product[]
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  categoryId  String
+  name        Json     // { "tr": "...", "en": "...", "ar": "..." }
+  description Json?    // { "tr": "...", "en": "...", "ar": "..." }
+  price       Decimal  @db.Decimal(10, 2)
+  photoUrl    String?
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  restaurantId String
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
