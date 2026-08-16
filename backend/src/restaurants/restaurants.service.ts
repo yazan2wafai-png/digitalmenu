@@ -7,23 +7,24 @@ export class RestaurantsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findBySlug(slug: string, locale: string) {
-    const restaurant = await this.prisma.restaurant.findUnique({
-      where: { slug },
-      include: {
-        categories: {
-          orderBy: { sortOrder: 'asc' },
-          include: {
-            products: {
-              orderBy: { sortOrder: 'asc' },
+    try {
+      const restaurant = await this.prisma.restaurant.findUnique({
+        where: { slug },
+        include: {
+          categories: {
+            orderBy: { sortOrder: 'asc' },
+            include: {
+              products: {
+                orderBy: { sortOrder: 'asc' },
+              },
             },
           },
         },
-      },
-    });
+      });
 
-    if (!restaurant) {
-      throw new NotFoundException(`Restaurant with slug "${slug}" not found`);
-    }
+      if (!restaurant) {
+        throw new NotFoundException(`Restaurant with slug "${slug}" not found`);
+      }
 
     const effectiveLocale = restaurant.supportedLocales.includes(locale)
       ? locale
@@ -87,5 +88,10 @@ export class RestaurantsService {
         })),
       })),
     };
+    } catch (err) {
+      console.error('❌ Error in findBySlug:', err);
+      if (err instanceof NotFoundException) throw err;
+      throw new Error(`Database/Query error: ${(err as Error).message}`);
+    }
   }
 }
