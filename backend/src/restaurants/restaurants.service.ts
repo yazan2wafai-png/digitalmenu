@@ -29,7 +29,7 @@ export class RestaurantsService {
       ? locale
       : restaurant.defaultLocale;
 
-    const publicBase = process.env.PUBLIC_URL || 'https://b44caa267d667c.lhr.life';
+    const publicBase = process.env.PUBLIC_URL || 'https://5cb1d4ec34fa76.lhr.life';
     const formatUrl = (url: string | null) => {
       if (!url) return null;
       if (url.startsWith('http://localhost:3001')) {
