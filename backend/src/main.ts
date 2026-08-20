@@ -30,7 +30,7 @@ async function bootstrap() {
 
   // Run Prisma db push & seed after server starts listening on $PORT
   if (process.env.DATABASE_URL) {
-    execAsync('npx prisma db push --accept-data-loss && npx ts-node prisma/seed.ts && npx ts-node prisma/seed-erenkoy.ts')
+    execAsync('npx prisma db push --accept-data-loss && node dist/prisma/seed.js && node dist/prisma/seed-erenkoy.js')
       .then(({ stdout, stderr }) => {
         if (stdout) console.log('🌱 Production DB Migration & Seed:', stdout);
         if (stderr) console.log('ℹ️ DB Migration & Seed info:', stderr);
