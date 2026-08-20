@@ -2,7 +2,7 @@
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "pnpm install --no-frozen-lockfile && npx prisma generate && npx prisma db push --accept-data-loss && npx ts-node prisma/seed.ts && npx ts-node prisma/seed-erenkoy.ts && npm run build"
+    "buildCommand": "pnpm install --no-frozen-lockfile && npx prisma generate && npx prisma db push --accept-data-loss && pnpm build && node dist/prisma/seed.js && node dist/prisma/seed-erenkoy.js"
   },
   "deploy": {
     "startCommand": "node dist/src/main",
