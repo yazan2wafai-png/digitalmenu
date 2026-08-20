@@ -27,9 +27,12 @@ export class RestaurantsService {
         throw new NotFoundException(`Restaurant with slug "${slug}" not found`);
       }
 
-    const effectiveLocale = restaurant.supportedLocales.includes(locale)
-      ? locale
-      : restaurant.defaultLocale;
+      const supportedLocales = Array.isArray(restaurant.supportedLocales)
+        ? (restaurant.supportedLocales as string[])
+        : ['tr', 'en', 'ar'];
+      const effectiveLocale = supportedLocales.includes(locale)
+        ? locale
+        : (restaurant.defaultLocale || 'tr');
 
     const publicBase = (process.env.PUBLIC_URL || '').replace(/\/$/, '');
     const formatUrl = (url: string | null) => {
