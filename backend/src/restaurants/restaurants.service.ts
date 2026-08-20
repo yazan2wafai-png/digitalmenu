@@ -24,7 +24,6 @@ export class RestaurantsService {
         },
       });
     } catch (err) {
-      // Fallback query without settings include if DB schema migration is pending
       try {
         restaurant = await this.prisma.restaurant.findUnique({
           where: { slug },
@@ -51,9 +50,7 @@ export class RestaurantsService {
     const supportedLocales = Array.isArray(restaurant.supportedLocales)
       ? (restaurant.supportedLocales as string[])
       : ['tr', 'en', 'ar'];
-    const effectiveLocale = supportedLocales.includes(locale)
-      ? locale
-      : (restaurant.defaultLocale || 'tr');
+    const defaultLocale = restaurant.defaultLocale || 'tr';
 
     const publicBase = (process.env.PUBLIC_URL || '').replace(/\/$/, '');
     const formatUrl = (url: string | null) => {
@@ -82,8 +79,8 @@ export class RestaurantsService {
       name: resolveTranslation(
         restaurant.name,
         locale,
-        effectiveLocale,
-        restaurant.name,
+        supportedLocales,
+        defaultLocale,
       ),
       themeColor: restaurant.themeColor,
       logoUrl: formatUrl(restaurant.logoUrl),
@@ -94,8 +91,8 @@ export class RestaurantsService {
         name: resolveTranslation(
           category.name,
           locale,
-          effectiveLocale,
-          category.name,
+          supportedLocales,
+          defaultLocale,
         ),
         photoUrl: formatUrl(category.photoUrl),
         sortOrder: category.sortOrder,
@@ -106,14 +103,14 @@ export class RestaurantsService {
             name: resolveTranslation(
               product.name,
               locale,
-              effectiveLocale,
-              product.name,
+              supportedLocales,
+              defaultLocale,
             ),
             description: resolveTranslation(
               product.description,
               locale,
-              effectiveLocale,
-              product.description,
+              supportedLocales,
+              defaultLocale,
             ),
             price: product.price,
             photoUrl: formatUrl(product.photoUrl),
