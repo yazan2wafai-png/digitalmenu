@@ -3,6 +3,11 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { CategoryModal } from '@/components/CategoryModal';
 import { ProductModal } from '@/components/ProductModal';
+import AnalyticsTab from '@/components/AnalyticsTab';
+import LocationsTablesTab from '@/components/LocationsTablesTab';
+import SeoSettingsTab from '@/components/SeoSettingsTab';
+
+type TabType = 'menu' | 'tables' | 'analytics' | 'seo';
 
 interface Product {
   id: string;
@@ -35,6 +40,7 @@ export default function DashboardPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [activeTab, setActiveTab] = useState<TabType>('menu');
 
   // Modal state
   const [catModal, setCatModal] = useState<{ open: boolean; category?: Category }>({ open: false });
@@ -84,20 +90,31 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+      <header className="bg-white border-b border-gray-200 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-lg font-bold text-gray-800">🍔 {slug.charAt(0).toUpperCase() + slug.slice(1)} Admin</h1>
           <p className="text-xs text-gray-400">{email}</p>
         </div>
-        <button onClick={handleLogout} className="text-sm text-gray-500 hover:text-gray-700 border border-gray-200 rounded-lg px-3 py-1.5">
+
+        {/* Navigation Tabs */}
+        <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg overflow-x-auto max-w-full">
+          <button onClick={() => setActiveTab('menu')} className={`whitespace-nowrap px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === 'menu' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>🍕 Menu Management</button>
+          <button onClick={() => setActiveTab('tables')} className={`whitespace-nowrap px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === 'tables' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>📍 Tables & Locations</button>
+          <button onClick={() => setActiveTab('analytics')} className={`whitespace-nowrap px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === 'analytics' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>📊 Analytics</button>
+          <button onClick={() => setActiveTab('seo')} className={`whitespace-nowrap px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === 'seo' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>⚙️ SEO & Settings</button>
+        </div>
+
+        <button onClick={handleLogout} className="text-sm text-gray-500 hover:text-gray-700 border border-gray-200 rounded-lg px-3 py-1.5 self-start md:self-auto flex-shrink-0">
           Sign out
         </button>
       </header>
 
-      <main className="max-w-4xl mx-auto px-6 py-8">
+      <main className="max-w-5xl mx-auto px-6 py-8">
         {error && <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-3 mb-6 text-sm">{error}</div>}
 
-        {/* Add Category */}
+        {activeTab === 'menu' && (
+          <>
+            {/* Add Category */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-gray-800">Menu</h2>
           <button onClick={() => setCatModal({ open: true })}
@@ -179,6 +196,12 @@ export default function DashboardPage() {
             </div>
           ))}
         </div>
+          </>
+        )}
+        
+        {activeTab === 'tables' && <LocationsTablesTab slug={slug} />}
+        {activeTab === 'analytics' && <AnalyticsTab slug={slug} />}
+        {activeTab === 'seo' && <SeoSettingsTab slug={slug} />}
       </main>
 
       {/* Category Modal */}
