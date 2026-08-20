@@ -7,6 +7,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum AdminRole {
+  RESTAURANT_ADMIN
+  SUPER_ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PREPARING
+  READY
+  COMPLETED
+  CANCELLED
+}
+
 model Restaurant {
   id               String   @id @default(cuid())
   name             Json     // { "tr": "...", "en": "...", "ar": "..." }
@@ -16,9 +30,17 @@ model Restaurant {
   supportedLocales String[] // e.g. ["tr", "en", "ar"]
   defaultLocale    String   @default("tr")
   createdAt        DateTime @default(now())
+  isActive         Boolean  @default(true)
+  deletedAt        DateTime?
 
   categories Category[]
   adminUsers AdminUser[]
+  settings   RestaurantSettings?
+  locations  Location[]
+  tables     Table[]
+  menuSessions MenuSession[]
+  menuViews  MenuView[]
+  orders     Order[]
 }
 
 model Category {
@@ -42,6 +64,7 @@ model Product {
   photoUrl    String?
   sortOrder   Int      @default(0)
   createdAt   DateTime @default(now())
+  isAvailable Boolean  @default(true)
 
   category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 }
@@ -52,6 +75,107 @@ model AdminUser {
   email        String   @unique
   passwordHash String
   createdAt    DateTime @default(now())
+  role         AdminRole @default(RESTAURANT_ADMIN)
 
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
+
+model RestaurantSettings {
+  id                    String   @id @default(cuid())
+  restaurantId          String   @unique
+  orderingEnabled       Boolean  @default(false)
+  dineInEnabled         Boolean  @default(false)
+  takeawayEnabled       Boolean  @default(false)
+  estimatedPrepMinutes  Int      @default(15)
+  currency              String   @default("TRY")
+  timezone              String   @default("Europe/Istanbul")
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
+
+model Location {
+  id           String   @id @default(cuid())
+  restaurantId String
+  name         String
+  isDefault    Boolean  @default(false)
+  isActive     Boolean  @default(true)
+  address      String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  tables     Table[]
+}
+
+model Table {
+  id           String   @id @default(cuid())
+  locationId   String
+  restaurantId String
+  name         String
+  isActive     Boolean  @default(true)
+  qrIdentifier String?  @unique
+  nfcIdentifier String? @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  location     Location     @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  restaurant   Restaurant   @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  menuSessions MenuSession[]
+}
+
+model MenuSession {
+  id           String    @id @default(cuid())
+  restaurantId String
+  tableId      String?
+  startedAt    DateTime  @default(now())
+  endedAt      DateTime?
+  ipHash       String?
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  table      Table?     @relation(fields: [tableId], references: [id], onDelete: SetNull)
+  orders     Order[]
+}
+
+model MenuView {
+  id           String   @id @default(cuid())
+  restaurantId String
+  ipHash       String?
+  userAgent    String?
+  recordedAt   DateTime @default(now())
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@index([restaurantId, recordedAt])
+}
+
+model Order {
+  id           String      @id @default(cuid())
+  restaurantId String
+  locationId   String?
+  tableId      String?
+  sessionId    String?
+  status       OrderStatus @default(PENDING)
+  totalAmount  Decimal     @db.Decimal(10, 2)
+  notes        String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  restaurant Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  session    MenuSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  items      OrderItem[]
+}
+
+model OrderItem {
+  id             String  @id @default(cuid())
+  orderId        String
+  productId      String
+  productName    Json    // snapshot of name at time of order
+  productPrice   Decimal @db.Decimal(10, 2) // snapshot of price at time of order
+  quantity       Int     @default(1)
+  notes          String?
+  createdAt      DateTime @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }

@@ -28,3 +28,4 @@ backend/uploads/*
 # Logs
 *.log
 npm-debug.log*
+.git_token
