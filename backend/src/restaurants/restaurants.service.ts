@@ -7,8 +7,9 @@ export class RestaurantsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findBySlug(slug: string, locale: string) {
+    let restaurant: any = null;
     try {
-      const restaurant = await this.prisma.restaurant.findUnique({
+      restaurant = await this.prisma.restaurant.findUnique({
         where: { slug },
         include: {
           settings: true,
@@ -22,17 +23,37 @@ export class RestaurantsService {
           },
         },
       });
-
-      if (!restaurant || !restaurant.isActive) {
+    } catch (err) {
+      // Fallback query without settings include if DB schema migration is pending
+      try {
+        restaurant = await this.prisma.restaurant.findUnique({
+          where: { slug },
+          include: {
+            categories: {
+              orderBy: { sortOrder: 'asc' },
+              include: {
+                products: {
+                  orderBy: { sortOrder: 'asc' },
+                },
+              },
+            },
+          },
+        });
+      } catch (innerErr) {
         throw new NotFoundException(`Restaurant with slug "${slug}" not found`);
       }
+    }
 
-      const supportedLocales = Array.isArray(restaurant.supportedLocales)
-        ? (restaurant.supportedLocales as string[])
-        : ['tr', 'en', 'ar'];
-      const effectiveLocale = supportedLocales.includes(locale)
-        ? locale
-        : (restaurant.defaultLocale || 'tr');
+    if (!restaurant || !restaurant.isActive) {
+      throw new NotFoundException(`Restaurant with slug "${slug}" not found`);
+    }
+
+    const supportedLocales = Array.isArray(restaurant.supportedLocales)
+      ? (restaurant.supportedLocales as string[])
+      : ['tr', 'en', 'ar'];
+    const effectiveLocale = supportedLocales.includes(locale)
+      ? locale
+      : (restaurant.defaultLocale || 'tr');
 
     const publicBase = (process.env.PUBLIC_URL || '').replace(/\/$/, '');
     const formatUrl = (url: string | null) => {
@@ -49,7 +70,7 @@ export class RestaurantsService {
     return {
       id: restaurant.id,
       slug: restaurant.slug,
-      settings: restaurant.settings,
+      settings: restaurant.settings || null,
       featureFlags: {
         enableOrdering: restaurant.settings?.enableOrdering ?? true,
         enableTables: restaurant.settings?.enableTables ?? true,
@@ -61,50 +82,44 @@ export class RestaurantsService {
       name: resolveTranslation(
         restaurant.name,
         locale,
-        restaurant.supportedLocales,
-        restaurant.defaultLocale,
+        effectiveLocale,
+        restaurant.name,
       ),
       themeColor: restaurant.themeColor,
       logoUrl: formatUrl(restaurant.logoUrl),
-      defaultLocale: restaurant.defaultLocale,
       supportedLocales: restaurant.supportedLocales,
-      locale: effectiveLocale,
-      categories: restaurant.categories.map((cat) => ({
-        id: cat.id,
+      defaultLocale: restaurant.defaultLocale,
+      categories: (restaurant.categories || []).map((category: any) => ({
+        id: category.id,
         name: resolveTranslation(
-          cat.name,
+          category.name,
           locale,
-          restaurant.supportedLocales,
-          restaurant.defaultLocale,
+          effectiveLocale,
+          category.name,
         ),
-        sortOrder: cat.sortOrder,
-        photoUrl: formatUrl(cat.photoUrl),
-        products: cat.products.map((prod) => ({
-          id: prod.id,
-          name: resolveTranslation(
-            prod.name,
-            locale,
-            restaurant.supportedLocales,
-            restaurant.defaultLocale,
-          ),
-          description: prod.description
-            ? resolveTranslation(
-                prod.description,
-                locale,
-                restaurant.supportedLocales,
-                restaurant.defaultLocale,
-              )
-            : null,
-          price: prod.price.toString(),
-          photoUrl: formatUrl(prod.photoUrl),
-          sortOrder: prod.sortOrder,
-        })),
+        photoUrl: formatUrl(category.photoUrl),
+        sortOrder: category.sortOrder,
+        products: (category.products || [])
+          .filter((product: any) => product.isAvailable)
+          .map((product: any) => ({
+            id: product.id,
+            name: resolveTranslation(
+              product.name,
+              locale,
+              effectiveLocale,
+              product.name,
+            ),
+            description: resolveTranslation(
+              product.description,
+              locale,
+              effectiveLocale,
+              product.description,
+            ),
+            price: product.price,
+            photoUrl: formatUrl(product.photoUrl),
+            sortOrder: product.sortOrder,
+          })),
       })),
     };
-    } catch (err) {
-      console.error('❌ Error in findBySlug:', err);
-      if (err instanceof NotFoundException) throw err;
-      throw new Error(`Database/Query error: ${(err as Error).message}`);
-    }
   }
 }
