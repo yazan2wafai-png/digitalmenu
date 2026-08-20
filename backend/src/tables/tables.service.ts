@@ -47,7 +47,11 @@ export class TablesService {
 
     return this.prisma.table.update({
       where: { id },
-      data: dto,
+      data: {
+        ...dto,
+        locationId,
+        restaurantId,
+      },
     });
   }
 

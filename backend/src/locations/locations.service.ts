@@ -34,7 +34,10 @@ export class LocationsService {
 
     return this.prisma.location.update({
       where: { id },
-      data: dto,
+      data: {
+        ...dto,
+        restaurantId, // Prevent modifying restaurantId
+      },
     });
   }
 

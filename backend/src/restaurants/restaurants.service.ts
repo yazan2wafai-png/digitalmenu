@@ -22,7 +22,7 @@ export class RestaurantsService {
         },
       });
 
-      if (!restaurant) {
+      if (!restaurant || !restaurant.isActive) {
         throw new NotFoundException(`Restaurant with slug "${slug}" not found`);
       }
 

@@ -1,15 +1,15 @@
-import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsBoolean } from 'class-validator';
 
 export class CreateLocationDto {
   @IsString()
   @IsNotEmpty()
   name: string;
 
-  @IsString()
+  @IsBoolean()
   @IsOptional()
-  address?: string;
+  isDefault?: boolean;
 
   @IsString()
   @IsOptional()
-  phone?: string;
+  address?: string;
 }

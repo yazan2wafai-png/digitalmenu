@@ -24,10 +24,13 @@ export class RestaurantAdminService {
     // Upsert settings since they might not exist yet
     return this.prisma.restaurantSettings.upsert({
       where: { restaurantId },
-      update: data,
-      create: {
-        restaurantId,
+      update: {
         ...data,
+        restaurantId, // Prevent modifying restaurantId
+      },
+      create: {
+        ...data,
+        restaurantId,
       },
     });
   }

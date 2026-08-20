@@ -24,7 +24,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JwtPayload) {
-    if (!payload.sub || !payload.restaurantId) {
+    if (!payload.sub || (!payload.restaurantId && payload.role !== 'SUPER_ADMIN')) {
       throw new UnauthorizedException();
     }
     // This object is attached to request.user

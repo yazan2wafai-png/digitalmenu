@@ -30,7 +30,7 @@ export class AuthService {
       sub: admin.id,
       email: admin.email,
       restaurantId: admin.restaurantId,
-      restaurantSlug: admin.restaurant.slug,
+      restaurantSlug: admin.restaurant?.slug || null,
       role: admin.role,
     };
 
@@ -38,7 +38,7 @@ export class AuthService {
 
     return {
       access_token: token,
-      restaurantSlug: admin.restaurant.slug,
+      restaurantSlug: admin.restaurant?.slug || null,
       email: admin.email,
     };
   }
