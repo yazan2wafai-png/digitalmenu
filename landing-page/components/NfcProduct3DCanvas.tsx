@@ -1,255 +1,216 @@
-"use client";
+'use client';
+import { useState, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import type { Locale } from '@/lib/translations';
+import { translations } from '@/lib/translations';
 
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { RotateCw, MousePointerClick, Smartphone, Info } from "lucide-react";
+type ProductType = 'stand' | 'card' | 'sticker';
 
-export default function NfcProduct3DCanvas() {
-  const [activeTab, setActiveTab] = useState<"stand" | "card" | "sticker">("stand");
-  const [rotationX, setRotationX] = useState(0);
-  const [rotationY, setRotationY] = useState(0);
+interface Props {
+  locale?: Locale;
+}
+
+export default function NfcProduct3DCanvas({ locale = 'tr' }: Props) {
+  const [selected, setSelected] = useState<ProductType>('stand');
+  const [rotation, setRotation] = useState({ x: 12, y: -25 });
   const [isDragging, setIsDragging] = useState(false);
-  const [autoRotate, setAutoRotate] = useState(true);
+  const dragRef = useRef<{ startX: number; startY: number; startRotX: number; startRotY: number }>({
+    startX: 0,
+    startY: 0,
+    startRotX: 12,
+    startRotY: -25,
+  });
 
-  // Auto-rotation effect
-  useEffect(() => {
-    let animationFrame: number;
-    if (autoRotate && !isDragging) {
-      const animate = () => {
-        setRotationY((prev) => (prev + 0.5) % 360);
-        animationFrame = requestAnimationFrame(animate);
-      };
-      animationFrame = requestAnimationFrame(animate);
-    }
-    return () => cancelAnimationFrame(animationFrame);
-  }, [autoRotate, isDragging]);
+  const t = translations[locale].canvas;
 
-  const handleDragStart = () => {
+  const PRODUCTS: { id: ProductType; name: string; subtitle: string; tag: string; bgGradient: string }[] = [
+    {
+      id: 'stand',
+      name: t.standTitle,
+      subtitle: t.standSubtitle,
+      tag: t.tagStand,
+      bgGradient: 'from-amber-950/40 via-neutral-900 to-neutral-950',
+    },
+    {
+      id: 'card',
+      name: t.cardTitle,
+      subtitle: t.cardSubtitle,
+      tag: t.tagCard,
+      bgGradient: 'from-yellow-950/40 via-neutral-900 to-neutral-950',
+    },
+    {
+      id: 'sticker',
+      name: t.stickerTitle,
+      subtitle: t.stickerSubtitle,
+      tag: t.tagSticker,
+      bgGradient: 'from-blue-950/40 via-neutral-900 to-neutral-950',
+    },
+  ];
+
+  const activeProduct = PRODUCTS.find((p) => p.id === selected)!;
+
+  const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
-    setAutoRotate(false);
+    dragRef.current = {
+      startX: e.clientX,
+      startY: e.clientY,
+      startRotX: rotation.x,
+      startRotY: rotation.y,
+    };
   };
 
-  const handleDragEnd = () => {
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    const deltaX = e.clientX - dragRef.current.startX;
+    const deltaY = e.clientY - dragRef.current.startY;
+    setRotation({
+      x: Math.max(-45, Math.min(45, dragRef.current.startRotX - deltaY * 0.4)),
+      y: dragRef.current.startRotY + deltaX * 0.5,
+    });
+  };
+
+  const handleMouseUp = () => {
     setIsDragging(false);
   };
 
-  const handleDrag = (e: any, info: any) => {
-    if (isDragging) {
-      setRotationY((prev) => prev + info.delta.x * 0.5);
-      setRotationX((prev) => Math.max(-45, Math.min(45, prev - info.delta.y * 0.5)));
-    }
-  };
-
-  const products = {
-    stand: {
-      name: "Table Acrylic Stand",
-      description: "Premium acrylic with wooden base. Perfect for restaurant tables.",
-      render: () => (
-        <div className="relative w-48 h-64 mx-auto preserve-3d" style={{ transformStyle: "preserve-3d" }}>
-          {/* Base */}
-          <div 
-            className="absolute bottom-0 w-56 h-8 -left-4 bg-amber-800 rounded-sm border-2 border-amber-900 shadow-xl"
-            style={{ transform: "translateZ(20px) rotateX(90deg)", transformOrigin: "bottom" }}
-          >
-             <div className="w-full h-full bg-amber-700 opacity-80" />
-          </div>
-          
-          {/* Acrylic front */}
-          <div 
-            className="absolute inset-0 bg-white/20 backdrop-blur-md rounded-t-lg border-2 border-white/50 flex flex-col items-center justify-center p-4 shadow-[0_0_20px_rgba(255,255,255,0.3)]"
-            style={{ transform: "translateZ(10px)", backfaceVisibility: "hidden" }}
-          >
-            <Smartphone className="w-12 h-12 text-white mb-4" />
-            <div className="w-24 h-24 bg-white rounded-lg flex items-center justify-center mb-4">
-              <span className="font-bold text-gray-800 text-sm text-center">SCAN OR TAP</span>
-            </div>
-            <p className="text-white text-center font-semibold text-lg">View Menu</p>
-          </div>
-
-          {/* Acrylic back */}
-          <div 
-            className="absolute inset-0 bg-white/10 backdrop-blur-md rounded-t-lg border-2 border-white/30 flex flex-col items-center justify-center p-4"
-            style={{ transform: "translateZ(-10px) rotateY(180deg)", backfaceVisibility: "hidden" }}
-          >
-            <p className="text-white/70 text-center font-medium">NFCMyPlace</p>
-          </div>
-        </div>
-      )
-    },
-    card: {
-      name: "Google Review Card",
-      description: "Matte black with gold foil text. Tap-to-review instantly.",
-      render: () => (
-        <div className="relative w-72 h-44 mx-auto preserve-3d" style={{ transformStyle: "preserve-3d" }}>
-          {/* Front */}
-          <div 
-            className="absolute inset-0 bg-zinc-900 rounded-xl border border-zinc-700 shadow-2xl flex flex-col items-center justify-between p-6 overflow-hidden"
-            style={{ transform: "translateZ(2px)", backfaceVisibility: "hidden" }}
-          >
-            {/* Gold accent line */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-yellow-600 via-yellow-400 to-yellow-600" />
-            
-            <div className="flex items-center w-full justify-between">
-              <div className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-yellow-400 font-serif font-bold text-xl tracking-wider">
-                REVIEW US
-              </div>
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center text-zinc-900 font-bold">
-                G
-              </div>
-            </div>
-
-            <div className="flex items-center justify-center space-x-2">
-              <MousePointerClick className="w-6 h-6 text-yellow-500" />
-              <span className="text-white font-light tracking-widest text-sm">TAP TO RATE</span>
-            </div>
-          </div>
-
-          {/* Back */}
-          <div 
-            className="absolute inset-0 bg-zinc-900 rounded-xl border border-zinc-700 flex flex-col items-center justify-center p-6"
-            style={{ transform: "translateZ(-2px) rotateY(180deg)", backfaceVisibility: "hidden" }}
-          >
-             <div className="w-20 h-20 bg-white p-1 rounded-sm mb-4">
-                <div className="w-full h-full border-4 border-dashed border-zinc-800 flex items-center justify-center">
-                  <span className="text-xs font-bold text-zinc-800">QR</span>
-                </div>
-             </div>
-             <p className="text-zinc-500 text-xs">Powered by NFCMyPlace</p>
-          </div>
-        </div>
-      )
-    },
-    sticker: {
-      name: "Waterproof Table Sticker",
-      description: "Ultra-durable, waterproof adhesive. Blends with any surface.",
-      render: () => (
-        <div className="relative w-48 h-48 mx-auto preserve-3d rounded-full" style={{ transformStyle: "preserve-3d" }}>
-           {/* Front */}
-           <div 
-            className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full shadow-lg flex flex-col items-center justify-center p-6 border-4 border-white"
-            style={{ transform: "translateZ(1px)", backfaceVisibility: "hidden" }}
-          >
-            <div className="absolute inset-0 rounded-full border-2 border-white/20 m-2" />
-            <Smartphone className="w-10 h-10 text-white mb-2" />
-            <p className="text-white font-bold text-lg text-center leading-tight">TAP FOR<br/>MENU</p>
-          </div>
-           {/* Back (Adhesive side) */}
-           <div 
-            className="absolute inset-0 bg-zinc-200 rounded-full flex items-center justify-center"
-            style={{ transform: "translateZ(-1px) rotateY(180deg)", backfaceVisibility: "hidden" }}
-          >
-            <p className="text-zinc-400 font-bold transform -rotate-45 text-xl opacity-50">3M ADHESIVE</p>
-          </div>
-        </div>
-      )
-    }
-  };
-
   return (
-    <div className="w-full max-w-5xl mx-auto p-4 md:p-8">
-      <div className="text-center mb-10">
-        <h2 className="text-3xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400 mb-4">
-          Interactive Product Viewer
-        </h2>
-        <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-          Experience our NFC-enabled products in 3D. Drag to rotate and explore every angle.
-        </p>
+    <div className="w-full max-w-5xl mx-auto my-8 px-4">
+      {/* Product Selector Tabs */}
+      <div className="flex items-center justify-center gap-2 mb-8 overflow-x-auto p-1 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 max-w-2xl mx-auto">
+        {PRODUCTS.map((prod) => {
+          const isActive = prod.id === selected;
+          return (
+            <button
+              key={prod.id}
+              onClick={() => {
+                setSelected(prod.id);
+                setRotation({ x: 12, y: -25 });
+              }}
+              className="relative px-5 py-2.5 text-xs font-bold rounded-xl transition-all whitespace-nowrap shrink-0"
+              style={{ color: isActive ? '#ffffff' : 'rgba(255,255,255,0.6)' }}
+            >
+              {isActive && (
+                <motion.div
+                  layoutId="active-3d-product-pill"
+                  className="absolute inset-0 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 shadow-lg shadow-amber-900/40"
+                  transition={{ type: 'spring', damping: 24, stiffness: 280 }}
+                />
+              )}
+              <span className="relative z-10">{prod.name.split(' ')[0]} {prod.name.split(' ')[1]}</span>
+            </button>
+          );
+        })}
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-8 items-center justify-center bg-gray-50 dark:bg-zinc-900/50 p-8 rounded-3xl border border-gray-200 dark:border-zinc-800">
-        
-        {/* Controls / Tabs */}
-        <div className="w-full lg:w-1/3 flex flex-col gap-4">
-          {(Object.keys(products) as Array<keyof typeof products>).map((key) => (
-            <button
-              key={key}
-              onClick={() => setActiveTab(key)}
-              className={`text-left p-4 rounded-xl transition-all duration-300 relative overflow-hidden ${
-                activeTab === key 
-                  ? "bg-white dark:bg-zinc-800 shadow-md border-blue-500 border" 
-                  : "bg-transparent hover:bg-gray-100 dark:hover:bg-zinc-800/50 border border-transparent"
-              }`}
-            >
-              <h3 className={`font-semibold text-lg ${activeTab === key ? "text-blue-600 dark:text-blue-400" : "text-gray-700 dark:text-gray-200"}`}>
-                {products[key].name}
-              </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                {products[key].description}
-              </p>
-            </button>
-          ))}
-          
-          <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl flex items-start gap-3">
-            <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-blue-800 dark:text-blue-300">
-              All products include pre-programmed NFC chips. Simply tap with any modern smartphone to trigger the action.
-            </p>
-          </div>
+      {/* 3D Viewport Box */}
+      <div
+        className={`relative w-full h-[420px] sm:h-[480px] rounded-3xl border border-white/10 overflow-hidden bg-gradient-to-b ${activeProduct.bgGradient} flex flex-col items-center justify-between p-6 cursor-grab active:cursor-grabbing select-none shadow-2xl`}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+      >
+        {/* Ambient Studio Lighting Reflections */}
+        <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-amber-500/15 via-transparent to-transparent pointer-events-none" />
+
+        {/* Viewport Header Tag */}
+        <div className="relative z-10 flex items-center justify-between w-full">
+          <span className="text-[11px] font-extrabold tracking-wider uppercase px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 shadow-inner">
+            {activeProduct.tag}
+          </span>
+          <span className="text-[11px] text-white/40 tracking-wider font-medium">
+            {t.dragHint}
+          </span>
         </div>
 
-        {/* 3D Canvas Area */}
-        <div className="w-full lg:w-2/3 h-[500px] relative perspective-1000">
-          
-          <div className="absolute top-4 right-4 z-10 flex gap-2">
-            <button 
-              onClick={() => setAutoRotate(!autoRotate)}
-              className={`p-2 rounded-full backdrop-blur-md border ${
-                autoRotate 
-                  ? "bg-blue-500/10 border-blue-500 text-blue-500" 
-                  : "bg-gray-500/10 border-gray-500 text-gray-500"
-              }`}
-              title="Toggle Auto-Rotate"
+        {/* 3D Canvas Geometry Render */}
+        <div className="relative w-full h-64 flex items-center justify-center perspective-[1000px]">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={selected}
+              initial={{ scale: 0.8, opacity: 0, rotateY: -60 }}
+              animate={{ scale: 1, opacity: 1, rotateY: 0 }}
+              exit={{ scale: 0.8, opacity: 0, rotateY: 60 }}
+              transition={{ type: 'spring', damping: 22, stiffness: 200 }}
+              className="relative flex items-center justify-center"
+              style={{
+                transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
+                transformStyle: 'preserve-3d',
+              }}
             >
-              <RotateCw className={`w-5 h-5 ${autoRotate ? "animate-spin-slow" : ""}`} style={{ animationDuration: '3s' }} />
-            </button>
-          </div>
+              {/* Model 1: Ahşap & Akrilik Masa Standı */}
+              {selected === 'stand' && (
+                <div className="relative w-48 h-60 flex flex-col items-center justify-end">
+                  {/* Acrylic Plate */}
+                  <div className="w-40 h-48 bg-gradient-to-tr from-white/25 via-white/10 to-white/35 backdrop-blur-md rounded-2xl border border-white/50 shadow-2xl flex flex-col items-center justify-between p-4 transform translate-z-4">
+                    <div className="w-9 h-9 rounded-full border border-amber-400/80 bg-amber-500/30 flex items-center justify-center text-amber-300 text-xs font-black shadow-inner">
+                      NFC
+                    </div>
+                    <div className="text-center space-y-1">
+                      <div className="w-16 h-16 mx-auto bg-neutral-900/90 rounded-xl p-1.5 border border-white/20 flex items-center justify-center">
+                        <div className="w-full h-full bg-white rounded flex items-center justify-center text-black font-extrabold text-[10px]">
+                          QR CODE
+                        </div>
+                      </div>
+                      <p className="text-[10px] font-bold text-white/90 tracking-wide">DOKUN VEYA TARAT</p>
+                    </div>
+                    <div className="text-[9px] text-white/60 uppercase tracking-widest font-bold">NFCMyPlace</div>
+                  </div>
+                  {/* Solid Walnut Wood Base */}
+                  <div className="w-52 h-9 bg-gradient-to-r from-amber-950 via-yellow-950 to-amber-950 rounded-xl border border-amber-700/60 shadow-2xl flex items-center justify-center text-[10px] font-bold text-amber-200/80 tracking-widest uppercase shadow-amber-950/60">
+                    Doğal Ahşap Taban
+                  </div>
+                </div>
+              )}
 
-          <motion.div 
-            className="w-full h-full flex items-center justify-center cursor-grab active:cursor-grabbing touch-none"
-            drag
-            dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-            dragElastic={0}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-            onDrag={handleDrag}
-            style={{ perspective: 1000 }}
-          >
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeTab}
-                initial={{ opacity: 0, scale: 0.8, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.8, y: -20 }}
-                transition={{ duration: 0.5 }}
-                className="relative preserve-3d"
-                style={{ 
-                  transformStyle: "preserve-3d",
-                  transform: `rotateX(${rotationX}deg) rotateY(${rotationY}deg)`
-                }}
-              >
-                {/* Floating animation wrapper */}
-                <motion.div
-                  animate={{ y: [-10, 10, -10] }}
-                  transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-                  className="preserve-3d"
-                  style={{ transformStyle: "preserve-3d" }}
-                >
-                  {products[activeTab].render()}
-                </motion.div>
-                
-                {/* Shadow */}
-                <div 
-                  className="absolute -bottom-24 left-1/2 -translate-x-1/2 w-48 h-8 bg-black/10 dark:bg-black/40 rounded-full blur-xl"
-                  style={{ transform: "rotateX(90deg) translateZ(-50px)" }}
-                />
-              </motion.div>
-            </AnimatePresence>
-          </motion.div>
-          
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-sm text-gray-400 flex items-center gap-2 pointer-events-none">
-            <MousePointerClick className="w-4 h-4" />
-            Drag to rotate
-          </div>
+              {/* Model 2: Mat Siyah & Altın Varak Google Yorum Kartı */}
+              {selected === 'card' && (
+                <div className="w-64 h-40 bg-neutral-950 rounded-2xl border border-amber-500/50 shadow-2xl p-5 flex flex-col justify-between relative overflow-hidden transform translate-z-6">
+                  <div className="absolute -top-12 -left-12 w-32 h-32 bg-amber-400/20 rounded-full blur-2xl pointer-events-none" />
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <div className="text-xs font-black tracking-widest text-amber-400 uppercase">Google Yorum Kartı</div>
+                      <div className="text-[10px] text-amber-200/70 mt-0.5">5 Yıldız Yorum İçin Dokundurun</div>
+                    </div>
+                    <div className="text-amber-400 text-lg">⭐⭐⭐⭐⭐</div>
+                  </div>
+                  <div className="flex items-end justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-full border border-amber-400/80 bg-amber-500/30 flex items-center justify-center text-amber-300 text-[10px] font-bold">
+                        NFC
+                      </div>
+                      <span className="text-[9px] text-amber-300/90 font-mono font-bold">ALTIN VARAK NFC</span>
+                    </div>
+                    <div className="w-10 h-10 bg-amber-400/10 rounded border border-amber-400/30 p-1 flex items-center justify-center text-amber-300 font-extrabold text-[8px]">
+                      QR
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Model 3: Endüstriyel Su Geçirmez NFC Masa Diski */}
+              {selected === 'sticker' && (
+                <div className="w-44 h-44 rounded-full bg-gradient-to-tr from-neutral-900 via-neutral-950 to-neutral-900 border-4 border-amber-500/60 shadow-2xl p-4 flex flex-col items-center justify-between text-center relative overflow-hidden transform translate-z-4">
+                  <div className="w-7 h-7 rounded-full bg-amber-500/30 border border-amber-400/80 flex items-center justify-center text-amber-300 text-[9px] font-black mt-1">
+                    NFC
+                  </div>
+                  <div className="my-auto">
+                    <div className="text-xs font-black text-white tracking-wide">AKILLI MENÜ DISKI</div>
+                    <div className="text-[9px] text-white/60">3M Su Geçirmez Reçine</div>
+                  </div>
+                  <div className="text-[9px] font-bold text-amber-400 tracking-widest uppercase mb-1">
+                    NFCMyPlace
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* Viewport Footer Product Details */}
+        <div className="relative z-10 text-center space-y-1">
+          <h3 className="text-lg font-black text-white">{activeProduct.name}</h3>
+          <p className="text-xs text-white/60 max-w-lg mx-auto leading-relaxed">{activeProduct.subtitle}</p>
         </div>
       </div>
     </div>

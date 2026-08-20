@@ -1,81 +1,108 @@
 'use client';
+import { useState } from 'react';
 import { Navbar } from '@/components/Navbar';
 import NfcProduct3DCanvas from '@/components/NfcProduct3DCanvas';
 import { DiscountModal } from '@/components/DiscountModal';
 import { motion } from 'framer-motion';
-
-const LIVE_DEMOS = [
-  {
-    name: 'Baltazar Burger',
-    tag: 'Smash Burgers & Bistro',
-    slug: 'baltazar',
-    themeColor: '#C0392B',
-    url: 'https://digitalmenu-wdo5.vercel.app/baltazar',
-    image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=600&auto=format&fit=crop&q=80',
-    description: 'High-energy gourmet burger joint with multi-language TR/EN/AR menu, table ordering, and dark mode aesthetics.',
-  },
-  {
-    name: 'Kahve Erenköy',
-    tag: 'Specialty Coffee & Bakery',
-    slug: 'kahve-erenkoy',
-    themeColor: '#6F4E37',
-    url: 'https://digitalmenu-wdo5.vercel.app/kahve-erenkoy',
-    image: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=600&auto=format&fit=crop&q=80',
-    description: 'Warm specialty coffee shop in Kadıköy featuring V60 pour over, Bask cheesecake, croissant badges, and table banners.',
-  },
-];
-
-const PRICING_TIERS = [
-  {
-    name: 'Starter Kit',
-    price: '$149',
-    subtitle: 'Ideal for small cafes & boutique venues',
-    features: [
-      '10x Acrylic & Wood NFC Table Stands',
-      '2x Gold Foil Google Review Cards',
-      'Full Digital Menu SaaS Access',
-      'Multi-Language (TR / EN / AR)',
-      'Basic Traffic Analytics',
-    ],
-    highlight: false,
-    cta: 'Order Starter Kit',
-  },
-  {
-    name: 'Restaurant Pro Kit',
-    price: '$299',
-    subtitle: 'Best value for busy restaurants & bars',
-    features: [
-      '25x Acrylic & Wood NFC Table Stands',
-      '5x Gold Foil Google Review Cards',
-      '10x Waterproof Table Stickers',
-      'Full SaaS + Table Routing Context',
-      '30-Day Advanced Traffic Analytics',
-      'Custom Logo & Theme Styling',
-    ],
-    highlight: true,
-    cta: 'Order Pro Kit',
-  },
-  {
-    name: 'Enterprise Custom',
-    price: 'Custom',
-    subtitle: 'Tailored hardware & multi-branch SaaS',
-    features: [
-      'Unlimited Custom Engraved Hardware',
-      'Dedicated Account Manager',
-      'Custom Subdomain (venue.nfcmyplace.com)',
-      'POS Integration & Webhook Sync',
-      'Priority 24/7 SLA Support',
-    ],
-    highlight: false,
-    cta: 'Contact Sales',
-  },
-];
+import type { Locale } from '@/lib/translations';
+import { translations } from '@/lib/translations';
 
 export default function LandingPage() {
+  const [locale, setLocale] = useState<Locale>('tr');
+  const t = translations[locale];
+
+  const LIVE_DEMOS = [
+    {
+      name: 'Baltazar Burger',
+      tag: t.demos.baltazarTag,
+      slug: 'baltazar',
+      themeColor: '#C0392B',
+      url: 'https://digitalmenu-wdo5.vercel.app/baltazar',
+      image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=600&auto=format&fit=crop&q=80',
+      description: t.demos.baltazarDesc,
+      buttonText: t.demos.baltazarBtn,
+    },
+    {
+      name: 'Kahve Erenköy',
+      tag: t.demos.erenkoyTag,
+      slug: 'kahve-erenkoy',
+      themeColor: '#6F4E37',
+      url: 'https://digitalmenu-wdo5.vercel.app/kahve-erenkoy',
+      image: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=600&auto=format&fit=crop&q=80',
+      description: t.demos.erenkoyDesc,
+      buttonText: t.demos.erenkoyBtn,
+    },
+  ];
+
+  const PRICING_TIERS = [
+    {
+      name: t.pricing.starterName,
+      price: t.pricing.starterPrice,
+      subtitle: t.pricing.starterSub,
+      features: locale === 'tr' ? [
+        '10x Ahşap & Akrilik NFC Masa Standı',
+        '2x Mat Siyah Altın Varak Google Yorum Kartı',
+        'Sınırsız Dijital Menü SaaS Erişimi',
+        'Çoklu Dil Desteği (TR / EN / AR)',
+        'Masa Bazlı Ziyaretçi Analitiği',
+      ] : [
+        '10x Wood & Acrylic NFC Table Stands',
+        '2x Gold Foil Google Review Cards',
+        'Full Digital Menu SaaS Access',
+        'Multi-Language (TR / EN / AR)',
+        'Table Traffic Analytics',
+      ],
+      highlight: false,
+      cta: t.pricing.starterCta,
+    },
+    {
+      name: t.pricing.proName,
+      price: t.pricing.proPrice,
+      subtitle: t.pricing.proSub,
+      features: locale === 'tr' ? [
+        '25x Ahşap & Akrilik NFC Masa Standı',
+        '5x Mat Siyah Altın Varak Google Yorum Kartı',
+        '15x Su Geçirmez NFC Masa Diski',
+        'Tam SaaS + Masa Yönlendirme Desteği',
+        '30 Günlük Gelişmiş Analitik Raporlar',
+        'Özel Logo & Renk Teması Entegrasyonu',
+      ] : [
+        '25x Wood & Acrylic NFC Table Stands',
+        '5x Gold Foil Google Review Cards',
+        '15x Waterproof NFC Table Stickers',
+        'Full SaaS + Table Routing Context',
+        '30-Day Advanced Traffic Analytics',
+        'Custom Logo & Theme Styling',
+      ],
+      highlight: true,
+      cta: t.pricing.proCta,
+    },
+    {
+      name: t.pricing.entName,
+      price: t.pricing.entPrice,
+      subtitle: t.pricing.entSub,
+      features: locale === 'tr' ? [
+        'Sınırsız Özel Lazer Baskılı Donanım',
+        'Özel Müşteri Temsilcisi',
+        'Özel Subdomain (mekan.nfcmyplace.com)',
+        'POS & Sipariş Entegrasyonu',
+        'Öncelikli 7/24 Teknik Destek',
+      ] : [
+        'Unlimited Custom Engraved Hardware',
+        'Dedicated Account Manager',
+        'Custom Subdomain Support',
+        'POS Integration & Webhook Sync',
+        'Priority 24/7 SLA Support',
+      ],
+      highlight: false,
+      cta: t.pricing.entCta,
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-neutral-950 text-white font-sans selection:bg-amber-500 selection:text-black">
-      <Navbar />
-      <DiscountModal />
+      <Navbar locale={locale} onToggleLocale={setLocale} />
+      <DiscountModal locale={locale} />
 
       {/* ── HERO SECTION ── */}
       <section className="relative pt-20 pb-16 px-6 text-center overflow-hidden">
@@ -88,15 +115,18 @@ export default function LandingPage() {
           className="max-w-4xl mx-auto space-y-6 relative z-10"
         >
           <span className="inline-block px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold tracking-wider uppercase">
-            ⚡ Physical NFC Hardware Meets Smart Menu SaaS
+            {t.hero.badge}
           </span>
 
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-none">
-            Next-Generation Smart Menus & <span className="bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 bg-clip-text text-transparent">NFC Hardware</span> for Venues
+            {t.hero.titleStart}
+            <span className="bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 bg-clip-text text-transparent">
+              {t.hero.titleGradient}
+            </span>
           </h1>
 
           <p className="text-sm sm:text-base text-white/60 max-w-2xl mx-auto leading-relaxed">
-            Connect physical tables directly to digital menus, 5-star Google reviews, and instant ordering with custom-designed NFC stands, stickers, and cards.
+            {t.hero.tagline}
           </p>
 
           <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
@@ -104,13 +134,13 @@ export default function LandingPage() {
               href="#hardware"
               className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-black text-sm shadow-xl shadow-amber-500/25 transition-all transform hover:-translate-y-0.5"
             >
-              Explore 3D Hardware ↓
+              {t.hero.primaryCta}
             </a>
             <a
               href="#demos"
               className="px-6 py-3.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-white font-bold text-sm transition-all"
             >
-              Try Live Demo
+              {t.hero.secondaryCta}
             </a>
           </div>
         </motion.div>
@@ -118,22 +148,15 @@ export default function LandingPage() {
 
       {/* ── 3D HARDWARE SHOWCASE SECTION ── */}
       <section id="hardware" className="py-12 px-6 border-t border-white/5 bg-gradient-to-b from-neutral-950 via-neutral-900 to-neutral-950">
-        <div className="max-w-4xl mx-auto text-center space-y-3 mb-6">
-          <h2 className="text-3xl sm:text-4xl font-black">Interactive 3D Product Showcase</h2>
-          <p className="text-xs sm:text-sm text-white/50">
-            Rotate 360° to inspect our restaurant-grade NFC hardware built for durability and instant customer taps.
-          </p>
-        </div>
-
-        <NfcProduct3DCanvas />
+        <NfcProduct3DCanvas locale={locale} />
       </section>
 
       {/* ── LIVE DEMO LAUNCHERS SECTION ── */}
       <section id="demos" className="py-20 px-6 max-w-6xl mx-auto">
         <div className="text-center space-y-3 mb-12">
-          <span className="text-xs font-bold text-amber-400 uppercase tracking-widest">Live Deployments</span>
-          <h2 className="text-3xl sm:text-4xl font-black">Experience Live Restaurant Menus</h2>
-          <p className="text-sm text-white/50">Test real multi-tenant menus powered by our single dynamic Next.js frontend.</p>
+          <span className="text-xs font-bold text-amber-400 uppercase tracking-widest">{t.demos.badge}</span>
+          <h2 className="text-3xl sm:text-4xl font-black">{t.demos.title}</h2>
+          <p className="text-sm text-white/50">{t.demos.subtitle}</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -163,7 +186,7 @@ export default function LandingPage() {
                   className="block w-full py-3 text-center rounded-xl font-bold text-xs transition-colors"
                   style={{ backgroundColor: demo.themeColor, color: '#ffffff' }}
                 >
-                  Launch {demo.name} Menu →
+                  {demo.buttonText}
                 </a>
               </div>
             </motion.article>
@@ -175,9 +198,9 @@ export default function LandingPage() {
       <section id="pricing" className="py-20 px-6 bg-white/[0.02] border-t border-white/5">
         <div className="max-w-6xl mx-auto">
           <div className="text-center space-y-3 mb-14">
-            <span className="text-xs font-bold text-amber-400 uppercase tracking-widest">Starter Packs</span>
-            <h2 className="text-3xl sm:text-4xl font-black">Hardware & SaaS Bundles</h2>
-            <p className="text-sm text-white/50">Everything you need to launch smart NFC table menus in under 24 hours.</p>
+            <span className="text-xs font-bold text-amber-400 uppercase tracking-widest">{t.pricing.badge}</span>
+            <h2 className="text-3xl sm:text-4xl font-black">{t.pricing.title}</h2>
+            <p className="text-sm text-white/50">{t.pricing.subtitle}</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -192,7 +215,7 @@ export default function LandingPage() {
               >
                 {tier.highlight && (
                   <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-amber-500 text-black font-extrabold text-[10px] uppercase tracking-wider">
-                    Most Popular
+                    {t.pricing.popular}
                   </span>
                 )}
 
@@ -228,8 +251,8 @@ export default function LandingPage() {
 
       {/* ── FOOTER ── */}
       <footer className="py-10 px-6 border-t border-white/10 text-center text-xs text-white/40 space-y-2">
-        <p>© 2026 NFCMyPlace Inc. All rights reserved.</p>
-        <p>Dynamic Multi-Tenant Smart Menus & Physical NFC Hardware System.</p>
+        <p>{t.footer.rights}</p>
+        <p>{t.footer.tagline}</p>
       </footer>
     </div>
   );

@@ -2,18 +2,25 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
+import type { Locale } from '@/lib/translations';
+import { translations } from '@/lib/translations';
 
 const STORAGE_KEY = 'nfc_discount_modal_dismissed';
 
-export function DiscountModal() {
+interface Props {
+  locale?: Locale;
+}
+
+export function DiscountModal({ locale = 'tr' }: Props) {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [venue, setVenue] = useState('');
   const [claimed, setClaimed] = useState(false);
   const [code, setCode] = useState('');
 
+  const t = translations[locale].modal;
+
   useEffect(() => {
-    // Check if dismissed before
     const isDismissed = localStorage.getItem(STORAGE_KEY);
     if (!isDismissed) {
       const timer = setTimeout(() => {
@@ -32,18 +39,17 @@ export function DiscountModal() {
     e.preventDefault();
     if (!email || !venue) return;
 
-    // Trigger celebratory confetti
     try {
       confetti({
-        particleCount: 80,
-        spread: 70,
+        particleCount: 85,
+        spread: 75,
         origin: { y: 0.6 },
       });
     } catch {
-      // Fallback if canvas-confetti is not loaded
+      // Fallback
     }
 
-    setCode('NFC-START-30');
+    setCode('NFC30TR');
     setClaimed(true);
     localStorage.setItem(STORAGE_KEY, 'true');
   };
@@ -69,10 +75,8 @@ export function DiscountModal() {
             transition={{ type: 'spring', damping: 25, stiffness: 220 }}
             className="relative w-full max-w-md bg-neutral-900 border border-amber-500/30 rounded-3xl p-6 shadow-2xl z-10 overflow-hidden text-center"
           >
-            {/* Ambient Gold Glow */}
             <div className="absolute -top-16 -right-16 w-32 h-32 bg-amber-500/20 rounded-full blur-3xl pointer-events-none" />
 
-            {/* Close Button */}
             <button
               onClick={handleDismiss}
               className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 text-white/70 hover:text-white flex items-center justify-center text-sm transition-colors"
@@ -84,17 +88,17 @@ export function DiscountModal() {
               <div>
                 <div className="text-4xl mb-3">🎁</div>
                 <h3 className="text-2xl font-black text-white leading-tight">
-                  Unlock <span className="text-amber-400">30% OFF</span> Your First NFC Order
+                  <span className="text-amber-400">%30</span> İlk Donanım Siparişi İndirimi
                 </h3>
                 <p className="text-xs text-white/60 mt-2 leading-relaxed">
-                  Join 500+ restaurants and cafes elevating customer experience with NFCMyPlace smart table hardware.
+                  {t.subtitle}
                 </p>
 
                 <form onSubmit={handleSubmit} className="mt-6 space-y-3">
                   <input
                     type="text"
                     required
-                    placeholder="Venue Name (e.g. Baltazar Cafe)"
+                    placeholder="Mekan / Restoran Adı"
                     value={venue}
                     onChange={(e) => setVenue(e.target.value)}
                     className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 text-sm focus:outline-none focus:border-amber-500 transition-colors"
@@ -102,7 +106,7 @@ export function DiscountModal() {
                   <input
                     type="email"
                     required
-                    placeholder="Work Email Address"
+                    placeholder="E-posta Adresiniz"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 text-sm focus:outline-none focus:border-amber-500 transition-colors"
@@ -111,26 +115,22 @@ export function DiscountModal() {
                     type="submit"
                     className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-black text-sm shadow-lg shadow-amber-500/25 transition-all transform active:scale-98"
                   >
-                    Claim 30% Off Code
+                    %30 İndirim Kodunu Al
                   </button>
                 </form>
-
-                <p className="text-[10px] text-white/30 mt-4">
-                  No spam guaranteed. Unsubscribe anytime.
-                </p>
               </div>
             ) : (
               <div className="py-4 space-y-4">
                 <div className="text-5xl">🎉</div>
-                <h3 className="text-2xl font-black text-white">Discount Code Claimed!</h3>
+                <h3 className="text-2xl font-black text-white">{t.claimedTitle}</h3>
                 <p className="text-xs text-white/60">
-                  Use code <strong className="text-amber-400 font-mono text-sm">{code}</strong> at checkout or present to your sales manager for 30% off.
+                  {t.claimedSub} <strong className="text-amber-400 font-mono text-sm block mt-1">{code}</strong>
                 </p>
                 <button
                   onClick={handleDismiss}
                   className="w-full py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition-colors"
                 >
-                  Continue Browsing
+                  {t.continueBtn}
                 </button>
               </div>
             )}
