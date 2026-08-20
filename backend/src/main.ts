@@ -28,10 +28,9 @@ async function bootstrap() {
   await app.listen(port, '0.0.0.0');
   console.log(`Backend running on port ${port}`);
 
-  // Run Prisma migrations and seed after server starts listening on $PORT
-  // This guarantees instant HTTP 200 OK responses to Railway health checks
+  // Run Prisma db push & seed after server starts listening on $PORT
   if (process.env.DATABASE_URL) {
-    execAsync('npx prisma migrate deploy && npx prisma db seed')
+    execAsync('npx prisma db push --accept-data-loss && npx ts-node prisma/seed.ts && npx ts-node prisma/seed-erenkoy.ts')
       .then(({ stdout, stderr }) => {
         if (stdout) console.log('🌱 Production DB Migration & Seed:', stdout);
         if (stderr) console.log('ℹ️ DB Migration & Seed info:', stderr);
