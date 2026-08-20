@@ -33,7 +33,7 @@ export default function NfcProduct3DCanvas() {
     setIsDragging(false);
   };
 
-  const handleDrag = (e: React.MouseEvent | React.TouchEvent, info: any) => {
+  const handleDrag = (e: any, info: any) => {
     if (isDragging) {
       setRotationY((prev) => prev + info.delta.x * 0.5);
       setRotationX((prev) => Math.max(-45, Math.min(45, prev - info.delta.y * 0.5)));

@@ -1,6 +1,6 @@
 'use client';
 import { Navbar } from '@/components/Navbar';
-import { NfcProduct3DCanvas } from '@/components/NfcProduct3DCanvas';
+import NfcProduct3DCanvas from '@/components/NfcProduct3DCanvas';
 import { DiscountModal } from '@/components/DiscountModal';
 import { motion } from 'framer-motion';
 
