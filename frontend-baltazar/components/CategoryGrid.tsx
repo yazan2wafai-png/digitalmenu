@@ -18,17 +18,7 @@ interface Props {
 
 export function CategoryGrid({ categories, themeColor, locale }: Props) {
   return (
-    <section className="px-6 pb-24 max-w-5xl mx-auto">
-      <motion.h2
-        className="text-sm font-semibold tracking-widest text-white/30 uppercase mb-8"
-        initial={{ opacity: 0, y: 12 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5, ease: 'easeOut' }}
-      >
-        Menu
-      </motion.h2>
-
+    <section className="px-4 sm:px-6 py-12 pb-24 max-w-5xl mx-auto">
       <motion.div
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4"
         variants={gridVariants}
@@ -37,12 +27,13 @@ export function CategoryGrid({ categories, themeColor, locale }: Props) {
         viewport={{ once: true, margin: '-60px' }}
       >
         {categories.map((cat) => (
-          <CategoryCard
-            key={cat.id}
-            category={cat}
-            themeColor={themeColor}
-            locale={locale}
-          />
+          <div key={cat.id} id={`category-${cat.id}`} className="scroll-mt-[160px]">
+            <CategoryCard
+              category={cat}
+              themeColor={themeColor}
+              locale={locale}
+            />
+          </div>
         ))}
       </motion.div>
     </section>

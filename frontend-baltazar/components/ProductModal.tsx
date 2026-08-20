@@ -12,7 +12,7 @@ interface Props {
   onClose: () => void;
 }
 
-export function ProductDetailModal({ product, themeColor, isRTL, onClose }: Props) {
+export function ProductModal({ product, themeColor, isRTL, onClose }: Props) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -115,6 +115,16 @@ export function ProductDetailModal({ product, themeColor, isRTL, onClose }: Prop
               ) : (
                 <p className="text-white/30 text-sm italic">No description available.</p>
               )}
+
+              {/* Prep time & Allergens */}
+              <div className="flex flex-wrap gap-3 pt-2">
+                <span className="flex items-center gap-1.5 text-xs font-medium text-white/60 bg-white/5 px-2.5 py-1.5 rounded-lg border border-white/10">
+                  <span className="text-white/80">⏱️</span> 10-15 min
+                </span>
+                <span className="flex items-center gap-1.5 text-xs font-medium text-amber-500/80 bg-amber-500/10 px-2.5 py-1.5 rounded-lg border border-amber-500/20">
+                  <span className="text-amber-500">⚠️</span> Contains Dairy, Nuts
+                </span>
+              </div>
 
               {/* Action bar / back */}
               <motion.div

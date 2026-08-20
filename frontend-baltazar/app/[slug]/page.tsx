@@ -3,11 +3,14 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { fetchRestaurant } from '@/lib/api';
 import type { Restaurant } from '@/types/menu';
+import { Header } from '@/components/Header';
 import { Hero } from '@/components/Hero';
+import { CategoryBar } from '@/components/CategoryBar';
 import { CategoryGrid } from '@/components/CategoryGrid';
 import { SplashScreen } from '@/components/SplashScreen';
 import { motion, AnimatePresence } from 'framer-motion';
 import MenuTracker from '@/components/MenuTracker';
+import { TableBanner } from '@/components/TableBanner';
 
 const DEFAULT_LOCALE = process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'tr';
 
@@ -20,8 +23,8 @@ export default function HomePage() {
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  // Splash is shown until the user swipes/clicks it away
   const [showSplash, setShowSplash] = useState(true);
+  const [activeCategoryId, setActiveCategoryId] = useState<string>('');
 
   const load = useCallback(async (loc: string) => {
     setLoading(true);
@@ -32,18 +35,58 @@ export default function HomePage() {
       if (loc === DEFAULT_LOCALE && data.defaultLocale && data.defaultLocale !== loc) {
         setLocale(data.defaultLocale);
       }
+      if (data.categories?.length > 0 && !activeCategoryId) {
+        setActiveCategoryId(data.categories[0].id);
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to load menu');
     } finally {
       setLoading(false);
     }
-  }, [slug]);
+  }, [slug, activeCategoryId]);
 
   useEffect(() => { load(locale); }, [locale, load]);
 
   const handleLocaleChange = (newLocale: string) => {
     setLocale(newLocale);
   };
+
+  const scrollToCategory = (id: string) => {
+    setActiveCategoryId(id);
+    const element = document.getElementById(`category-${id}`);
+    if (element) {
+      const yOffset = -140; 
+      const y = element.getBoundingClientRect().top + window.scrollY + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+  };
+
+  // Setup scroll spy
+  useEffect(() => {
+    if (!restaurant) return;
+    const handleScroll = () => {
+      const categoryElements = restaurant.categories.map(c => document.getElementById(`category-${c.id}`));
+      let currentActiveId = '';
+      let minDistance = Infinity;
+
+      categoryElements.forEach(el => {
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        const distance = Math.abs(rect.top - 150); // Target scroll distance from top
+        if (distance < minDistance && rect.top < window.innerHeight / 2) {
+          minDistance = distance;
+          currentActiveId = el.id.replace('category-', '');
+        }
+      });
+
+      if (currentActiveId && currentActiveId !== activeCategoryId) {
+        setActiveCategoryId(currentActiveId);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [restaurant, activeCategoryId]);
 
   const isRTL = locale === 'ar';
 
@@ -74,10 +117,17 @@ export default function HomePage() {
   if (!restaurant) return null;
 
   return (
-    <div dir={isRTL ? 'rtl' : 'ltr'}>
+    <div dir={isRTL ? 'rtl' : 'ltr'} className="bg-neutral-950 min-h-screen">
       <MenuTracker slug={slug} tableId={tableId} />
       
-      {/* Locale-switch loading overlay */}
+      {/* Sticky Header */}
+      <Header
+        restaurant={restaurant}
+        locale={locale}
+        onLocaleChange={handleLocaleChange}
+        isRTL={isRTL}
+      />
+
       {loading && (
         <div className="fixed inset-0 bg-neutral-950/60 backdrop-blur-sm z-50 flex items-center justify-center">
           <motion.div
@@ -88,7 +138,6 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* ── Splash screen — sits above everything, dismissed by swipe or click ── */}
       <AnimatePresence>
         {showSplash && (
           <SplashScreen
@@ -98,7 +147,6 @@ export default function HomePage() {
         )}
       </AnimatePresence>
 
-      {/* ── Hero rises into view as splash leaves ── */}
       <motion.div
         initial={{ y: 60, opacity: 0, filter: 'blur(12px)' }}
         animate={
@@ -108,11 +156,13 @@ export default function HomePage() {
         }
         transition={{ type: 'spring', damping: 26, stiffness: 180, delay: 0.1 }}
       >
-        <Hero
-          restaurant={restaurant}
-          locale={locale}
-          onLocaleChange={handleLocaleChange}
-          isRTL={isRTL}
+        <Hero restaurant={restaurant} isRTL={isRTL} />
+
+        <CategoryBar 
+          categories={restaurant.categories} 
+          activeCategoryId={activeCategoryId} 
+          themeColor={restaurant.themeColor || '#C0392B'}
+          onSelectCategory={scrollToCategory} 
         />
 
         <CategoryGrid

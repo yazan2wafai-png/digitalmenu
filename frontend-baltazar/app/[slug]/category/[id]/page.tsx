@@ -5,7 +5,8 @@ import type { Restaurant, Category, Product } from '@/types/menu';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { ProductDetailModal } from '@/components/ProductDetailModal';
+import { ProductModal } from '@/components/ProductModal';
+import { TableBanner } from '@/components/TableBanner';
 
 const DEFAULT_LOCALE = process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'tr';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://digitalmenu-backend-production.up.railway.app';
@@ -85,6 +86,8 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
         </div>
       </header>
 
+      <TableBanner themeColor={themeColor} />
+
       {/* Main product grid */}
       <main className="max-w-5xl mx-auto px-6 py-8">
         <div className="mb-8">
@@ -124,7 +127,7 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
       </main>
 
       {/* Zoom-in shared-element detail view modal */}
-      <ProductDetailModal
+      <ProductModal
         product={selectedProduct}
         themeColor={themeColor}
         isRTL={isRTL}
