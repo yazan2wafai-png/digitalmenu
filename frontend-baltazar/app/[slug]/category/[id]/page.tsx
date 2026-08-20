@@ -10,88 +10,7 @@ import { ProductDetailModal } from '@/components/ProductDetailModal';
 const DEFAULT_LOCALE = process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'tr';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://digitalmenu-backend-production.up.railway.app';
 
-interface ProductCardProps {
-  product: Product;
-  themeColor: string;
-  onSelect: (product: Product) => void;
-}
-
-function ProductCard({ product, themeColor, onSelect }: ProductCardProps) {
-  return (
-    <motion.article
-      layoutId={`product-card-${product.id}`}
-      onClick={() => onSelect(product)}
-      className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden cursor-pointer group flex flex-col justify-between"
-      variants={{
-        hidden: { y: 30, opacity: 0 },
-        visible: {
-          y: 0,
-          opacity: 1,
-          transition: { type: 'spring', damping: 24, stiffness: 160 },
-        },
-      }}
-      whileHover={{ y: -4, scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      transition={{ type: 'spring', damping: 20, stiffness: 260 }}
-    >
-      <div>
-        {/* Product photo with layoutId */}
-        <motion.div
-          layoutId={`product-image-${product.id}`}
-          className="w-full h-44 bg-neutral-950 overflow-hidden"
-        >
-          {product.photoUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={
-                product.photoUrl.startsWith('/')
-                  ? `${API_URL}${product.photoUrl}`
-                  : product.photoUrl
-              }
-              alt={product.name}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-          ) : (
-            <div
-              className="w-full h-full flex items-center justify-center"
-              style={{ backgroundColor: `${themeColor}18` }}
-            >
-              <span className="text-4xl">🍽️</span>
-            </div>
-          )}
-        </motion.div>
-
-        {/* Product info */}
-        <div className="p-4">
-          <motion.h3
-            layoutId={`product-name-${product.id}`}
-            className="font-bold text-white text-base leading-snug group-hover:text-white/90 transition-colors"
-          >
-            {product.name}
-          </motion.h3>
-          {product.description && (
-            <p className="text-white/50 text-sm mt-1.5 leading-relaxed line-clamp-2">
-              {product.description}
-            </p>
-          )}
-        </div>
-      </div>
-
-      <div className="px-4 pb-4 pt-1 flex items-center justify-between">
-        <motion.div
-          layoutId={`product-price-${product.id}`}
-          className="text-base font-extrabold"
-          style={{ color: themeColor }}
-        >
-          ₺{product.price}
-        </motion.div>
-        <span className="text-xs text-white/40 group-hover:text-white/70 transition-colors">
-          View details →
-        </span>
-      </div>
-    </motion.article>
-  );
-}
+import { ProductCard } from '@/components/ProductCard';
 
 export default function CategoryPage({ params }: { params: Promise<{ slug: string; id: string }> }) {
   const { slug, id } = use(params);
@@ -197,6 +116,7 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
                 product={prod}
                 themeColor={themeColor}
                 onSelect={(p) => setSelectedProduct(p)}
+                categoryName={category.name}
               />
             ))}
           </motion.div>
