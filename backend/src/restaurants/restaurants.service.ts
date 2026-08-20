@@ -112,7 +112,7 @@ export class RestaurantsService {
               supportedLocales,
               defaultLocale,
             ),
-            price: product.price,
+            price: Number(product.price) || 0,
             photoUrl: formatUrl(product.photoUrl),
             sortOrder: product.sortOrder,
           })),
