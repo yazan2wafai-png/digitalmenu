@@ -11,6 +11,7 @@ export class RestaurantsService {
       const restaurant = await this.prisma.restaurant.findUnique({
         where: { slug },
         include: {
+          settings: true,
           categories: {
             orderBy: { sortOrder: 'asc' },
             include: {
@@ -45,6 +46,15 @@ export class RestaurantsService {
     return {
       id: restaurant.id,
       slug: restaurant.slug,
+      settings: restaurant.settings,
+      featureFlags: {
+        enableOrdering: restaurant.settings?.enableOrdering ?? true,
+        enableTables: restaurant.settings?.enableTables ?? true,
+        enableAnalytics: restaurant.settings?.enableAnalytics ?? true,
+        enableMultiLanguage: restaurant.settings?.enableMultiLanguage ?? true,
+        enableReviews: restaurant.settings?.enableReviews ?? false,
+        enableServiceCall: restaurant.settings?.enableServiceCall ?? false,
+      },
       name: resolveTranslation(
         restaurant.name,
         locale,

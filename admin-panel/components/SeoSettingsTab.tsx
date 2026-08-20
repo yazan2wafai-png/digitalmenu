@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, FormEvent } from 'react';
 
-export default function SeoSettingsTab({ slug }: { slug: string }) {
+export default function SeoSettingsTab({ slug, onSettingsUpdated }: { slug: string; onSettingsUpdated?: () => void }) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -12,9 +12,13 @@ export default function SeoSettingsTab({ slug }: { slug: string }) {
   const [keywords, setKeywords] = useState('');
   const [currency, setCurrency] = useState('TRY');
   const [timezone, setTimezone] = useState('Europe/Istanbul');
-  const [orderingEnabled, setOrderingEnabled] = useState(true);
-  const [dineInEnabled, setDineInEnabled] = useState(true);
-  const [takeawayEnabled, setTakeawayEnabled] = useState(true);
+  
+  const [enableOrdering, setEnableOrdering] = useState(true);
+  const [enableTables, setEnableTables] = useState(true);
+  const [enableAnalytics, setEnableAnalytics] = useState(true);
+  const [enableMultiLanguage, setEnableMultiLanguage] = useState(true);
+  const [enableReviews, setEnableReviews] = useState(true);
+  const [enableServiceCall, setEnableServiceCall] = useState(true);
 
   useEffect(() => {
     fetch('/api/proxy/admin/me/restaurant')
@@ -26,9 +30,12 @@ export default function SeoSettingsTab({ slug }: { slug: string }) {
         setKeywords(s.keywords || '');
         setCurrency(s.currency || 'TRY');
         setTimezone(s.timezone || 'Europe/Istanbul');
-        setOrderingEnabled(s.orderingEnabled ?? true);
-        setDineInEnabled(s.dineInEnabled ?? true);
-        setTakeawayEnabled(s.takeawayEnabled ?? true);
+        setEnableOrdering(s.enableOrdering ?? true);
+        setEnableTables(s.enableTables ?? true);
+        setEnableAnalytics(s.enableAnalytics ?? true);
+        setEnableMultiLanguage(s.enableMultiLanguage ?? true);
+        setEnableReviews(s.enableReviews ?? true);
+        setEnableServiceCall(s.enableServiceCall ?? true);
         setLoading(false);
       })
       .catch(err => {
@@ -52,15 +59,21 @@ export default function SeoSettingsTab({ slug }: { slug: string }) {
           keywords,
           currency,
           timezone,
-          orderingEnabled,
-          dineInEnabled,
-          takeawayEnabled,
+          enableOrdering,
+          enableTables,
+          enableAnalytics,
+          enableMultiLanguage,
+          enableReviews,
+          enableServiceCall,
         })
       });
       if (!res.ok) {
         throw new Error('Failed to save settings');
       }
       setSuccess('Settings saved successfully!');
+      if (onSettingsUpdated) {
+        onSettingsUpdated();
+      }
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -95,19 +108,31 @@ export default function SeoSettingsTab({ slug }: { slug: string }) {
           </div>
 
           <div className="space-y-4">
-            <h3 className="font-semibold text-gray-800">Feature Toggles</h3>
+            <h3 className="font-semibold text-gray-800">Module & Feature Flags</h3>
             <div className="space-y-2">
               <label className="flex items-center space-x-2">
-                <input type="checkbox" checked={orderingEnabled} onChange={e => setOrderingEnabled(e.target.checked)} className="rounded text-blue-600 focus:ring-blue-500" />
-                <span className="text-sm text-gray-700">Ordering Enabled</span>
+                <input type="checkbox" checked={enableOrdering} onChange={e => setEnableOrdering(e.target.checked)} className="rounded text-blue-600 focus:ring-blue-500" />
+                <span className="text-sm text-gray-700">Order Checkout & Cart (enableOrdering)</span>
               </label>
               <label className="flex items-center space-x-2">
-                <input type="checkbox" checked={dineInEnabled} onChange={e => setDineInEnabled(e.target.checked)} className="rounded text-blue-600 focus:ring-blue-500" />
-                <span className="text-sm text-gray-700">Dine-In Enabled</span>
+                <input type="checkbox" checked={enableTables} onChange={e => setEnableTables(e.target.checked)} className="rounded text-blue-600 focus:ring-blue-500" />
+                <span className="text-sm text-gray-700">Tables & Location Management (enableTables)</span>
               </label>
               <label className="flex items-center space-x-2">
-                <input type="checkbox" checked={takeawayEnabled} onChange={e => setTakeawayEnabled(e.target.checked)} className="rounded text-blue-600 focus:ring-blue-500" />
-                <span className="text-sm text-gray-700">Takeaway Enabled</span>
+                <input type="checkbox" checked={enableAnalytics} onChange={e => setEnableAnalytics(e.target.checked)} className="rounded text-blue-600 focus:ring-blue-500" />
+                <span className="text-sm text-gray-700">Traffic Analytics & Reports (enableAnalytics)</span>
+              </label>
+              <label className="flex items-center space-x-2">
+                <input type="checkbox" checked={enableMultiLanguage} onChange={e => setEnableMultiLanguage(e.target.checked)} className="rounded text-blue-600 focus:ring-blue-500" />
+                <span className="text-sm text-gray-700">Multi-Language TR/EN/AR (enableMultiLanguage)</span>
+              </label>
+              <label className="flex items-center space-x-2">
+                <input type="checkbox" checked={enableReviews} onChange={e => setEnableReviews(e.target.checked)} className="rounded text-blue-600 focus:ring-blue-500" />
+                <span className="text-sm text-gray-700">Customer Ratings & Reviews (enableReviews)</span>
+              </label>
+              <label className="flex items-center space-x-2">
+                <input type="checkbox" checked={enableServiceCall} onChange={e => setEnableServiceCall(e.target.checked)} className="rounded text-blue-600 focus:ring-blue-500" />
+                <span className="text-sm text-gray-700">Waiter Call Button (enableServiceCall)</span>
               </label>
             </div>
           </div>

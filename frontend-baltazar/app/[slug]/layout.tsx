@@ -10,7 +10,8 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   try {
-    const res = await fetch(`https://digitalmenu-backend-production.up.railway.app/restaurants/${slug}?locale=en`);
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://digitalmenu-backend-production.up.railway.app';
+    const res = await fetch(`${apiUrl}/restaurants/${slug}?locale=en`);
     if (!res.ok) {
       return { title: 'Restaurant Not Found - Digital Menu' };
     }
@@ -38,7 +39,8 @@ export default async function Layout({ params, children }: Props) {
   
   let restaurant = null;
   try {
-    const res = await fetch(`https://digitalmenu-backend-production.up.railway.app/restaurants/${slug}?locale=en`);
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://digitalmenu-backend-production.up.railway.app';
+    const res = await fetch(`${apiUrl}/restaurants/${slug}?locale=en`);
     if (res.ok) {
       restaurant = await res.json();
     }

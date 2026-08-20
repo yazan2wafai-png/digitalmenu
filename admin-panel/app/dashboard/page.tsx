@@ -41,6 +41,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState<TabType>('menu');
+  const [featureFlags, setFeatureFlags] = useState<any>({});
 
   // Modal state
   const [catModal, setCatModal] = useState<{ open: boolean; category?: Category }>({ open: false });
@@ -61,6 +62,15 @@ export default function DashboardPage() {
       if (restRes.ok) {
         const restData = await restRes.json();
         if (restData.supportedLocales) setLocales(restData.supportedLocales);
+        const s = restData.settings || restData;
+        setFeatureFlags({
+          enableTables: s.enableTables ?? true,
+          enableAnalytics: s.enableAnalytics ?? true,
+          enableOrdering: s.enableOrdering ?? true,
+          enableMultiLanguage: s.enableMultiLanguage ?? true,
+          enableReviews: s.enableReviews ?? true,
+          enableServiceCall: s.enableServiceCall ?? true,
+        });
       }
     } catch {
       setError('Network error');
@@ -99,8 +109,12 @@ export default function DashboardPage() {
         {/* Navigation Tabs */}
         <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg overflow-x-auto max-w-full">
           <button onClick={() => setActiveTab('menu')} className={`whitespace-nowrap px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === 'menu' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>🍕 Menu Management</button>
-          <button onClick={() => setActiveTab('tables')} className={`whitespace-nowrap px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === 'tables' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>📍 Tables & Locations</button>
-          <button onClick={() => setActiveTab('analytics')} className={`whitespace-nowrap px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === 'analytics' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>📊 Analytics</button>
+          {featureFlags.enableTables !== false && (
+            <button onClick={() => setActiveTab('tables')} className={`whitespace-nowrap px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === 'tables' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>📍 Tables & Locations</button>
+          )}
+          {featureFlags.enableAnalytics !== false && (
+            <button onClick={() => setActiveTab('analytics')} className={`whitespace-nowrap px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === 'analytics' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>📊 Analytics</button>
+          )}
           <button onClick={() => setActiveTab('seo')} className={`whitespace-nowrap px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === 'seo' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>⚙️ SEO & Settings</button>
         </div>
 
@@ -199,9 +213,9 @@ export default function DashboardPage() {
           </>
         )}
         
-        {activeTab === 'tables' && <LocationsTablesTab slug={slug} />}
-        {activeTab === 'analytics' && <AnalyticsTab slug={slug} />}
-        {activeTab === 'seo' && <SeoSettingsTab slug={slug} />}
+        {activeTab === 'tables' && featureFlags.enableTables !== false && <LocationsTablesTab slug={slug} />}
+        {activeTab === 'analytics' && featureFlags.enableAnalytics !== false && <AnalyticsTab slug={slug} />}
+        {activeTab === 'seo' && <SeoSettingsTab slug={slug} onSettingsUpdated={refresh} />}
       </main>
 
       {/* Category Modal */}

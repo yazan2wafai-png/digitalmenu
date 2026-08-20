@@ -8,6 +8,13 @@ export class TablesService {
   constructor(private prisma: PrismaService) {}
 
   private async verifyLocation(locationId: string, restaurantId: string) {
+    const settings = await this.prisma.restaurantSettings.findUnique({
+      where: { restaurantId },
+    });
+    if (settings && settings.enableTables === false) {
+      throw new ForbiddenException('Table management feature is disabled for this restaurant');
+    }
+
     const location = await this.prisma.location.findFirst({
       where: { id: locationId, restaurantId, isActive: true },
     });
