@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Body, Headers, Req, UseGuards, Param, ForbiddenException } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { AnalyticsService } from './analytics.service';
 import type { Request } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -8,6 +9,7 @@ export class AnalyticsController {
   constructor(private readonly analyticsService: AnalyticsService) {}
 
   @Post('analytics/view')
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   async recordView(
     @Body('restaurantSlug') restaurantSlug: string,
     @Req() req: Request,

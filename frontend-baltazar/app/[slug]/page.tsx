@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
+import { useParams } from 'next/navigation';
 import { fetchRestaurant } from '@/lib/api';
 import type { Restaurant } from '@/types/menu';
 import { Hero } from '@/components/Hero';
@@ -10,6 +11,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 const DEFAULT_LOCALE = process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'tr';
 
 export default function HomePage() {
+  const params = useParams();
+  const slug = (params?.slug as string) || 'baltazar';
+
   const [locale, setLocale] = useState(DEFAULT_LOCALE);
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [loading, setLoading] = useState(true);
@@ -21,7 +25,7 @@ export default function HomePage() {
     setLoading(true);
     setError('');
     try {
-      const data = await fetchRestaurant(loc);
+      const data = await fetchRestaurant(slug, loc);
       setRestaurant(data);
       if (loc === DEFAULT_LOCALE && data.defaultLocale && data.defaultLocale !== loc) {
         setLocale(data.defaultLocale);
@@ -31,7 +35,7 @@ export default function HomePage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [slug]);
 
   useEffect(() => { load(locale); }, [locale, load]);
 

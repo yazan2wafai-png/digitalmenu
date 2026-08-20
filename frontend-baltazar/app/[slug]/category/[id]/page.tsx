@@ -93,8 +93,8 @@ function ProductCard({ product, themeColor, onSelect }: ProductCardProps) {
   );
 }
 
-export default function CategoryPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function CategoryPage({ params }: { params: Promise<{ slug: string; id: string }> }) {
+  const { slug, id } = use(params);
   const searchParams = useSearchParams();
   const locale = searchParams.get('locale') || DEFAULT_LOCALE;
 
@@ -108,7 +108,7 @@ export default function CategoryPage({ params }: { params: Promise<{ id: string 
     async function load() {
       setLoading(true);
       try {
-        const data = await fetchRestaurant(locale);
+        const data = await fetchRestaurant(slug, locale);
         setRestaurant(data);
         const cat = data.categories.find((c) => c.id === id) ?? null;
         setCategory(cat);
@@ -119,7 +119,7 @@ export default function CategoryPage({ params }: { params: Promise<{ id: string 
       }
     }
     load();
-  }, [id, locale]);
+  }, [slug, id, locale]);
 
   const isRTL = locale === 'ar';
   const themeColor = restaurant?.themeColor || '#C0392B';
