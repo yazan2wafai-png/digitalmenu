@@ -17,3 +17,16 @@ export async function fetchRestaurant(slug: string, locale: string): Promise<Res
   }
   return res.json() as Promise<Restaurant>;
 }
+
+export async function recordPageView(restaurantSlug: string, tableId?: string): Promise<void> {
+  try {
+    await fetch(`${API_URL}/analytics/pageview`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ restaurantSlug, tableId }),
+      keepalive: true,
+    });
+  } catch (error) {
+    console.warn('Failed to record page view:', error);
+  }
+}

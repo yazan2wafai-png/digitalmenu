@@ -25,6 +25,7 @@ describe('Analytics Tests', () => {
       menuView: {
         create: jest.fn(),
         count: jest.fn(),
+        findMany: jest.fn(),
       },
     };
 
@@ -55,9 +56,15 @@ describe('Analytics Tests', () => {
         .update(rawIp)
         .digest('hex')
         .substring(0, 16);
-      const userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)';
+      const userAgent =
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)';
 
-      const result = await analyticsService.recordView('baltazar', rawIp, userAgent);
+      const result = await analyticsService.recordView(
+        'baltazar',
+        rawIp,
+        userAgent,
+        't1',
+      );
 
       expect(result).toEqual({ recorded: true });
       expect(prismaService.restaurant.findUnique).toHaveBeenCalledWith({
@@ -68,6 +75,7 @@ describe('Analytics Tests', () => {
           restaurantId: mockRestaurant.id,
           ipHash: expectedIpHash,
           userAgent,
+          tableId: 't1',
           recordedAt: expect.any(Date),
         },
       });
@@ -108,43 +116,46 @@ describe('Analytics Tests', () => {
   });
 
   describe('AnalyticsService.getStats', () => {
-    it('should return aggregated counts for total, today, last 7 days, and last 30 days', async () => {
-      // Mock count calls sequentially: total, today, last 7 days, last 30 days
-      prismaService.menuView.count
-        .mockResolvedValueOnce(540) // totalViews
-        .mockResolvedValueOnce(42)  // todayViews
-        .mockResolvedValueOnce(180) // last7DaysViews
-        .mockResolvedValueOnce(450); // last30DaysViews
+    it('should return aggregated counts for total, today, last 7 days, and last 30 days and daily breakdown', async () => {
+      // Mock count call for total
+      prismaService.menuView.count.mockResolvedValueOnce(540); // totalViews
+
+      const now = new Date();
+      const mockViews = [];
+      for (let i = 0; i < 42; i++) {
+        mockViews.push({ recordedAt: now });
+      }
+      for (let i = 0; i < 138; i++) {
+        const d = new Date(now);
+        d.setDate(now.getDate() - 3);
+        mockViews.push({ recordedAt: d });
+      }
+      for (let i = 0; i < 270; i++) {
+        const d = new Date(now);
+        d.setDate(now.getDate() - 15);
+        mockViews.push({ recordedAt: d });
+      }
+      prismaService.menuView.findMany.mockResolvedValueOnce(mockViews); // recent views
 
       const stats = await analyticsService.getStats(mockRestaurant.id);
 
-      expect(stats).toEqual({
-        totalViews: 540,
-        todayViews: 42,
-        last7DaysViews: 180,
-        last30DaysViews: 450,
-      });
+      expect(stats.totalViews).toBe(540);
+      expect(stats.today).toBe(42);
+      expect(stats.last7Days).toBe(180);
+      expect(stats.last30Days).toBe(450);
+      expect(stats.dailyBreakdown.length).toBe(30);
 
-      expect(prismaService.menuView.count).toHaveBeenCalledTimes(4);
-      expect(prismaService.menuView.count).toHaveBeenNthCalledWith(1, {
+      expect(prismaService.menuView.count).toHaveBeenCalledTimes(1);
+      expect(prismaService.menuView.count).toHaveBeenCalledWith({
         where: { restaurantId: mockRestaurant.id },
       });
-      expect(prismaService.menuView.count).toHaveBeenNthCalledWith(2, {
+      expect(prismaService.menuView.findMany).toHaveBeenCalledWith({
         where: {
           restaurantId: mockRestaurant.id,
           recordedAt: { gte: expect.any(Date) },
         },
-      });
-      expect(prismaService.menuView.count).toHaveBeenNthCalledWith(3, {
-        where: {
-          restaurantId: mockRestaurant.id,
-          recordedAt: { gte: expect.any(Date) },
-        },
-      });
-      expect(prismaService.menuView.count).toHaveBeenNthCalledWith(4, {
-        where: {
-          restaurantId: mockRestaurant.id,
-          recordedAt: { gte: expect.any(Date) },
+        select: {
+          recordedAt: true,
         },
       });
     });
@@ -159,6 +170,7 @@ describe('Analytics Tests', () => {
       const mockReq = { ip: '127.0.0.1' } as any;
       const res = await analyticsController.recordView(
         'baltazar',
+        'table-1',
         mockReq,
         'Mozilla/5.0',
         '203.0.113.195, 70.41.3.18',
@@ -169,17 +181,21 @@ describe('Analytics Tests', () => {
         'baltazar',
         '203.0.113.195',
         'Mozilla/5.0',
+        'table-1',
       );
     });
 
     it('should allow admin to retrieve stats for their own restaurant slug', async () => {
       const expectedStats = {
         totalViews: 120,
-        todayViews: 10,
-        last7DaysViews: 50,
-        last30DaysViews: 100,
+        today: 10,
+        last7Days: 50,
+        last30Days: 100,
+        dailyBreakdown: [],
       };
-      jest.spyOn(analyticsService, 'getStats').mockResolvedValue(expectedStats);
+      jest
+        .spyOn(analyticsService, 'getStatsBySlug')
+        .mockResolvedValue(expectedStats as any);
 
       const mockReq = {
         user: {
@@ -197,12 +213,43 @@ describe('Analytics Tests', () => {
         user: {
           restaurantSlug: 'baltazar',
           restaurantId: 'rest-uuid-baltazar',
+          role: 'ADMIN',
         },
       };
 
       await expect(
         analyticsController.getStats('other-restaurant', mockReq),
       ).rejects.toThrow(ForbiddenException);
+    });
+
+    it('should allow SUPER_ADMIN to get stats for a different restaurant slug', async () => {
+      const expectedStats = {
+        totalViews: 120,
+        today: 10,
+        last7Days: 50,
+        last30Days: 100,
+        dailyBreakdown: [],
+      };
+      jest
+        .spyOn(analyticsService, 'getStatsBySlug')
+        .mockResolvedValue(expectedStats as any);
+
+      const mockReq = {
+        user: {
+          restaurantSlug: 'baltazar',
+          restaurantId: 'rest-uuid-baltazar',
+          role: 'SUPER_ADMIN',
+        },
+      };
+
+      const result = await analyticsController.getStats(
+        'other-restaurant',
+        mockReq,
+      );
+      expect(result).toEqual(expectedStats);
+      expect(analyticsService.getStatsBySlug).toHaveBeenCalledWith(
+        'other-restaurant',
+      );
     });
   });
 });

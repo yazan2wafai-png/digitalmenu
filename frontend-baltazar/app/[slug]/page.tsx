@@ -7,12 +7,14 @@ import { Hero } from '@/components/Hero';
 import { CategoryGrid } from '@/components/CategoryGrid';
 import { SplashScreen } from '@/components/SplashScreen';
 import { motion, AnimatePresence } from 'framer-motion';
+import MenuTracker from '@/components/MenuTracker';
 
 const DEFAULT_LOCALE = process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'tr';
 
 export default function HomePage() {
   const params = useParams();
   const slug = (params?.slug as string) || 'baltazar';
+  const tableId = params?.tableId as string | undefined;
 
   const [locale, setLocale] = useState(DEFAULT_LOCALE);
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
@@ -73,6 +75,8 @@ export default function HomePage() {
 
   return (
     <div dir={isRTL ? 'rtl' : 'ltr'}>
+      <MenuTracker slug={slug} tableId={tableId} />
+      
       {/* Locale-switch loading overlay */}
       {loading && (
         <div className="fixed inset-0 bg-neutral-950/60 backdrop-blur-sm z-50 flex items-center justify-center">

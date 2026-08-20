@@ -142,6 +142,7 @@ model MenuSession {
 model MenuView {
   id           String   @id @default(cuid())
   restaurantId String
+  tableId      String?
   ipHash       String?
   userAgent    String?
   recordedAt   DateTime @default(now())
