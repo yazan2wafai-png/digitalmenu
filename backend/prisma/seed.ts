@@ -267,7 +267,7 @@ async function main() {
           data: {
             name: prod.name,
             description: prod.description,
-            price: prod.price,
+            price: parseFloat(prod.price),
             photoUrl: prod.photoUrl,
             sortOrder: prod.sortOrder,
           },
@@ -277,7 +277,7 @@ async function main() {
             categoryId: catId,
             name: prod.name,
             description: prod.description,
-            price: prod.price,
+            price: parseFloat(prod.price),
             photoUrl: prod.photoUrl,
             sortOrder: prod.sortOrder,
           },
