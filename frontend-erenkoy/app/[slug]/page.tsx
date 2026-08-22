@@ -16,7 +16,7 @@ const DEFAULT_LOCALE = process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'tr';
 
 export default function HomePage() {
   const params = useParams();
-  const slug = (params?.slug as string) || 'baltazar';
+  const slug = (params?.slug as string) || process.env.NEXT_PUBLIC_RESTAURANT_SLUG || 'kahve-erenkoy';
   const tableId = params?.tableId as string | undefined;
 
   const [locale, setLocale] = useState(DEFAULT_LOCALE);
