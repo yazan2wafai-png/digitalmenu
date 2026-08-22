@@ -287,19 +287,42 @@ async function main() {
   }
 
   // ---------------------------------------------------------------------------
-  // ADMIN USER
+  // ADMIN USER (BALTAZAR)
   // ---------------------------------------------------------------------------
   const hash = await bcrypt.hash('admin123', 10);
   const admin = await prisma.adminUser.upsert({
     where: { email: 'admin@baltazar.com' },
-    update: {},
+    update: {
+      role: 'RESTAURANT_ADMIN',
+    },
     create: {
       restaurantId: restaurant.id,
       email: 'admin@baltazar.com',
       passwordHash: hash,
+      role: 'RESTAURANT_ADMIN',
     },
   });
   console.log(`👤 Admin user: ${admin.email}`);
+
+  // ---------------------------------------------------------------------------
+  // SUPER ADMIN USER
+  // ---------------------------------------------------------------------------
+  const superAdminHash = await bcrypt.hash('SuperAdmin123!', 10);
+  const superAdmin = await prisma.adminUser.upsert({
+    where: { email: 'superadmin@nfcmyplace.com' },
+    update: {
+      passwordHash: superAdminHash,
+      role: 'SUPER_ADMIN',
+      restaurantId: null,
+    },
+    create: {
+      email: 'superadmin@nfcmyplace.com',
+      passwordHash: superAdminHash,
+      role: 'SUPER_ADMIN',
+      restaurantId: null,
+    },
+  });
+  console.log(`👑 Super Admin user: ${superAdmin.email}`);
 
   console.log('✅ Seed complete!');
 }

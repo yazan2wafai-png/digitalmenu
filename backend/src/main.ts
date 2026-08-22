@@ -22,7 +22,15 @@ async function bootstrap() {
   // Serve uploaded images at /uploads/*
   app.useStaticAssets(join(process.cwd(), 'uploads'), { prefix: '/uploads' });
 
-  app.enableCors();
+  app.enableCors({
+    origin: [
+      'https://nfcmyplace.com',
+      /^https:\/\/.*\.nfcmyplace\.com$/,
+      /^https:\/\/.*\.vercel\.app$/,
+      /^http:\/\/localhost(:[0-9]+)?$/,
+    ],
+    credentials: true,
+  });
 
   const port = process.env.PORT || 3001;
   await app.listen(port, '0.0.0.0');

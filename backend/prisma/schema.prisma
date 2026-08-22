@@ -40,6 +40,7 @@ model Restaurant {
   tables     Table[]
   menuSessions MenuSession[]
   menuViews  MenuView[]
+  pageViews  PageView[]
   orders     Order[]
 }
 
@@ -190,4 +191,14 @@ model OrderItem {
   createdAt      DateTime @default(now())
 
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model PageView {
+  id           String   @id @default(cuid())
+  restaurantId String
+  timestamp    DateTime @default(now())
+
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@index([restaurantId, timestamp])
 }

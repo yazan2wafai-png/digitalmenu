@@ -47,6 +47,18 @@ export class RestaurantsService {
       throw new NotFoundException(`Restaurant with slug "${slug}" not found`);
     }
 
+    // Record page view asynchronously without blocking response
+    this.prisma.pageView
+      .create({
+        data: {
+          restaurantId: restaurant.id,
+        },
+      })
+      .catch((err) => {
+        // Non-blocking catch
+        console.warn(`Failed to log page view for restaurant ${restaurant.id}:`, err?.message || err);
+      });
+
     const supportedLocales = Array.isArray(restaurant.supportedLocales)
       ? (restaurant.supportedLocales as string[])
       : ['tr', 'en', 'ar'];
