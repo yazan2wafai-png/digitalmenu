@@ -28,6 +28,9 @@ async function bootstrap() {
       /^https:\/\/.*\.nfcmyplace\.com$/,
       /^https:\/\/.*\.vercel\.app$/,
       /^http:\/\/localhost(:[0-9]+)?$/,
+      /^http:\/\/127\.0\.0\.1(:[0-9]+)?$/,
+      /^http:\/\/.*\.localhost(:[0-9]+)?$/,
+      /^http:\/\/.*\.nfcmyplace\.local(:[0-9]+)?$/,
     ],
     credentials: true,
   });

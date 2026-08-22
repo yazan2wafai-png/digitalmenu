@@ -7,17 +7,27 @@ export function middleware(request: NextRequest) {
   const hostname = request.headers.get('x-forwarded-host') || request.headers.get('host') || '';
   const hostWithoutPort = hostname.split(':')[0].toLowerCase();
 
+  const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'nfcmyplace.com';
+  const landingUrl = process.env.NEXT_PUBLIC_LANDING_URL || `https://${rootDomain}`;
+
   // Extract query params or custom headers
   const querySlug = url.searchParams.get('slug') || url.searchParams.get('tenant');
   const headerSlug = request.headers.get('x-tenant-slug');
 
-  // If naked domain nfcmyplace.com or www.nfcmyplace.com and root path, redirect to landing page
+  // If naked domain nfcmyplace.com or www.nfcmyplace.com and root path, redirect to landing page if on a distinct host
   if (
-    (hostWithoutPort === 'nfcmyplace.com' || hostWithoutPort === 'www.nfcmyplace.com') &&
+    (hostWithoutPort === rootDomain || hostWithoutPort === `www.${rootDomain}`) &&
     pathname === '/' &&
     !querySlug
   ) {
-    return NextResponse.redirect('https://landing.nfcmyplace.com');
+    try {
+      const parsedLanding = new URL(landingUrl);
+      if (parsedLanding.hostname !== hostWithoutPort) {
+        return NextResponse.redirect(landingUrl);
+      }
+    } catch {
+      // Passthrough if invalid URL
+    }
   }
 
   // Extract subdomain slug
@@ -28,7 +38,7 @@ export function middleware(request: NextRequest) {
   } else if (headerSlug) {
     slug = headerSlug.toLowerCase();
   } else if (
-    hostWithoutPort.endsWith('.nfcmyplace.com') ||
+    hostWithoutPort.endsWith(`.${rootDomain}`) ||
     hostWithoutPort.endsWith('.localhost') ||
     hostWithoutPort.endsWith('.nfcmyplace.local')
   ) {

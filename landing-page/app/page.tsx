@@ -17,7 +17,7 @@ export default function LandingPage() {
       tag: t.demos.baltazarTag,
       slug: 'baltazar',
       themeColor: '#C0392B',
-      url: 'https://nfcmyplace-menu.vercel.app/',
+      url: 'https://baltazar.nfcmyplace.com',
       image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=600&auto=format&fit=crop&q=80',
       description: t.demos.baltazarDesc,
       buttonText: t.demos.baltazarBtn,
@@ -27,10 +27,20 @@ export default function LandingPage() {
       tag: t.demos.erenkoyTag,
       slug: 'kahve-erenkoy',
       themeColor: '#6F4E37',
-      url: 'https://frontend-erenkoy.vercel.app/',
+      url: 'https://kahve-erenkoy.nfcmyplace.com',
       image: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=600&auto=format&fit=crop&q=80',
       description: t.demos.erenkoyDesc,
       buttonText: t.demos.erenkoyBtn,
+    },
+    {
+      name: 'Burger Zoom',
+      tag: t.demos.burgerZoomTag,
+      slug: 'burger-zoom',
+      themeColor: '#D35400',
+      url: 'https://burger-zoom.nfcmyplace.com',
+      image: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=600&auto=format&fit=crop&q=80',
+      description: t.demos.burgerZoomDesc,
+      buttonText: t.demos.burgerZoomBtn,
     },
   ];
 
@@ -159,7 +169,7 @@ export default function LandingPage() {
           <p className="text-sm text-white/50">{t.demos.subtitle}</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {LIVE_DEMOS.map((demo) => (
             <motion.article
               key={demo.slug}
