@@ -9,10 +9,12 @@ const STORAGE_KEY = 'nfc_discount_modal_dismissed';
 
 interface Props {
   locale?: Locale;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
-export function DiscountModal({ locale = 'tr' }: Props) {
-  const [open, setOpen] = useState(false);
+export function DiscountModal({ locale = 'tr', isOpen, onClose }: Props) {
+  const [internalOpen, setInternalOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [venue, setVenue] = useState('');
   const [claimed, setClaimed] = useState(false);
@@ -24,15 +26,18 @@ export function DiscountModal({ locale = 'tr' }: Props) {
     const isDismissed = localStorage.getItem(STORAGE_KEY);
     if (!isDismissed) {
       const timer = setTimeout(() => {
-        setOpen(true);
+        setInternalOpen(true);
       }, 4000);
       return () => clearTimeout(timer);
     }
   }, []);
 
+  const open = isOpen !== undefined ? isOpen : internalOpen;
+
   const handleDismiss = () => {
     localStorage.setItem(STORAGE_KEY, 'true');
-    setOpen(false);
+    setInternalOpen(false);
+    onClose?.();
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -79,7 +84,8 @@ export function DiscountModal({ locale = 'tr' }: Props) {
 
             <button
               onClick={handleDismiss}
-              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 text-white/70 hover:text-white flex items-center justify-center text-sm transition-colors"
+              aria-label="Close modal"
+              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 text-white/70 hover:text-white flex items-center justify-center text-sm transition-colors cursor-pointer"
             >
               ✕
             </button>
@@ -88,7 +94,9 @@ export function DiscountModal({ locale = 'tr' }: Props) {
               <div>
                 <div className="text-4xl mb-3">🎁</div>
                 <h3 className="text-2xl font-black text-white leading-tight">
-                  <span className="text-amber-400">%30</span> İlk Donanım Siparişi İndirimi
+                  {t.titleStart}
+                  <span className="text-amber-400">{t.titleHighlight}</span>
+                  {t.titleEnd}
                 </h3>
                 <p className="text-xs text-white/60 mt-2 leading-relaxed">
                   {t.subtitle}
@@ -98,7 +106,7 @@ export function DiscountModal({ locale = 'tr' }: Props) {
                   <input
                     type="text"
                     required
-                    placeholder="Mekan / Restoran Adı"
+                    placeholder={t.venuePlaceholder}
                     value={venue}
                     onChange={(e) => setVenue(e.target.value)}
                     className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 text-sm focus:outline-none focus:border-amber-500 transition-colors"
@@ -106,16 +114,16 @@ export function DiscountModal({ locale = 'tr' }: Props) {
                   <input
                     type="email"
                     required
-                    placeholder="E-posta Adresiniz"
+                    placeholder={t.emailPlaceholder}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 text-sm focus:outline-none focus:border-amber-500 transition-colors"
                   />
                   <button
                     type="submit"
-                    className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-black text-sm shadow-lg shadow-amber-500/25 transition-all transform active:scale-98"
+                    className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-black text-sm shadow-lg shadow-amber-500/25 transition-all transform active:scale-98 cursor-pointer"
                   >
-                    %30 İndirim Kodunu Al
+                    {t.submitBtn}
                   </button>
                 </form>
               </div>
@@ -128,7 +136,7 @@ export function DiscountModal({ locale = 'tr' }: Props) {
                 </p>
                 <button
                   onClick={handleDismiss}
-                  className="w-full py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition-colors"
+                  className="w-full py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition-colors cursor-pointer"
                 >
                   {t.continueBtn}
                 </button>

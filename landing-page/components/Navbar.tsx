@@ -6,9 +6,10 @@ import { translations } from '@/lib/translations';
 interface Props {
   locale: Locale;
   onToggleLocale: (locale: Locale) => void;
+  onOpenDiscount?: () => void;
 }
 
-export function Navbar({ locale, onToggleLocale }: Props) {
+export function Navbar({ locale, onToggleLocale, onOpenDiscount }: Props) {
   const t = translations[locale].nav;
 
   return (
@@ -37,7 +38,7 @@ export function Navbar({ locale, onToggleLocale }: Props) {
           <div className="flex items-center bg-white/10 border border-white/15 rounded-xl p-0.5 text-[11px] font-bold">
             <button
               onClick={() => onToggleLocale('tr')}
-              className={`px-2.5 py-1 rounded-lg transition-all ${
+              className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
                 locale === 'tr'
                   ? 'bg-amber-500 text-black shadow-sm'
                   : 'text-white/60 hover:text-white'
@@ -47,7 +48,7 @@ export function Navbar({ locale, onToggleLocale }: Props) {
             </button>
             <button
               onClick={() => onToggleLocale('en')}
-              className={`px-2.5 py-1 rounded-lg transition-all ${
+              className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
                 locale === 'en'
                   ? 'bg-amber-500 text-black shadow-sm'
                   : 'text-white/60 hover:text-white'
@@ -66,12 +67,21 @@ export function Navbar({ locale, onToggleLocale }: Props) {
             {t.adminLogin}
           </a>
 
-          <a
-            href="#pricing"
-            className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-black font-bold text-xs shadow-lg shadow-amber-500/20 transition-all"
-          >
-            {t.cta}
-          </a>
+          {onOpenDiscount ? (
+            <button
+              onClick={onOpenDiscount}
+              className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-black font-bold text-xs shadow-lg shadow-amber-500/20 transition-all cursor-pointer"
+            >
+              {t.cta}
+            </button>
+          ) : (
+            <a
+              href="#pricing"
+              className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-black font-bold text-xs shadow-lg shadow-amber-500/20 transition-all"
+            >
+              {t.cta}
+            </a>
+          )}
         </div>
       </div>
     </nav>

@@ -9,6 +9,7 @@ import { translations } from '@/lib/translations';
 
 export default function LandingPage() {
   const [locale, setLocale] = useState<Locale>('tr');
+  const [isDiscountOpen, setIsDiscountOpen] = useState(false);
   const t = translations[locale];
 
   const LIVE_DEMOS = [
@@ -64,6 +65,7 @@ export default function LandingPage() {
       ],
       highlight: false,
       cta: t.pricing.starterCta,
+      action: 'modal' as const,
     },
     {
       name: t.pricing.proName,
@@ -86,6 +88,7 @@ export default function LandingPage() {
       ],
       highlight: true,
       cta: t.pricing.proCta,
+      action: 'modal' as const,
     },
     {
       name: t.pricing.entName,
@@ -106,13 +109,22 @@ export default function LandingPage() {
       ],
       highlight: false,
       cta: t.pricing.entCta,
+      action: 'contact' as const,
     },
   ];
 
   return (
     <div className="min-h-screen bg-neutral-950 text-white font-sans selection:bg-amber-500 selection:text-black">
-      <Navbar locale={locale} onToggleLocale={setLocale} />
-      <DiscountModal locale={locale} />
+      <Navbar
+        locale={locale}
+        onToggleLocale={setLocale}
+        onOpenDiscount={() => setIsDiscountOpen(true)}
+      />
+      <DiscountModal
+        locale={locale}
+        isOpen={isDiscountOpen}
+        onClose={() => setIsDiscountOpen(false)}
+      />
 
       {/* ── HERO SECTION ── */}
       <section className="relative pt-20 pb-16 px-6 text-center overflow-hidden">
@@ -176,24 +188,35 @@ export default function LandingPage() {
               whileHover={{ y: -6 }}
               className="bg-white/5 border border-white/10 rounded-3xl overflow-hidden shadow-2xl flex flex-col justify-between"
             >
-              <div>
+              <a
+                href={demo.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block group"
+              >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={demo.image} alt={demo.name} className="w-full h-48 object-cover" />
+                <img
+                  src={demo.image}
+                  alt={demo.name}
+                  className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                />
                 <div className="p-6">
                   <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-white/10 text-white/80">
                     {demo.tag}
                   </span>
-                  <h3 className="text-2xl font-bold text-white mt-3">{demo.name}</h3>
+                  <h3 className="text-2xl font-bold text-white mt-3 group-hover:text-amber-400 transition-colors">
+                    {demo.name}
+                  </h3>
                   <p className="text-xs text-white/60 mt-2 leading-relaxed">{demo.description}</p>
                 </div>
-              </div>
+              </a>
 
               <div className="p-6 pt-0">
                 <a
                   href={demo.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block w-full py-3 text-center rounded-xl font-bold text-xs transition-colors"
+                  className="block w-full py-3 text-center rounded-xl font-bold text-xs transition-opacity hover:opacity-90"
                   style={{ backgroundColor: demo.themeColor, color: '#ffffff' }}
                 >
                   {demo.buttonText}
@@ -243,16 +266,26 @@ export default function LandingPage() {
                   </ul>
                 </div>
 
-                <a
-                  href="#pricing"
-                  className={`w-full py-3.5 rounded-xl text-center font-bold text-xs transition-all ${
-                    tier.highlight
-                      ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-600 hover:to-amber-700 shadow-lg shadow-amber-500/20'
-                      : 'bg-white/10 hover:bg-white/15 text-white'
-                  }`}
-                >
-                  {tier.cta}
-                </a>
+                {tier.action === 'modal' ? (
+                  <button
+                    type="button"
+                    onClick={() => setIsDiscountOpen(true)}
+                    className={`w-full py-3.5 rounded-xl text-center font-bold text-xs transition-all cursor-pointer ${
+                      tier.highlight
+                        ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-600 hover:to-amber-700 shadow-lg shadow-amber-500/20'
+                        : 'bg-white/10 hover:bg-white/15 text-white'
+                    }`}
+                  >
+                    {tier.cta}
+                  </button>
+                ) : (
+                  <a
+                    href="mailto:destek@nfcmyplace.com?subject=NFCMyPlace%20Kurumsal%20ve%20Ozel%20Tasarim%20Talebi"
+                    className="w-full py-3.5 rounded-xl text-center font-bold text-xs transition-all bg-white/10 hover:bg-white/15 text-white block"
+                  >
+                    {tier.cta}
+                  </a>
+                )}
               </div>
             ))}
           </div>
@@ -260,9 +293,41 @@ export default function LandingPage() {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer className="py-10 px-6 border-t border-white/10 text-center text-xs text-white/40 space-y-2">
-        <p>{t.footer.rights}</p>
-        <p>{t.footer.tagline}</p>
+      <footer className="py-12 px-6 border-t border-white/10 bg-black/40">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+          <div className="space-y-2">
+            <div className="flex items-center justify-center md:justify-start gap-2">
+              <div className="w-6 h-6 rounded bg-gradient-to-tr from-amber-500 to-amber-600 flex items-center justify-center font-black text-black text-[10px]">
+                NFC
+              </div>
+              <span className="font-extrabold text-sm text-white tracking-tight">
+                NFC<span className="text-amber-400">MyPlace</span>
+              </span>
+            </div>
+            <p className="text-xs text-white/50">{t.footer.tagline}</p>
+            <p className="text-[11px] text-white/30">{t.footer.rights}</p>
+          </div>
+
+          <div className="flex flex-wrap justify-center items-center gap-6 text-xs text-white/60">
+            <a href="#hardware" className="hover:text-amber-400 transition-colors">
+              {t.nav.hardware}
+            </a>
+            <a href="#demos" className="hover:text-amber-400 transition-colors">
+              {t.nav.demos}
+            </a>
+            <a href="#pricing" className="hover:text-amber-400 transition-colors">
+              {t.nav.pricing}
+            </a>
+            <a
+              href="https://digitalmenu-admin-panel.vercel.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-amber-400 transition-colors"
+            >
+              {t.nav.adminLogin}
+            </a>
+          </div>
+        </div>
       </footer>
     </div>
   );
