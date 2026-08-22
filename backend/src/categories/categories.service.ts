@@ -47,6 +47,7 @@ export class CategoriesService {
       data: {
         restaurantId: restaurant.id,
         name: dto.name,
+        photoUrl: dto.photoUrl,
         sortOrder: dto.sortOrder ?? 0,
       },
     });
@@ -63,6 +64,7 @@ export class CategoriesService {
       where: { id },
       data: {
         ...(dto.name && { name: dto.name }),
+        ...(dto.photoUrl !== undefined && { photoUrl: dto.photoUrl }),
         ...(dto.sortOrder !== undefined && { sortOrder: dto.sortOrder }),
       },
     });

@@ -12,19 +12,19 @@ async function main() {
   const restaurant = await prisma.restaurant.upsert({
     where: { slug: 'kahve-erenkoy' },
     update: {
-      name: { tr: 'Kahve Erenköy', en: 'Kahve Erenkoy', ar: 'كافيه إرينكوي' },
+      name: { tr: 'Kahve Erenköy', en: 'Kahve Erenkoy' },
       themeColor: '#6F4E37',
       logoUrl: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=300&auto=format&fit=crop&q=80',
-      supportedLocales: ['tr', 'en', 'ar'],
+      supportedLocales: ['tr', 'en'],
       defaultLocale: 'tr',
       isActive: true,
     },
     create: {
-      name: { tr: 'Kahve Erenköy', en: 'Kahve Erenkoy', ar: 'كافيه إرينكوي' },
+      name: { tr: 'Kahve Erenköy', en: 'Kahve Erenkoy' },
       slug: 'kahve-erenkoy',
       themeColor: '#6F4E37',
       logoUrl: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=300&auto=format&fit=crop&q=80',
-      supportedLocales: ['tr', 'en', 'ar'],
+      supportedLocales: ['tr', 'en'],
       defaultLocale: 'tr',
       isActive: true,
     },
@@ -58,6 +58,12 @@ async function main() {
       estimatedPrepMinutes: 10,
       currency: 'TRY',
       timezone: 'Europe/Istanbul',
+      enableOrdering: true,
+      enableTables: true,
+      enableAnalytics: true,
+      enableMultiLanguage: true,
+      enableReviews: false,
+      enableServiceCall: false,
     },
     create: {
       restaurantId: restaurant.id,
@@ -67,6 +73,12 @@ async function main() {
       estimatedPrepMinutes: 10,
       currency: 'TRY',
       timezone: 'Europe/Istanbul',
+      enableOrdering: true,
+      enableTables: true,
+      enableAnalytics: true,
+      enableMultiLanguage: true,
+      enableReviews: false,
+      enableServiceCall: false,
     },
   });
   console.log(`⚙️ Settings configured`);
@@ -112,19 +124,23 @@ async function main() {
   // 5. Categories
   const categoriesData = [
     {
-      name: { tr: 'Sıcak Kahveler', en: 'Hot Coffees', ar: 'قهوة ساخنة' },
+      name: { tr: 'Sıcak Kahveler', en: 'Hot Coffees' },
+      photoUrl: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800&auto=format&fit=crop&q=80',
       sortOrder: 1,
     },
     {
-      name: { tr: 'Soğuk Kahveler', en: 'Cold Brews & Iced Coffees', ar: 'قهوة باردة' },
+      name: { tr: 'Soğuk Kahveler', en: 'Cold Coffees' },
+      photoUrl: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=800&auto=format&fit=crop&q=80',
       sortOrder: 2,
     },
     {
-      name: { tr: 'Fırından & Tatlılar', en: 'Bakery & Desserts', ar: 'حلويات ومخبوزات' },
+      name: { tr: 'Fırından & Tatlılar', en: 'Pastries & Desserts' },
+      photoUrl: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800&auto=format&fit=crop&q=80',
       sortOrder: 3,
     },
     {
-      name: { tr: 'Özel İçecekler & Çaylar', en: 'Signature Drinks & Teas', ar: 'شاي ومشروبات خاصة' },
+      name: { tr: 'Çaylar & Özel İçecekler', en: 'Teas & Specialty Drinks' },
+      photoUrl: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=800&auto=format&fit=crop&q=80',
       sortOrder: 4,
     },
   ];
@@ -138,11 +154,20 @@ async function main() {
     if (category) {
       category = await prisma.category.update({
         where: { id: category.id },
-        data: { name: catData.name, sortOrder: catData.sortOrder },
+        data: {
+          name: catData.name,
+          photoUrl: catData.photoUrl,
+          sortOrder: catData.sortOrder,
+        },
       });
     } else {
       category = await prisma.category.create({
-        data: { restaurantId: restaurant.id, name: catData.name, sortOrder: catData.sortOrder },
+        data: {
+          restaurantId: restaurant.id,
+          name: catData.name,
+          photoUrl: catData.photoUrl,
+          sortOrder: catData.sortOrder,
+        },
       });
     }
     categoryMap[trName] = category.id;
@@ -151,129 +176,254 @@ async function main() {
 
   // 6. Products
   const productsData = [
-    // Sıcak Kahveler
+    // ── Sıcak Kahveler (6 products) ──────────────────────────────────────────
     {
       category: 'Sıcak Kahveler',
-      name: { tr: 'Espresso Single / Double', en: 'Espresso Single / Double', ar: 'إسبريسو سينجل / دبل' },
+      name: { tr: 'Espresso Single / Double', en: 'Espresso Single / Double' },
       description: {
-        tr: '%100 Arabica taze kavrulmuş çekirdeklerden yoğun aroma.',
-        en: 'Rich extraction from 100% Arabica freshly roasted beans.',
-        ar: 'مستخلص كفيف من بن أرابيكا 100% محمص طازجاً.',
+        tr: '%100 Arabica taze çekilmiş çekirdeklerden yoğun gövde ve fındık rengi krema.',
+        en: 'Rich body and nutty crema crafted from 100% freshly ground Arabica beans.',
       },
-      price: '75.00',
-      photoUrl: 'https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=600&auto=format&fit=crop&q=80',
+      price: 75.00,
+      photoUrl: 'https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=800&auto=format&fit=crop&q=80',
       sortOrder: 1,
     },
     {
       category: 'Sıcak Kahveler',
-      name: { tr: 'Flat White', en: 'Flat White', ar: 'فلات وايت' },
+      name: { tr: 'V60 Pour Over', en: 'V60 Pour Over' },
       description: {
-        tr: 'Çift shot espresso ve kadifemsi köpüklü süt.',
-        en: 'Double shot espresso with velvety micro-foam milk.',
-        ar: 'جرعتان إسبريسو مع حليب مخفوق مخملي.',
+        tr: 'Single origin Etiyopya Yirgacheffe çekirdekleri, narenciye ve bergamot notalarıyla el demleme.',
+        en: 'Hand-poured single origin Ethiopian Yirgacheffe with bright citrus and floral bergamot notes.',
       },
-      price: '110.00',
-      photoUrl: 'https://images.unsplash.com/photo-1577968897966-3d4325b36b61?w=600&auto=format&fit=crop&q=80',
+      price: 135.00,
+      photoUrl: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&auto=format&fit=crop&q=80',
       sortOrder: 2,
     },
     {
       category: 'Sıcak Kahveler',
-      name: { tr: 'V60 Pour Over', en: 'V60 Pour Over', ar: 'V60 تقطير' },
+      name: { tr: 'Flat White', en: 'Flat White' },
       description: {
-        tr: 'Single origin Etiyopya Yirgacheffe çekirdeği ile özel demleme.',
-        en: 'Hand-poured single origin Ethiopia Yirgacheffe coffee.',
-        ar: 'قهوة إثيوبيا ييرغاتشيف من مصدر واحد محضرة يدوياً.',
+        tr: 'Çift shot ristretto espresso ve kadifemsi mikro süt köpüğü.',
+        en: 'Double shot ristretto espresso topped with velvety micro-foam steamed milk.',
       },
-      price: '135.00',
-      photoUrl: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&auto=format&fit=crop&q=80',
+      price: 115.00,
+      photoUrl: 'https://images.unsplash.com/photo-1577968897966-3d4325b36b61?w=800&auto=format&fit=crop&q=80',
       sortOrder: 3,
     },
-    // Soğuk Kahveler
+    {
+      category: 'Sıcak Kahveler',
+      name: { tr: 'Cortado', en: 'Cortado' },
+      description: {
+        tr: 'Eşit oranda yoğun espresso ve ılık buharda ısıtılmış kadifemsi süt.',
+        en: 'Equal parts rich espresso and lightly textured warm milk.',
+      },
+      price: 105.00,
+      photoUrl: 'https://images.unsplash.com/photo-1534778101976-62847782c213?w=800&auto=format&fit=crop&q=80',
+      sortOrder: 4,
+    },
+    {
+      category: 'Sıcak Kahveler',
+      name: { tr: 'Latte', en: 'Caffè Latte' },
+      description: {
+        tr: 'Yumuşak içimli espresso, bol sıcak süt ve ince kremsi süt tabakası.',
+        en: 'Smooth espresso combined with steamed milk and a delicate layer of foam.',
+      },
+      price: 110.00,
+      photoUrl: 'https://images.unsplash.com/photo-1529892485617-25f63cd7b1e9?w=800&auto=format&fit=crop&q=80',
+      sortOrder: 5,
+    },
+    {
+      category: 'Sıcak Kahveler',
+      name: { tr: 'Cappuccino', en: 'Cappuccino' },
+      description: {
+        tr: 'Dengeli espresso lezzeti, eşit oranda süt ve yoğun ipeksi süt köpüğü.',
+        en: 'Classic balance of rich espresso, steamed milk, and a thick cloud of silky milk froth.',
+      },
+      price: 110.00,
+      photoUrl: 'https://images.unsplash.com/photo-1534432182912-63863115e106?w=800&auto=format&fit=crop&q=80',
+      sortOrder: 6,
+    },
+
+    // ── Soğuk Kahveler (5 products) ──────────────────────────────────────────
     {
       category: 'Soğuk Kahveler',
-      name: { tr: 'Iced Spanish Latte', en: 'Iced Spanish Latte', ar: 'سبانيش لاتيه بارد' },
+      name: { tr: 'Iced Spanish Latte', en: 'Iced Spanish Latte' },
       description: {
-        tr: 'Espresso, soğuk süt ve tatlandırılmış yoğunlaştırılmış süt karışımı.',
-        en: 'Espresso, cold milk and sweetened condensed milk over ice.',
-        ar: 'إسبريسو مع حليب بارد وحليب مكثف محلى over ثلج.',
+        tr: 'Duble espresso, soğuk süt ve tatlandırılmış yoğunlaştırılmış süt karışımı buzla.',
+        en: 'Double espresso poured over ice with fresh milk and sweet condensed milk.',
       },
-      price: '140.00',
-      photoUrl: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=600&auto=format&fit=crop&q=80',
+      price: 140.00,
+      photoUrl: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=800&auto=format&fit=crop&q=80',
       sortOrder: 1,
     },
     {
       category: 'Soğuk Kahveler',
-      name: { tr: 'Cold Brew', en: 'Cold Brew', ar: 'كولد برو' },
+      name: { tr: 'Cold Brew (16 Saat Demleme)', en: 'Cold Brew 16hr' },
       description: {
-        tr: '16 saat soğuk demleme tekniğiyle hazırlanmış pürüzsüz içim.',
-        en: 'Smooth 16-hour cold steep specialty coffee.',
-        ar: 'قهوة كولد برو منقوعة باردة لمدة 16 ساعة ناعمة المذاق.',
+        tr: '16 saat soğuk demleme tekniğiyle hazırlanmış düşük asiditeli pürüzsüz içim.',
+        en: 'Smooth 16-hour cold steep specialty coffee over crystal ice.',
       },
-      price: '125.00',
-      photoUrl: 'https://images.unsplash.com/photo-1517256064527-09c73fc73e38?w=600&auto=format&fit=crop&q=80',
-      sortOrder: 2,
-    },
-    // Fırından & Tatlılar
-    {
-      category: 'Fırından & Tatlılar',
-      name: { tr: 'San Sebastian Cheesecake', en: 'San Sebastian Cheesecake', ar: 'سان سيباستيان تشيز كيك' },
-      description: {
-        tr: 'İçi kremsi, üstü yanık klasik Bask cheesecake dilimi.',
-        en: 'Creamy inside with a caramelized burnt Basque top.',
-        ar: 'تشيز كيك باسك كريمي من الداخل ومحروق كلاسيكي.',
-      },
-      price: '160.00',
-      photoUrl: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=600&auto=format&fit=crop&q=80',
-      sortOrder: 1,
-    },
-    {
-      category: 'Fırından & Tatlılar',
-      name: { tr: 'Taze Tereyağlı Kruvasan', en: 'Fresh Butter Croissant', ar: 'كرواسون زبدة طازج' },
-      description: {
-        tr: 'Günlük fırından çıkan kat kat çıtır Fransız kruvasanı.',
-        en: 'Flaky daily baked French butter croissant.',
-        ar: 'كرواسون فرنسي طازج بالزبدة مقرمش متعدد الطبقات.',
-      },
-      price: '85.00',
-      photoUrl: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=600&auto=format&fit=crop&q=80',
+      price: 125.00,
+      photoUrl: 'https://images.unsplash.com/photo-1517256064527-09c73fc73e38?w=800&auto=format&fit=crop&q=80',
       sortOrder: 2,
     },
     {
-      category: 'Fırından & Tatlılar',
-      name: { tr: 'Yaban Mersinli Danish', en: 'Blueberry Danish', ar: 'دانيش التوت الأزرق' },
+      category: 'Soğuk Kahveler',
+      name: { tr: 'Iced Americano', en: 'Iced Americano' },
       description: {
-        tr: 'Taze yaban mersini dolgulu ve vanilya kremalı çıtır danish.',
-        en: 'Pastry topped with fresh blueberries and vanilla custard.',
-        ar: 'معجنات دانيش بحشوة التوت الأزرق وكريمة الفانيليا.',
+        tr: 'Duble shot taze espresso ve soğuk filtrelenmiş suyun buzla buluşması.',
+        en: 'Double shot fresh espresso over crisp cold water and ice for a clean lift.',
       },
-      price: '95.00',
-      photoUrl: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600&auto=format&fit=crop&q=80',
+      price: 95.00,
+      photoUrl: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=800&auto=format&fit=crop&q=80',
       sortOrder: 3,
     },
-    // Özel İçecekler & Çaylar
     {
-      category: 'Özel İçecekler & Çaylar',
-      name: { tr: 'Iced Japanese Matcha Latte', en: 'Iced Japanese Matcha Latte', ar: 'ماتشا لاتيه بارد' },
+      category: 'Soğuk Kahveler',
+      name: { tr: 'Iced Salted Caramel Latte', en: 'Iced Salted Caramel Latte' },
       description: {
-        tr: 'Uji seremoniyel derece organik matcha ve yulaf sütü.',
-        en: 'Ceremonial grade Uji organic matcha with oat milk over ice.',
-        ar: 'ماتشا عضوية درجة احتفالية مع حليب الشوفان والثلج.',
+        tr: 'Ev yapımı deniz tuzlu karamel sosu, espresso, soğuk süt ve buz.',
+        en: 'Artisanal sea salted caramel drizzle, espresso, chilled milk, and ice.',
       },
-      price: '150.00',
-      photoUrl: 'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=600&auto=format&fit=crop&q=80',
+      price: 145.00,
+      photoUrl: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=800&auto=format&fit=crop&q=80',
+      sortOrder: 4,
+    },
+    {
+      category: 'Soğuk Kahveler',
+      name: { tr: 'Espresso Tonic', en: 'Espresso Tonic' },
+      description: {
+        tr: 'Premium botanik tonik, taze sıkılmış limon dilimi ve aromatik espresso shot.',
+        en: 'Premium tonic water, a twist of citrus, topped with layered fresh espresso.',
+      },
+      price: 130.00,
+      photoUrl: 'https://images.unsplash.com/photo-1582293041079-7814c2f12063?w=800&auto=format&fit=crop&q=80',
+      sortOrder: 5,
+    },
+
+    // ── Fırından & Tatlılar (6 products) ─────────────────────────────────────
+    {
+      category: 'Fırından & Tatlılar',
+      name: { tr: 'San Sebastian Cheesecake', en: 'San Sebastian Cheesecake' },
+      description: {
+        tr: 'İçi kremsi akışkan, üstü karamelize yanık klasik Bask cheesecake dilimi.',
+        en: 'Creamy inside with a caramelized burnt Basque top crust.',
+      },
+      price: 160.00,
+      photoUrl: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=800&auto=format&fit=crop&q=80',
       sortOrder: 1,
     },
     {
-      category: 'Özel İçecekler & Çaylar',
-      name: { tr: 'Demleme Hibiskus Çayı', en: 'Brewed Hibiscus Tea', ar: 'شاي كركديه بارد' },
+      category: 'Fırından & Tatlılar',
+      name: { tr: 'Taze Tereyağlı Kruvasan', en: 'Fresh Butter Croissant' },
       description: {
-        tr: 'Taze nane ve çubuk tarçın eşliğinde soğuk demlenmiş hibiskus.',
-        en: 'Cold brewed hibiscus tea served with fresh mint and cinnamon.',
-        ar: 'شاي كركديه بارد منقوع مع نعناع طازج وقرفة.',
+        tr: 'Her sabah günlük fırınlanan kat kat çıtır Fransız tereyağlı kruvasan.',
+        en: 'Flaky daily baked French butter croissant with golden layers.',
       },
-      price: '90.00',
-      photoUrl: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=600&auto=format&fit=crop&q=80',
+      price: 85.00,
+      photoUrl: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=800&auto=format&fit=crop&q=80',
       sortOrder: 2,
+    },
+    {
+      category: 'Fırından & Tatlılar',
+      name: { tr: 'Yaban Mersinli Danish', en: 'Blueberry Danish' },
+      description: {
+        tr: 'Taze yaban mersini dolgulu ve vanilya kremalı çıtır tereyağlı danish.',
+        en: 'Flaky pastry topped with fresh blueberries and vanilla custard cream.',
+      },
+      price: 95.00,
+      photoUrl: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800&auto=format&fit=crop&q=80',
+      sortOrder: 3,
+    },
+    {
+      category: 'Fırından & Tatlılar',
+      name: { tr: 'Havuçlu Tarçınlı Kek', en: 'Carrot Cinnamon Cake' },
+      description: {
+        tr: 'Taze havuç rendesi, ceviz, Seylan tarçını ve nefis labne kreması dolgulu kek.',
+        en: 'Moist spiced cake packed with fresh carrots, walnuts, and cream cheese frosting.',
+      },
+      price: 120.00,
+      photoUrl: 'https://images.unsplash.com/photo-1621303837174-89787a7d4729?w=800&auto=format&fit=crop&q=80',
+      sortOrder: 4,
+    },
+    {
+      category: 'Fırından & Tatlılar',
+      name: { tr: 'Belçika Çikolatalı Cookie', en: 'Belgian Chocolate Cookie' },
+      description: {
+        tr: 'İçi yumuşak Callebaut sütlü ve bitter çikolata parçacıklı dev kurabiye.',
+        en: 'Giant soft-baked cookie loaded with premium Belgian chocolate chunks.',
+      },
+      price: 90.00,
+      photoUrl: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=800&auto=format&fit=crop&q=80',
+      sortOrder: 5,
+    },
+    {
+      category: 'Fırından & Tatlılar',
+      name: { tr: 'Gluten-Free Brownie', en: 'Gluten-Free Brownie' },
+      description: {
+        tr: 'Glutensiz badem unu ve %70 bitter çikolatayla fırınlanmış yoğun nemli brownie.',
+        en: 'Fudgy rich brownie baked with almond flour and 70% dark chocolate.',
+      },
+      price: 130.00,
+      photoUrl: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=800&auto=format&fit=crop&q=80',
+      sortOrder: 6,
+    },
+
+    // ── Çaylar & Özel İçecekler (5 products) ─────────────────────────────────
+    {
+      category: 'Çaylar & Özel İçecekler',
+      name: { tr: 'Iced Japanese Matcha Latte', en: 'Iced Japanese Matcha Latte' },
+      description: {
+        tr: 'Uji seremoniyel derece organik matcha ve organik yulaf sütü ile buzlu sunum.',
+        en: 'Ceremonial grade Uji organic matcha whisked with oat milk over ice.',
+      },
+      price: 150.00,
+      photoUrl: 'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=800&auto=format&fit=crop&q=80',
+      sortOrder: 1,
+    },
+    {
+      category: 'Çaylar & Özel İçecekler',
+      name: { tr: 'Demleme Hibiskus Çayı', en: 'Brewed Hibiscus Tea' },
+      description: {
+        tr: 'Taze nane yaprakları ve çubuk tarçın eşliğinde soğuk demlenmiş yakut rengi hibiskus.',
+        en: 'Cold brewed ruby hibiscus tea served with fresh mint and cinnamon.',
+      },
+      price: 90.00,
+      photoUrl: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=800&auto=format&fit=crop&q=80',
+      sortOrder: 2,
+    },
+    {
+      category: 'Çaylar & Özel İçecekler',
+      name: { tr: 'Geleneksel Türk Çayı', en: 'Traditional Turkish Tea' },
+      description: {
+        tr: 'Rize seçkin yapraklarından taze demlenmiş berrak demiyle ince belli bardakta.',
+        en: 'Freshly brewed premium black tea from Rize in a traditional curved glass.',
+      },
+      price: 40.00,
+      photoUrl: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=800&auto=format&fit=crop&q=80',
+      sortOrder: 3,
+    },
+    {
+      category: 'Çaylar & Özel İçecekler',
+      name: { tr: 'Chai Tea Latte', en: 'Chai Tea Latte' },
+      description: {
+        tr: 'Kakule, tarçın, zencefil baharat harmanı ve kadifemsi sıcak süt köpüğü.',
+        en: 'Aromatic spiced black tea with cinnamon, cardamom, and steamed milk foam.',
+      },
+      price: 125.00,
+      photoUrl: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=800&auto=format&fit=crop&q=80',
+      sortOrder: 4,
+    },
+    {
+      category: 'Çaylar & Özel İçecekler',
+      name: { tr: 'Taze Sıkılmış Portakal Suyu', en: 'Freshly Squeezed Orange Juice' },
+      description: {
+        tr: 'Sipariş anında taze sıkılan Finike portakalları, %100 doğal ve katkısız.',
+        en: 'Pure 100% freshly squeezed sweet Mediterranean orange juice.',
+      },
+      price: 95.00,
+      photoUrl: 'https://images.unsplash.com/photo-1613478223719-2ab802602423?w=800&auto=format&fit=crop&q=80',
+      sortOrder: 5,
     },
   ];
 
@@ -294,6 +444,7 @@ async function main() {
           price: prodData.price,
           photoUrl: prodData.photoUrl,
           sortOrder: prodData.sortOrder,
+          isAvailable: true,
         },
       });
     } else {
@@ -305,13 +456,14 @@ async function main() {
           price: prodData.price,
           photoUrl: prodData.photoUrl,
           sortOrder: prodData.sortOrder,
+          isAvailable: true,
         },
       });
     }
-    console.log(`  🍔 [${prodData.sortOrder}] ${prodData.name.tr} — ₺${prodData.price}`);
+    console.log(`  ☕ [${prodData.sortOrder}] ${prodData.name.tr} — ₺${prodData.price}`);
   }
 
-  console.log('✅ Kahve Erenköy Seed complete!');
+  console.log('✅ Kahve Erenköy Seed complete with 4 categories & 22 items!');
 }
 
 main()

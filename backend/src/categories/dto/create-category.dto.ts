@@ -1,4 +1,4 @@
-import { IsObject, IsInt, IsOptional, Min } from 'class-validator';
+import { IsObject, IsInt, IsOptional, Min, IsString } from 'class-validator';
 
 export class LocalizedStringDto {
   [locale: string]: string;
@@ -10,6 +10,10 @@ export class CreateCategoryDto {
    */
   @IsObject()
   name: Record<string, string>;
+
+  @IsOptional()
+  @IsString()
+  photoUrl?: string;
 
   @IsOptional()
   @IsInt()

@@ -79,10 +79,10 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
         const erenkoy = await this.restaurant.create({
           data: {
             slug: 'kahve-erenkoy',
-            name: { tr: 'Kahve Erenköy', en: 'Kahve Erenkoy', ar: 'كافيه إرينكوي' },
+            name: { tr: 'Kahve Erenköy', en: 'Kahve Erenkoy' },
             themeColor: '#6F4E37',
             logoUrl: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=300&auto=format&fit=crop&q=80',
-            supportedLocales: ['tr', 'en', 'ar'],
+            supportedLocales: ['tr', 'en'],
             defaultLocale: 'tr',
             isActive: true,
             settings: {
