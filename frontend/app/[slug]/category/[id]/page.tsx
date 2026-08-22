@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { ProductModal } from '@/components/ProductModal';
 import { TableBanner } from '@/components/TableBanner';
+import { LogoPlaceholder } from '@/components/LogoPlaceholder';
 
 const DEFAULT_LOCALE = process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'tr';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://digitalmenu-backend-production.up.railway.app';
@@ -61,7 +62,7 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
       <div className="min-h-screen flex items-center justify-center bg-neutral-950 text-white/50 text-sm">
         <div className="text-center">
           <p>{error || 'Category not found'}</p>
-          <Link href={`/?locale=${locale}`} className="mt-4 inline-block text-xs underline">
+          <Link href={`/${slug}?locale=${locale}`} className="mt-4 inline-block text-xs underline">
             ← Back to menu
           </Link>
         </div>
@@ -75,11 +76,14 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
       <header className="sticky top-0 z-20 backdrop-blur-md bg-neutral-950/80 border-b border-white/5 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link
-            href={`/?locale=${locale}`}
-            className="text-white/60 hover:text-white transition-colors text-sm font-medium flex items-center gap-1.5"
+            href={`/${slug}?locale=${locale}`}
+            className="text-white/60 hover:text-white transition-colors text-sm font-medium flex items-center gap-2"
           >
             <span>{isRTL ? '→' : '←'}</span>
-            <span>{restaurant?.name}</span>
+            {restaurant && (
+              <LogoPlaceholder restaurant={restaurant} size="sm" />
+            )}
+            <span className="font-semibold text-white/90">{restaurant?.name}</span>
           </Link>
           <span className="text-white/20">/</span>
           <span className="font-bold text-white text-sm">{category.name}</span>

@@ -2,6 +2,7 @@
 import { motion } from 'framer-motion';
 import type { Category } from '@/types/menu';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 
 const cardVariants = {
   hidden: { y: 60, opacity: 0 },
@@ -19,11 +20,13 @@ interface Props {
 }
 
 export function CategoryCard({ category, themeColor, locale }: Props) {
+  const params = useParams();
+  const slug = (params?.slug as string) || 'baltazar';
   const hasPhoto = Boolean(category.photoUrl);
 
   return (
     <motion.div variants={cardVariants}>
-      <Link href={`/category/${category.id}?locale=${locale}`} className="block">
+      <Link href={`/${slug}/category/${category.id}?locale=${locale}`} className="block">
         <motion.article
           className="relative overflow-hidden rounded-2xl border border-white/10 cursor-pointer h-44 flex flex-col justify-between"
           style={
