@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, FormEvent, Suspense } from 'react';
+import { useState, useEffect, FormEvent, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 
 function SuperAdminLoginForm() {
@@ -9,6 +9,10 @@ function SuperAdminLoginForm() {
   const [password, setPassword] = useState('SuperAdmin123!');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    document.title = 'NFCMyPlace Super Admin';
+  }, []);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -40,6 +44,7 @@ function SuperAdminLoginForm() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-radial from-slate-900 via-slate-950 to-black p-4">
+      <title>NFCMyPlace Super Admin</title>
       <div className="w-full max-w-md bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-3xl p-8 shadow-2xl shadow-indigo-950/40">
         <div className="flex flex-col items-center mb-8">
           <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-600 via-violet-600 to-cyan-400 p-0.5 shadow-lg shadow-indigo-500/30 mb-4">
@@ -47,7 +52,7 @@ function SuperAdminLoginForm() {
               ⚡
             </div>
           </div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">SuperAdmin Portal</h1>
+          <h1 className="text-2xl font-bold text-white tracking-tight">NFCMyPlace Super Admin</h1>
           <p className="text-xs text-slate-400 mt-1 text-center">
             Multi-Tenant Platform Governance & Global Administration
           </p>
@@ -118,7 +123,7 @@ function SuperAdminLoginForm() {
                 <span>Authenticating…</span>
               </>
             ) : (
-              'Enter SuperAdmin Portal →'
+              'Enter NFCMyPlace Super Admin →'
             )}
           </button>
         </form>

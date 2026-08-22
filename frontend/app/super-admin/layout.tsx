@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'SuperAdmin Portal | Digital Menu Platform',
+  title: 'NFCMyPlace Super Admin',
   description: 'Multi-tenant Platform Administration & Analytics',
 };
 

@@ -33,16 +33,6 @@ export default function LandingPage() {
       description: t.demos.erenkoyDesc,
       buttonText: t.demos.erenkoyBtn,
     },
-    {
-      name: 'Burger Zoom',
-      tag: t.demos.burgerZoomTag,
-      slug: 'burger-zoom',
-      themeColor: '#D35400',
-      url: 'https://burger-zoom.nfcmyplace.com',
-      image: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=600&auto=format&fit=crop&q=80',
-      description: t.demos.burgerZoomDesc,
-      buttonText: t.demos.burgerZoomBtn,
-    },
   ];
 
   const PRICING_TIERS = [
@@ -181,7 +171,7 @@ export default function LandingPage() {
           <p className="text-sm text-white/50">{t.demos.subtitle}</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {LIVE_DEMOS.map((demo) => (
             <motion.article
               key={demo.slug}

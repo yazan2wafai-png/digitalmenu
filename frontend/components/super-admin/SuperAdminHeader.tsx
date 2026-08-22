@@ -33,10 +33,10 @@ export function SuperAdminHeader({ email, onRefresh, loading }: Props) {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-base font-bold text-white leading-none">SuperAdmin Portal</h1>
+              <h1 className="text-base font-bold text-white leading-none">NFCMyPlace</h1>
               <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span>
-                PLATFORM ACTIVE
+                NFCMyPlace Super Admin
               </span>
             </div>
             <p className="text-xs text-slate-400 font-mono mt-0.5">

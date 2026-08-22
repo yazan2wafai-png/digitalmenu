@@ -59,6 +59,7 @@ export default function SuperAdminDashboardPage() {
   }, []);
 
   useEffect(() => {
+    document.title = 'NFCMyPlace Super Admin';
     const adminEmail = getCookie('super_admin_email');
     setEmail(adminEmail);
     fetchRestaurants();
@@ -96,6 +97,7 @@ export default function SuperAdminDashboardPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+      <title>NFCMyPlace Super Admin</title>
       <SuperAdminHeader email={email} onRefresh={fetchRestaurants} loading={loading} />
 
       {/* Main Content */}

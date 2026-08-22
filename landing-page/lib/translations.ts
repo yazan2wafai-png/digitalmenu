@@ -41,9 +41,6 @@ export const translations = {
       erenkoyTag: 'Nitelikli Kahve & Fırın',
       erenkoyDesc: 'V60 demleme, San Sebastian cheesecake, kruvasan rozetleri ve masa özel bannerlı Kadıköy kahvecisi.',
       erenkoyBtn: 'Kahve Erenköy Menüsünü Aç →',
-      burgerZoomTag: 'Smash Burger & Sokak Lezzeti',
-      burgerZoomDesc: 'Taze çekim smash burgerler, çıtır atıştırmalıklar ve dinamik QR/NFC menü sipariş deneyimi.',
-      burgerZoomBtn: 'Burger Zoom Menüsünü Aç →',
     },
     pricing: {
       badge: 'Donanım & SaaS Paketleri',
@@ -120,9 +117,6 @@ export const translations = {
       erenkoyTag: 'Specialty Coffee & Bakery',
       erenkoyDesc: 'Warm specialty coffee shop in Kadıköy featuring V60 pour over, Bask cheesecake, and table banners.',
       erenkoyBtn: 'Launch Kahve Erenköy Menu →',
-      burgerZoomTag: 'Smash Burger & Street Food',
-      burgerZoomDesc: 'Freshly smashed burgers, crispy bites, and high-speed multi-tenant NFC/QR table ordering.',
-      burgerZoomBtn: 'Launch Burger Zoom Menu →',
     },
     pricing: {
       badge: 'Hardware & SaaS Bundles',

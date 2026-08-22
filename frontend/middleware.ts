@@ -30,6 +30,78 @@ export function middleware(request: NextRequest) {
     }
   }
 
+  // Check if request is targeting the Super Admin hostname
+  const isAdminHost =
+    hostWithoutPort === `admin.${rootDomain}` ||
+    hostWithoutPort === 'admin.localhost' ||
+    hostWithoutPort === 'admin.nfcmyplace.local' ||
+    hostname.toLowerCase().startsWith('admin.localhost') ||
+    hostname.toLowerCase().startsWith(`admin.${rootDomain}`);
+
+  if (isAdminHost) {
+    const superAdminToken = request.cookies.get('super_admin_token')?.value;
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set('x-tenant-slug', 'super-admin');
+
+    // 1. Root / -> /super-admin
+    if (pathname === '/') {
+      if (!superAdminToken) {
+        return NextResponse.redirect(new URL('/login', request.url));
+      }
+      const response = NextResponse.rewrite(new URL('/super-admin', request.url), {
+        request: {
+          headers: requestHeaders,
+        },
+      });
+      response.headers.set('x-tenant-slug', 'super-admin');
+      return response;
+    }
+
+    // 2. /login -> /super-admin/login
+    if (pathname === '/login') {
+      if (superAdminToken) {
+        return NextResponse.redirect(new URL('/', request.url));
+      }
+      const response = NextResponse.rewrite(new URL('/super-admin/login', request.url), {
+        request: {
+          headers: requestHeaders,
+        },
+      });
+      response.headers.set('x-tenant-slug', 'super-admin');
+      return response;
+    }
+
+    // 3. /super-admin and /super-admin/* routes
+    if (pathname.startsWith('/super-admin')) {
+      if (!superAdminToken && pathname !== '/super-admin/login') {
+        return NextResponse.redirect(new URL('/login', request.url));
+      }
+      if (superAdminToken && pathname === '/super-admin/login') {
+        return NextResponse.redirect(new URL('/', request.url));
+      }
+      const response = NextResponse.next({
+        request: {
+          headers: requestHeaders,
+        },
+      });
+      response.headers.set('x-tenant-slug', 'super-admin');
+      return response;
+    }
+
+    // 4. Any other routes on admin host -> redirect to /login if unauthenticated
+    if (!superAdminToken) {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+
+    const response = NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      },
+    });
+    response.headers.set('x-tenant-slug', 'super-admin');
+    return response;
+  }
+
   // Extract subdomain slug
   let slug = 'baltazar'; // default fallback for localhost
 
