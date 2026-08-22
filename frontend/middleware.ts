@@ -63,7 +63,30 @@ export function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set('x-tenant-slug', slug);
 
-  // 1. Admin routes handling
+  // 1. SuperAdmin routes handling
+  if (pathname.startsWith('/super-admin')) {
+    const superAdminToken = request.cookies.get('super_admin_token')?.value;
+
+    // If not authenticated and trying to access protected super-admin page (not /super-admin/login)
+    if (!superAdminToken && pathname !== '/super-admin/login') {
+      const loginUrl = new URL('/super-admin/login', request.url);
+      return NextResponse.redirect(loginUrl);
+    }
+
+    // If already authenticated and trying to access /super-admin/login, redirect to /super-admin
+    if (superAdminToken && pathname === '/super-admin/login') {
+      const superAdminUrl = new URL('/super-admin', request.url);
+      return NextResponse.redirect(superAdminUrl);
+    }
+
+    return NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      },
+    });
+  }
+
+  // 2. Admin routes handling
   if (pathname.startsWith('/admin')) {
     const token = request.cookies.get('admin_token')?.value;
 

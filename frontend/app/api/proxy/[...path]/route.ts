@@ -4,10 +4,15 @@ import { cookies } from 'next/headers';
 const BACKEND_URL = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || 'https://digitalmenu-backend-production.up.railway.app';
 
 type Params = { path: string[] };
-
 async function proxy(request: NextRequest, params: Params, method: string) {
   const cookieStore = await cookies();
-  const token = cookieStore.get('admin_token')?.value;
+  const superAdminToken = cookieStore.get('super_admin_token')?.value;
+  const adminToken = cookieStore.get('admin_token')?.value;
+  const authHeader = request.headers.get('authorization');
+
+  // Prioritize request Authorization header, then super_admin_token (for super-admin routes or general), then admin_token
+  const isSuperAdminRoute = params.path[0] === 'super-admin';
+  const token = authHeader?.replace(/^Bearer\s+/i, '') || (isSuperAdminRoute ? (superAdminToken || adminToken) : (adminToken || superAdminToken));
 
   const pathStr = params.path.join('/');
   const { search } = new URL(request.url);
