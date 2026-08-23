@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { Navbar } from '@/components/Navbar';
-import { Nfc3DCanvas } from '@/components/Nfc3DCanvas';
+import { NFCShowcase } from '@/components/nfc-showcase';
 import { DiscountModal } from '@/components/DiscountModal';
 import { motion } from 'framer-motion';
 import {
@@ -16,6 +16,8 @@ import {
   ShieldCheck,
   Cpu,
   ChevronRight,
+  Layers,
+  ArrowRight,
 } from 'lucide-react';
 import type { Locale } from '@/lib/translations';
 import { translations } from '@/lib/translations';
@@ -36,7 +38,10 @@ export default function LandingPage() {
       image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=800&auto=format&fit=crop&q=80',
       description: t.demos.baltazarDesc,
       buttonText: t.demos.baltazarBtn,
-      highlights: locale === 'tr' ? ['Karanlık Mod UI', 'Masa Siparişi', '3 Dil Desteği'] : ['Dark Mode UI', 'Table Ordering', '3 Languages'],
+      highlights:
+        locale === 'tr'
+          ? ['Karanlık Mod UI', 'Masa Siparişi', '3 Dil Desteği (TR/EN/AR)']
+          : ['Dark Mode UI', 'Table Ordering', '3 Languages (TR/EN/AR)'],
     },
     {
       name: 'Kahve Erenköy',
@@ -48,7 +53,10 @@ export default function LandingPage() {
       image: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800&auto=format&fit=crop&q=80',
       description: t.demos.erenkoyDesc,
       buttonText: t.demos.erenkoyBtn,
-      highlights: locale === 'tr' ? ['V60 Özel Menü', 'Masa Rozetleri', 'Görsel Şölen'] : ['V60 Pour Over', 'Table Badges', 'Visual Showcase'],
+      highlights:
+        locale === 'tr'
+          ? ['V60 Özel Menü', 'Masa Rozetleri', 'Görsel Şölen']
+          : ['V60 Pour Over', 'Table Badges', 'Visual Showcase'],
     },
   ];
 
@@ -60,20 +68,20 @@ export default function LandingPage() {
       features:
         locale === 'tr'
           ? [
-              '10x Doğal Ahşap & Akrilik NFC Masa Standı',
+              '10x 75° Eğimli Akıllı Akrilik 3D L-Stand',
               '2x Mat Siyah Altın Varak Google Yorum Kartı',
               'Sınırsız Dijital Menü SaaS Erişimi',
               'Çoklu Dil Desteği (TR / EN / AR)',
               'Masa Bazlı Ziyaretçi Analitiği',
-              'QR Kod & NFC Hibrit Çalışma',
+              'QR Kod & Dual-Coil NFC Hibrit Çalışma',
             ]
           : [
-              '10x Walnut & Acrylic NFC Table Stands',
+              '10x 75° Inclined Smart Acrylic 3D L-Stands',
               '2x Gold Foil Google Review Cards',
               'Full Digital Menu SaaS Access',
               'Multi-Language (TR / EN / AR)',
               'Table Traffic Analytics',
-              'Hybrid QR & NFC Dual Support',
+              'Hybrid QR & Dual-Coil NFC Dual Support',
             ],
       highlight: false,
       cta: t.pricing.starterCta,
@@ -86,20 +94,20 @@ export default function LandingPage() {
       features:
         locale === 'tr'
           ? [
-              '25x Doğal Ahşap & Akrilik NFC Masa Standı',
+              '25x 75° Eğimli Akıllı Akrilik 3D L-Stand',
               '5x Mat Siyah Altın Varak Google Yorum Kartı',
-              '15x Endüstriyel Su Geçirmez NFC Masa Diski',
+              '15x Özelleştirilebilir NFC Akrilik Masa Diski',
               'Tam SaaS + Masa Yönlendirme Desteği',
-              '30 Günlük Gelişmiş Analitik & Raporlama',
+              'Gelişmiş Gerçek Zamanlı Analitik & Raporlama',
               'Özel Logo & Renk Teması Entegrasyonu',
               'Öncelikli Kurulum & Özel Tasarım Desteği',
             ]
           : [
-              '25x Walnut & Acrylic NFC Table Stands',
+              '25x 75° Inclined Smart Acrylic 3D L-Stands',
               '5x Gold Foil Google Review Cards',
-              '15x Waterproof NFC Table Pucks',
+              '15x Customizable NFC Table Discs',
               'Full SaaS + Table Routing Context',
-              '30-Day Advanced Traffic Analytics',
+              'Advanced Real-Time Traffic Analytics',
               'Custom Logo & Theme Styling',
               'Priority Onboarding & Direct Support',
             ],
@@ -114,7 +122,7 @@ export default function LandingPage() {
       features:
         locale === 'tr'
           ? [
-              'Sınırsız Özel Lazer Baskılı Donanım',
+              'Sınırsız Özel Lazer Baskılı L-Stand & Kart',
               'Özel Müşteri Temsilcisi & SLA',
               'Özel Subdomain (mekan.nfcmyplace.com)',
               'POS & Sipariş Entegrasyonu & Webhook',
@@ -150,7 +158,7 @@ export default function LandingPage() {
       />
 
       {/* ── HERO SECTION ── */}
-      <section className="relative pt-12 sm:pt-20 pb-20 px-4 sm:px-6 text-center overflow-hidden">
+      <section className="relative pt-12 sm:pt-20 pb-16 px-4 sm:px-6 text-center overflow-hidden">
         {/* Apple/Stripe-Style Glowing Radial Mesh Backgrounds */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[550px] bg-gradient-to-b from-amber-500/20 via-yellow-600/5 to-transparent blur-3xl pointer-events-none" />
         <div className="absolute top-1/3 -left-32 w-96 h-96 bg-amber-600/10 rounded-full blur-3xl pointer-events-none" />
@@ -184,7 +192,7 @@ export default function LandingPage() {
           {/* CTA Buttons */}
           <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
             <a
-              href="#hardware"
+              href="#customizer"
               className="px-7 py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-black font-black text-sm shadow-xl shadow-amber-500/25 transition-all transform hover:-translate-y-0.5 active:scale-98 cursor-pointer flex items-center gap-2"
             >
               <span>{t.hero.primaryCta}</span>
@@ -213,16 +221,16 @@ export default function LandingPage() {
         </motion.div>
       </section>
 
-      {/* ── 3D HARDWARE SHOWCASE SECTION (REACT THREE FIBER) ── */}
+      {/* ── 3D HARDWARE SHOWCASE SECTION (REACT THREE FIBER & L-STAND) ── */}
       <section
         id="hardware"
-        className="py-16 px-4 sm:px-6 border-t border-white/5 bg-gradient-to-b from-neutral-950 via-neutral-900/60 to-neutral-950 relative"
+        className="py-12 border-t border-white/5 bg-gradient-to-b from-neutral-950 via-neutral-900/60 to-neutral-950 relative"
       >
-        <Nfc3DCanvas locale={locale} />
+        <NFCShowcase locale={locale} />
       </section>
 
       {/* ── BENTO BOX FEATURE GRID SECTION ── */}
-      <section className="py-20 px-4 sm:px-6 max-w-6xl mx-auto">
+      <section id="features" className="py-20 px-4 sm:px-6 max-w-6xl mx-auto">
         <div className="text-center space-y-3 mb-14">
           <span className="text-xs font-extrabold text-amber-400 uppercase tracking-widest">
             {t.features.badge}
@@ -339,7 +347,7 @@ export default function LandingPage() {
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/20 to-transparent" />
-                  
+
                   {/* Live Badge */}
                   <div className="absolute top-4 left-4 flex items-center gap-2">
                     <span className={`text-xs font-bold px-3 py-1 rounded-full border backdrop-blur-md ${demo.badgeColor}`}>
@@ -403,6 +411,54 @@ export default function LandingPage() {
             </p>
           </div>
 
+          {/* ── STANDALONE HARDWARE UNIT PRICING STRIP ── */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-12">
+            <div className="p-5 rounded-2xl bg-neutral-900/60 border border-amber-500/30 backdrop-blur-xl flex items-center justify-between">
+              <div>
+                <div className="text-xs text-white/50 font-semibold">
+                  {locale === 'tr' ? 'Tekil Donanım' : 'Single Hardware'}
+                </div>
+                <div className="text-sm font-bold text-white mt-0.5">
+                  {locale === 'tr' ? 'Akıllı 3D Akrilik L-Stand' : 'Smart 3D Acrylic L-Stand'}
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-base font-black text-amber-400">₺1.750 TL</div>
+                <div className="text-[10px] text-white/40">{locale === 'tr' ? 'adet başı' : 'per unit'}</div>
+              </div>
+            </div>
+
+            <div className="p-5 rounded-2xl bg-neutral-900/60 border border-white/10 backdrop-blur-xl flex items-center justify-between">
+              <div>
+                <div className="text-xs text-white/50 font-semibold">
+                  {locale === 'tr' ? 'Tekil Donanım' : 'Single Hardware'}
+                </div>
+                <div className="text-sm font-bold text-white mt-0.5">
+                  {locale === 'tr' ? 'NFC Masa Diski (Sticker)' : 'NFC Table Sticker Disc'}
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-base font-black text-amber-400">₺175 TL</div>
+                <div className="text-[10px] text-white/40">{locale === 'tr' ? 'adet başı' : 'per unit'}</div>
+              </div>
+            </div>
+
+            <div className="p-5 rounded-2xl bg-neutral-900/60 border border-white/10 backdrop-blur-xl flex items-center justify-between">
+              <div>
+                <div className="text-xs text-white/50 font-semibold">
+                  {locale === 'tr' ? 'Tekil Donanım' : 'Single Hardware'}
+                </div>
+                <div className="text-sm font-bold text-white mt-0.5">
+                  {locale === 'tr' ? 'Google Yorum Kartı' : 'Google Review Card'}
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-base font-black text-amber-400">₺350 TL</div>
+                <div className="text-[10px] text-white/40">{locale === 'tr' ? 'adet başı' : 'per unit'}</div>
+              </div>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
             {PRICING_TIERS.map((tier) => (
               <div
@@ -422,7 +478,7 @@ export default function LandingPage() {
                 <div>
                   <h3 className="text-xl font-bold text-white">{tier.name}</h3>
                   <p className="text-xs text-white/50 mt-1">{tier.subtitle}</p>
-                  
+
                   <div className="text-4xl font-black text-amber-400 my-6 tracking-tight">
                     {tier.price}
                   </div>
@@ -482,7 +538,7 @@ export default function LandingPage() {
 
           {/* Quick Links & Admin Portal Link */}
           <div className="flex flex-wrap justify-center items-center gap-8 text-xs font-semibold text-white/60">
-            <a href="#hardware" className="hover:text-amber-400 transition-colors">
+            <a href="#customizer" className="hover:text-amber-400 transition-colors">
               {t.nav.hardware}
             </a>
             <a href="#demos" className="hover:text-amber-400 transition-colors">

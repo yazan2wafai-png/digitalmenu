@@ -3,40 +3,29 @@ import { useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Float, ContactShadows, Environment, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
-import { TableStand, GoogleReviewCard, TablePuck } from './SceneObjects';
-import type { StandMaterialType } from './LStand3DModel';
+import { LStand3DModel, type StandMaterialType } from './canvas/LStand3DModel';
 
-export type ProductType = 'stand' | 'card' | 'sticker';
-
-export interface SceneProps {
-  product: ProductType;
-  material?: StandMaterialType | string;
+export interface Stand3DProps {
   white?: boolean;
-  branding?: boolean;
   logoText?: string;
   businessName?: string;
   qrText?: string;
   showStars?: boolean;
-  patternVariant?: 1 | 2 | 3;
-  venueName?: string;
-  tableNumber?: string;
+  branding?: boolean;
+  material?: StandMaterialType | string;
   autoRotate?: boolean;
 }
 
-function InteractiveModelGroup({
-  product,
-  material = 'crystal',
+function StandSceneObject({
   white = false,
-  branding = true,
   logoText = 'Your Logo',
   businessName = 'Business Name (Optional)',
   qrText = 'nfcmyplace.com',
   showStars = true,
-  patternVariant = 1,
-  venueName = 'Baltazar Bistro',
-  tableNumber = 'MASA #12',
+  branding = true,
+  material = 'crystal',
   autoRotate = true,
-}: SceneProps) {
+}: Stand3DProps) {
   const groupRef = useRef<THREE.Group>(null);
   const [hovered, setHovered] = useState(false);
   const { pointer } = useThree();
@@ -46,7 +35,7 @@ function InteractiveModelGroup({
 
     // Smooth subtle mouse parallax tilt
     const targetRotX = pointer.y * 0.22;
-    const targetRotY = pointer.x * 0.4;
+    const targetRotY = pointer.x * 0.38;
 
     groupRef.current.rotation.x = THREE.MathUtils.damp(
       groupRef.current.rotation.x,
@@ -55,9 +44,9 @@ function InteractiveModelGroup({
       delta
     );
 
-    // If autoRotate, slowly spin around Y while adding mouse influence
+    // Auto rotate unless hovered or dragging
     if (autoRotate && !hovered) {
-      groupRef.current.rotation.y += delta * 0.4;
+      groupRef.current.rotation.y += delta * 0.45;
     } else {
       groupRef.current.rotation.y = THREE.MathUtils.damp(
         groupRef.current.rotation.y,
@@ -80,46 +69,31 @@ function InteractiveModelGroup({
         floatIntensity={0.5}
         floatingRange={[-0.08, 0.08]}
       >
-        {product === 'stand' && (
-          <TableStand
-            isHovered={hovered}
-            material={material}
-            white={white}
-            branding={branding}
-            logoText={logoText}
-            businessName={businessName}
-            qrText={qrText}
-            showStars={showStars}
-          />
-        )}
-        {product === 'card' && <GoogleReviewCard isHovered={hovered} />}
-        {product === 'sticker' && (
-          <TablePuck
-            isHovered={hovered}
-            patternVariant={patternVariant}
-            venueName={venueName}
-            tableNumber={tableNumber}
-          />
-        )}
+        <LStand3DModel
+          white={white}
+          logoText={logoText}
+          businessName={businessName}
+          qrText={qrText}
+          showStars={showStars}
+          branding={branding}
+          material={material}
+          isHovered={hovered}
+        />
       </Float>
     </group>
   );
 }
 
-export default function NfcHardwareScene({
-  product,
-  material = 'crystal',
+export default function Stand3D({
   white = false,
-  branding = true,
   logoText = 'Your Logo',
   businessName = 'Business Name (Optional)',
   qrText = 'nfcmyplace.com',
   showStars = true,
-  patternVariant = 1,
-  venueName = 'Baltazar Bistro',
-  tableNumber = 'MASA #12',
+  branding = true,
+  material = 'crystal',
   autoRotate = true,
-}: SceneProps) {
+}: Stand3DProps) {
   return (
     <Canvas
       camera={{ position: [0, 0.5, 6.2], fov: 42 }}
@@ -173,19 +147,15 @@ export default function NfcHardwareScene({
       {/* Realistic HDRI Environment Reflections */}
       <Environment preset="city" />
 
-      {/* ── 3D INTERACTIVE OBJECT ── */}
-      <InteractiveModelGroup
-        product={product}
-        material={material}
+      {/* ── 3D L-STAND MODEL ── */}
+      <StandSceneObject
         white={white}
-        branding={branding}
         logoText={logoText}
         businessName={businessName}
         qrText={qrText}
         showStars={showStars}
-        patternVariant={patternVariant}
-        venueName={venueName}
-        tableNumber={tableNumber}
+        branding={branding}
+        material={material}
         autoRotate={autoRotate}
       />
 
@@ -209,3 +179,5 @@ export default function NfcHardwareScene({
     </Canvas>
   );
 }
+
+export { Stand3D };

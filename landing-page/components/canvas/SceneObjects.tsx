@@ -3,200 +3,39 @@ import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Text } from '@react-three/drei';
 import * as THREE from 'three';
+import { LStand3DModel, type StandMaterialType } from './LStand3DModel';
 
-// ── 1. WALNUT WOOD & ACRYLIC TABLE STAND ──
-export function TableStand({ isHovered }: { isHovered?: boolean }) {
-  const standRef = useRef<THREE.Group>(null);
-  const pulseRingRef = useRef<THREE.Mesh>(null);
-
-  useFrame((state) => {
-    if (pulseRingRef.current) {
-      const t = state.clock.getElapsedTime();
-      pulseRingRef.current.scale.setScalar(1 + Math.sin(t * 3) * 0.08);
-    }
-  });
-
+// ── 1. AUTHENTIC 3D L-STAND TABLE MODEL ──
+export function TableStand({
+  isHovered = false,
+  material = 'crystal',
+  white = false,
+  branding = true,
+  logoText = 'Your Logo',
+  businessName = 'Business Name (Optional)',
+  qrText = 'nfcmyplace.com',
+  showStars = true,
+}: {
+  isHovered?: boolean;
+  material?: StandMaterialType | string;
+  white?: boolean;
+  branding?: boolean;
+  logoText?: string;
+  businessName?: string;
+  qrText?: string;
+  showStars?: boolean;
+}) {
   return (
-    <group ref={standRef} position={[0, -0.4, 0]}>
-      {/* ── SOLID WALNUT WOOD BASE ── */}
-      <mesh position={[0, -1.2, 0]} castShadow receiveShadow>
-        <boxGeometry args={[3.2, 0.45, 1.4]} />
-        <meshStandardMaterial
-          color="#331c0e"
-          roughness={0.45}
-          metalness={0.08}
-        />
-      </mesh>
-
-      {/* Wood Base Chamfer Trim */}
-      <mesh position={[0, -1.4, 0]} receiveShadow>
-        <boxGeometry args={[3.3, 0.1, 1.5]} />
-        <meshStandardMaterial
-          color="#221107"
-          roughness={0.6}
-          metalness={0.1}
-        />
-      </mesh>
-
-      {/* Brass / Gold Inlay Base Trim */}
-      <mesh position={[0, -1.18, 0.705]}>
-        <boxGeometry args={[2.8, 0.04, 0.02]} />
-        <meshStandardMaterial
-          color="#eab308"
-          metalness={0.92}
-          roughness={0.18}
-          emissive="#b45309"
-          emissiveIntensity={0.2}
-        />
-      </mesh>
-
-      {/* ── ACRYLIC / GLASS MAIN SLAB ── */}
-      <mesh position={[0, 0.4, 0]} castShadow receiveShadow>
-        <boxGeometry args={[2.5, 3.1, 0.12]} />
-        <meshPhysicalMaterial
-          color="#ffffff"
-          transmission={0.88}
-          opacity={1}
-          transparent={true}
-          roughness={0.06}
-          ior={1.52}
-          thickness={0.8}
-          specularIntensity={1}
-          specularColor="#ffffff"
-        />
-      </mesh>
-
-      {/* Acrylic Subtle Golden Rim Glow */}
-      <mesh position={[0, 0.4, 0]}>
-        <boxGeometry args={[2.54, 3.14, 0.1]} />
-        <meshStandardMaterial
-          color="#f59e0b"
-          transparent
-          opacity={0.15}
-          wireframe
-        />
-      </mesh>
-
-      {/* ── METALLIC GOLD NFC LOGO BADGE & COIL ── */}
-      <group position={[0, 1.25, 0.08]}>
-        {/* Outer Ring */}
-        <mesh>
-          <torusGeometry args={[0.38, 0.025, 16, 48]} />
-          <meshStandardMaterial
-            color="#fbbf24"
-            metalness={0.95}
-            roughness={0.15}
-            emissive="#d97706"
-            emissiveIntensity={0.3}
-          />
-        </mesh>
-
-        {/* Pulsing NFC Signal Wave Ring */}
-        <mesh ref={pulseRingRef}>
-          <torusGeometry args={[0.48, 0.015, 16, 48]} />
-          <meshStandardMaterial
-            color="#fef08a"
-            metalness={0.8}
-            roughness={0.2}
-            transparent
-            opacity={0.6}
-            emissive="#eab308"
-            emissiveIntensity={0.5}
-          />
-        </mesh>
-
-        {/* NFC Center Disc */}
-        <mesh position={[0, 0, -0.01]} rotation={[Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[0.32, 0.32, 0.02, 32]} />
-          <meshStandardMaterial
-            color="#1c1917"
-            metalness={0.8}
-            roughness={0.3}
-          />
-        </mesh>
-
-        <Text
-          position={[0, 0, 0.02]}
-          fontSize={0.15}
-          color="#fbbf24"
-          anchorX="center"
-          anchorY="middle"
-          fontWeight={900}
-        >
-          NFC
-        </Text>
-      </group>
-
-      {/* ── HIGH-CONTRAST QR CODE PLATE ── */}
-      <group position={[0, 0.15, 0.08]}>
-        {/* Dark Ceramic QR Housing */}
-        <mesh castShadow>
-          <boxGeometry args={[1.3, 1.3, 0.04]} />
-          <meshStandardMaterial
-            color="#09090b"
-            roughness={0.2}
-            metalness={0.8}
-          />
-        </mesh>
-
-        {/* QR Plate Inner White Tile */}
-        <mesh position={[0, 0, 0.025]}>
-          <boxGeometry args={[1.15, 1.15, 0.02]} />
-          <meshStandardMaterial
-            color="#ffffff"
-            roughness={0.2}
-          />
-        </mesh>
-
-        {/* QR Core Simulation Grid */}
-        <mesh position={[0, 0, 0.04]}>
-          <boxGeometry args={[0.95, 0.95, 0.01]} />
-          <meshStandardMaterial
-            color="#0a0a0a"
-            roughness={0.5}
-          />
-        </mesh>
-
-        {/* QR Corner Alignment Squares */}
-        <mesh position={[-0.32, 0.32, 0.05]}>
-          <boxGeometry args={[0.26, 0.26, 0.01]} />
-          <meshStandardMaterial color="#d97706" />
-        </mesh>
-        <mesh position={[0.32, 0.32, 0.05]}>
-          <boxGeometry args={[0.26, 0.26, 0.01]} />
-          <meshStandardMaterial color="#d97706" />
-        </mesh>
-        <mesh position={[-0.32, -0.32, 0.05]}>
-          <boxGeometry args={[0.26, 0.26, 0.01]} />
-          <meshStandardMaterial color="#d97706" />
-        </mesh>
-      </group>
-
-      {/* ── ENGRAVED TEXT & CALL-TO-ACTION ── */}
-      <Text
-        position={[0, -0.65, 0.08]}
-        fontSize={0.11}
-        color="#ffffff"
-        anchorX="center"
-        anchorY="middle"
-        letterSpacing={0.06}
-        fontWeight={800}
-      >
-        DOKUN VEYA TARAT
-      </Text>
-
-      <Text
-        position={[0, -0.82, 0.08]}
-        fontSize={0.08}
-        color="#fbbf24"
-        anchorX="center"
-        anchorY="middle"
-        letterSpacing={0.12}
-        fontWeight={700}
-      >
-        NFCMyPlace.com
-      </Text>
-    </group>
+    <LStand3DModel
+      white={white}
+      branding={branding}
+      logoText={logoText}
+      businessName={businessName}
+      qrText={qrText}
+      showStars={showStars}
+      material={material}
+      isHovered={isHovered}
+    />
   );
 }
 
@@ -326,118 +165,318 @@ export function GoogleReviewCard({ isHovered }: { isHovered?: boolean }) {
   );
 }
 
-// ── 3. INDUSTRIAL WATERPROOF NFC TABLE PUCK / DISC ──
-export function TablePuck({ isHovered }: { isHovered?: boolean }) {
+// ── 3. CUSTOMIZABLE ACRYLIC TABLE STICKER / PUCK (3 PATTERNS) ──
+export function TablePuck({
+  isHovered = false,
+  patternVariant = 1,
+  venueName = 'Baltazar Bistro',
+  tableNumber = 'MASA #12',
+}: {
+  isHovered?: boolean;
+  patternVariant?: 1 | 2 | 3;
+  venueName?: string;
+  tableNumber?: string;
+}) {
   const puckRef = useRef<THREE.Group>(null);
   const glowRingRef = useRef<THREE.Mesh>(null);
 
   useFrame((state) => {
     if (glowRingRef.current) {
       const t = state.clock.getElapsedTime();
-      glowRingRef.current.rotation.z = t * 0.5;
+      glowRingRef.current.rotation.z = t * 0.4;
     }
   });
 
   return (
     <group ref={puckRef} position={[0, -0.1, 0]}>
-      {/* ── BASE DISK HOUSING ── */}
+      {/* ── BASE DISK HOUSING (2mm ACRYILIC DISC) ── */}
       <mesh castShadow receiveShadow>
-        <cylinderGeometry args={[1.7, 1.7, 0.35, 64]} />
+        <cylinderGeometry args={[1.75, 1.75, 0.35, 64]} />
         <meshStandardMaterial
-          color="#121318"
-          roughness={0.25}
-          metalness={0.5}
+          color="#101014"
+          roughness={0.22}
+          metalness={0.4}
         />
       </mesh>
 
-      {/* Chamfered Outer Gold Bezel */}
+      {/* Outer Metallic Gold Inlay Bezel */}
       <mesh position={[0, 0.08, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[1.7, 0.06, 16, 64]} />
+        <torusGeometry args={[1.75, 0.05, 16, 64]} />
         <meshStandardMaterial
           color="#f59e0b"
           metalness={0.96}
           roughness={0.12}
           emissive="#d97706"
-          emissiveIntensity={0.25}
+          emissiveIntensity={0.3}
         />
       </mesh>
 
-      {/* High-Gloss Resin Inner Cap */}
+      {/* High-Gloss Optical Resin Cap */}
       <mesh position={[0, 0.18, 0]} castShadow>
-        <cylinderGeometry args={[1.5, 1.5, 0.08, 64]} />
+        <cylinderGeometry args={[1.56, 1.56, 0.08, 64]} />
         <meshPhysicalMaterial
-          color="#18181b"
-          roughness={0.08}
-          metalness={0.3}
+          color="#141418"
+          roughness={0.06}
+          metalness={0.25}
           clearcoat={1}
-          clearcoatRoughness={0.05}
+          clearcoatRoughness={0.04}
         />
       </mesh>
 
-      {/* Rotating Ambient Light Accent Ring */}
-      <mesh ref={glowRingRef} position={[0, 0.23, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[1.25, 0.02, 16, 64]} />
-        <meshStandardMaterial
-          color="#fbbf24"
-          metalness={0.9}
-          roughness={0.1}
-          emissive="#f59e0b"
-          emissiveIntensity={0.8}
-        />
-      </mesh>
+      {/* ──────────────────────────────────────────────────────────
+          PATTERN 1: MINIMALIST GOLD RIM
+          ────────────────────────────────────────────────────────── */}
+      {patternVariant === 1 && (
+        <group position={[0, 0.23, 0]}>
+          {/* Inner Sleek Gold Ring */}
+          <mesh rotation={[Math.PI / 2, 0, 0]}>
+            <torusGeometry args={[1.35, 0.022, 16, 64]} />
+            <meshStandardMaterial
+              color="#fbbf24"
+              metalness={0.95}
+              roughness={0.1}
+              emissive="#f59e0b"
+              emissiveIntensity={0.6}
+            />
+          </mesh>
 
-      {/* Central NFC Emblem */}
-      <group position={[0, 0.24, 0]}>
-        <mesh rotation={[Math.PI / 2, 0, 0]}>
-          <torusGeometry args={[0.38, 0.03, 16, 32]} />
-          <meshStandardMaterial
+          {/* Secondary Delicate Hairline Ring */}
+          <mesh rotation={[Math.PI / 2, 0, 0]}>
+            <torusGeometry args={[1.18, 0.01, 16, 64]} />
+            <meshStandardMaterial
+              color="#fde047"
+              metalness={0.9}
+              roughness={0.15}
+              emissive="#d97706"
+              emissiveIntensity={0.4}
+            />
+          </mesh>
+
+          {/* Center NFC Golden Coil Emblem */}
+          <group position={[0, 0.01, 0]}>
+            <mesh rotation={[Math.PI / 2, 0, 0]}>
+              <torusGeometry args={[0.38, 0.03, 16, 32]} />
+              <meshStandardMaterial
+                color="#fbbf24"
+                metalness={0.95}
+                roughness={0.1}
+                emissive="#d97706"
+                emissiveIntensity={0.5}
+              />
+            </mesh>
+            <Text
+              position={[0, 0, 0]}
+              rotation={[-Math.PI / 2, 0, 0]}
+              fontSize={0.16}
+              color="#fbbf24"
+              anchorX="center"
+              anchorY="middle"
+              fontWeight={900}
+            >
+              NFC
+            </Text>
+          </group>
+
+          {/* Minimalist Curved / Straight Labels */}
+          <Text
+            position={[0, 0.01, 0.72]}
+            rotation={[-Math.PI / 2, 0, 0]}
+            fontSize={0.11}
+            color="#fef08a"
+            anchorX="center"
+            anchorY="middle"
+            letterSpacing={0.15}
+            fontWeight={800}
+          >
+            TEMASSIZ MENÜ
+          </Text>
+
+          <Text
+            position={[0, 0.01, -0.72]}
+            rotation={[-Math.PI / 2, 0, 0]}
+            fontSize={0.095}
+            color="#94a3b8"
+            anchorX="center"
+            anchorY="middle"
+            letterSpacing={0.12}
+            fontWeight={600}
+          >
+            DOKUNDURUN
+          </Text>
+        </group>
+      )}
+
+      {/* ──────────────────────────────────────────────────────────
+          PATTERN 2: GEOMETRIC LASER BORDER (ART-DECO / HEXAGON)
+          ────────────────────────────────────────────────────────── */}
+      {patternVariant === 2 && (
+        <group position={[0, 0.23, 0]}>
+          {/* Laser-Etched Hexagonal Border Ring */}
+          <mesh ref={glowRingRef} rotation={[Math.PI / 2, 0, 0]}>
+            <torusGeometry args={[1.32, 0.02, 16, 6]} />
+            <meshStandardMaterial
+              color="#fbbf24"
+              metalness={0.95}
+              roughness={0.1}
+              emissive="#f59e0b"
+              emissiveIntensity={0.7}
+            />
+          </mesh>
+
+          {/* Concentric Geometric Circle */}
+          <mesh rotation={[Math.PI / 2, 0, 0]}>
+            <torusGeometry args={[1.05, 0.012, 16, 48]} />
+            <meshStandardMaterial
+              color="#fde047"
+              metalness={0.9}
+              roughness={0.2}
+              emissive="#d97706"
+              emissiveIntensity={0.4}
+            />
+          </mesh>
+
+          {/* Geometric Corner Accent Diamonds */}
+          {[0, Math.PI / 2, Math.PI, (3 * Math.PI) / 2].map((angle, i) => (
+            <mesh
+              key={i}
+              position={[Math.cos(angle) * 1.32, 0.01, Math.sin(angle) * 1.32]}
+              rotation={[Math.PI / 2, 0, angle]}
+            >
+              <cylinderGeometry args={[0.045, 0.045, 0.01, 4]} />
+              <meshStandardMaterial color="#fbbf24" metalness={0.95} />
+            </mesh>
+          ))}
+
+          {/* Central NFC Emblem */}
+          <group position={[0, 0.01, 0]}>
+            <mesh rotation={[Math.PI / 2, 0, 0]}>
+              <torusGeometry args={[0.34, 0.025, 16, 32]} />
+              <meshStandardMaterial
+                color="#fbbf24"
+                metalness={0.95}
+                roughness={0.1}
+                emissive="#d97706"
+                emissiveIntensity={0.4}
+              />
+            </mesh>
+            <Text
+              position={[0, 0, 0]}
+              rotation={[-Math.PI / 2, 0, 0]}
+              fontSize={0.15}
+              color="#fbbf24"
+              anchorX="center"
+              anchorY="middle"
+              fontWeight={900}
+            >
+              NFC
+            </Text>
+          </group>
+
+          <Text
+            position={[0, 0.01, 0.7]}
+            rotation={[-Math.PI / 2, 0, 0]}
+            fontSize={0.105}
+            color="#ffffff"
+            anchorX="center"
+            anchorY="middle"
+            letterSpacing={0.12}
+            fontWeight={800}
+          >
+            SMART CONTACTLESS
+          </Text>
+        </group>
+      )}
+
+      {/* ──────────────────────────────────────────────────────────
+          PATTERN 3: CUSTOM VENUE LOGO & TABLE NUMBER BADGE
+          ────────────────────────────────────────────────────────── */}
+      {patternVariant === 3 && (
+        <group position={[0, 0.23, 0]}>
+          {/* Outer Gold Ring */}
+          <mesh rotation={[Math.PI / 2, 0, 0]}>
+            <torusGeometry args={[1.36, 0.02, 16, 64]} />
+            <meshStandardMaterial
+              color="#f59e0b"
+              metalness={0.95}
+              roughness={0.1}
+              emissive="#d97706"
+              emissiveIntensity={0.4}
+            />
+          </mesh>
+
+          {/* Venue Name / Logo Text (Top) */}
+          <Text
+            position={[0, 0.01, -0.72]}
+            rotation={[-Math.PI / 2, 0, 0]}
+            fontSize={0.13}
             color="#fbbf24"
-            metalness={0.95}
-            roughness={0.1}
-            emissive="#d97706"
-            emissiveIntensity={0.4}
-          />
-        </mesh>
+            anchorX="center"
+            anchorY="middle"
+            letterSpacing={0.06}
+            fontWeight={900}
+          >
+            {venueName.toUpperCase()}
+          </Text>
 
-        <Text
-          position={[0, 0.01, 0]}
-          rotation={[-Math.PI / 2, 0, 0]}
-          fontSize={0.16}
-          color="#fbbf24"
-          anchorX="center"
-          anchorY="middle"
-          fontWeight={900}
-        >
-          NFC
-        </Text>
-      </group>
+          {/* Central Contactless Waves Emblem */}
+          <group position={[0, 0.01, -0.05]}>
+            <mesh rotation={[Math.PI / 2, 0, 0]}>
+              <torusGeometry args={[0.3, 0.022, 16, 32]} />
+              <meshStandardMaterial
+                color="#fbbf24"
+                metalness={0.95}
+                roughness={0.1}
+                emissive="#d97706"
+                emissiveIntensity={0.5}
+              />
+            </mesh>
+            <Text
+              position={[0, 0, 0]}
+              rotation={[-Math.PI / 2, 0, 0]}
+              fontSize={0.13}
+              color="#fef08a"
+              anchorX="center"
+              anchorY="middle"
+              fontWeight={900}
+            >
+              NFC
+            </Text>
+          </group>
 
-      {/* Table Badge Number & Label */}
-      <Text
-        position={[0, 0.24, 0.72]}
-        rotation={[-Math.PI / 2, 0, 0]}
-        fontSize={0.14}
-        color="#ffffff"
-        anchorX="center"
-        anchorY="middle"
-        letterSpacing={0.08}
-        fontWeight={800}
-      >
-        MASA #12
-      </Text>
-
-      <Text
-        position={[0, 0.24, -0.72]}
-        rotation={[-Math.PI / 2, 0, 0]}
-        fontSize={0.09}
-        color="#9ca3af"
-        anchorX="center"
-        anchorY="middle"
-        letterSpacing={0.1}
-        fontWeight={600}
-      >
-        3M SU GEÇİRMEZ REÇİNE
-      </Text>
+          {/* Prominent Table Number Pill Badge (Bottom) */}
+          <group position={[0, 0.01, 0.68]}>
+            <mesh position={[0, 0, 0]}>
+              <boxGeometry args={[1.4, 0.01, 0.38]} />
+              <meshStandardMaterial
+                color="#1e1e24"
+                roughness={0.2}
+                metalness={0.8}
+              />
+            </mesh>
+            <mesh position={[0, 0.005, 0]}>
+              <boxGeometry args={[1.36, 0.01, 0.34]} />
+              <meshStandardMaterial
+                color="#f59e0b"
+                metalness={0.95}
+                roughness={0.1}
+                wireframe
+              />
+            </mesh>
+            <Text
+              position={[0, 0.01, 0]}
+              rotation={[-Math.PI / 2, 0, 0]}
+              fontSize={0.14}
+              color="#ffffff"
+              anchorX="center"
+              anchorY="middle"
+              letterSpacing={0.1}
+              fontWeight={900}
+            >
+              {tableNumber.toUpperCase()}
+            </Text>
+          </group>
+        </group>
+      )}
     </group>
   );
 }
