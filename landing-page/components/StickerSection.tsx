@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 import {
   Sparkles,
   Palette,
-  CheckCircle2,
   Plus,
   Minus,
   ArrowUpRight,
@@ -14,6 +13,8 @@ import {
   QrCode,
   Layers,
   Radio,
+  Award,
+  CheckCircle2,
 } from 'lucide-react';
 import type { Locale } from '@/lib/translations';
 import { translations } from '@/lib/translations';
@@ -24,14 +25,12 @@ export interface StickerSectionProps {
 }
 
 export function StickerSection({ locale = 'tr', onOrderClick }: StickerSectionProps) {
-  const [stickerPattern, setStickerPattern] = useState<1 | 2 | 3>(1);
   const [stickerVenueName, setStickerVenueName] = useState<string>('THE CAFE');
   const [stickerTableNumber, setStickerTableNumber] = useState<string>('MASA 12');
   const [stickerCurvedText, setStickerCurvedText] = useState<string>(
     'Menü için qr veya nfc okutabilirsiniz'
   );
   const [stickerQuantity, setStickerQuantity] = useState<number>(10);
-  const [woodTheme, setWoodTheme] = useState<'walnut' | 'oak'>('walnut');
 
   const t = translations[locale];
   const stickerSubtotal = stickerQuantity * 175;
@@ -45,82 +44,59 @@ export function StickerSection({ locale = 'tr', onOrderClick }: StickerSectionPr
       <div className="text-center space-y-3 mb-12">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold tracking-wider uppercase backdrop-blur-md">
           <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-          <span>{t.sticker.badge}</span>
+          <span>{locale === 'tr' ? 'Hizmet 2: Masa Çözümleri' : 'Service 2: Table Solutions'}</span>
         </div>
         <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-white">
-          {locale === 'tr' ? 'Akrilik Masa Stickerı ' : 'Acrylic Table Sticker '}
+          {locale === 'tr' ? 'Premium Akrilik Masa Stickerı ' : 'Premium Acrylic Table Sticker '}
           <span className="bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 bg-clip-text text-transparent">
-            (NFC + QR)
+            (NFC & QR Hibrit)
           </span>
         </h2>
         <p className="text-sm sm:text-base text-white/60 max-w-2xl mx-auto leading-relaxed">
-          {t.sticker.subtitle}
+          {locale === 'tr'
+            ? 'Ultra dayanıklı 2mm lazer kesim pleksi akrilik, 3M endüstriyel VHB yapışkan ve IP68 sıvı geçirmez koruma ile masalarınızı tek dokunuşla dijitalleştirin.'
+            : 'Digitize your tables instantly with ultra-durable 2mm laser-cut plexi acrylic, 3M industrial VHB adhesive, and IP68 waterproof rating.'}
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-        {/* ── LEFT: REALISTIC ACRYLIC STICKER MOCKUP ON WOOD ── */}
-        <div
-          className={`lg:col-span-7 relative min-h-[490px] sm:min-h-[540px] rounded-3xl border border-white/10 overflow-hidden p-6 sm:p-8 shadow-2xl flex flex-col justify-between transition-colors duration-500 ${
-            woodTheme === 'walnut'
-              ? 'bg-gradient-to-br from-[#1e1109] via-[#140a04] to-[#0a0502]'
-              : 'bg-gradient-to-br from-[#2a1b10] via-[#1f140b] to-[#120b06]'
-          }`}
-        >
-          {/* Wood Grain Texture & Radial Studio Lighting */}
+        {/* ── LEFT: STUDIO PEDESTAL ACRYLIC STICKER SHOWCASE ── */}
+        <div className="lg:col-span-7 relative min-h-[490px] sm:min-h-[540px] rounded-3xl border border-white/10 overflow-hidden p-6 sm:p-8 shadow-2xl flex flex-col justify-between bg-gradient-to-b from-[#16161a] via-[#1a1a22] to-[#222228] backdrop-blur-2xl">
+          {/* Studio Pedestal Lighting */}
           <div
-            className="absolute inset-0 opacity-40 pointer-events-none mix-blend-overlay"
+            className="absolute inset-0 pointer-events-none"
             style={{
-              backgroundImage: `repeating-linear-gradient(45deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 2px, transparent 2px, transparent 10px), radial-gradient(circle at 50% 40%, rgba(245,158,11,0.22), transparent 75%)`,
+              background:
+                'radial-gradient(ellipse at 50% 45%, rgba(60, 60, 75, 0.35) 0%, rgba(26, 26, 32, 0.7) 60%, rgba(18, 18, 22, 0.95) 100%)',
             }}
           />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-tr from-amber-500/10 via-cyan-500/5 to-transparent blur-3xl pointer-events-none" />
 
-          {/* Top Bar: Wood Surface Switcher & Badges */}
+          {/* Top Bar: Badges */}
           <div className="relative z-20 flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2">
               <span className="text-[11px] font-extrabold tracking-wider uppercase px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                {locale === 'tr' ? '🌳 Masif Ahşap Masa' : '🌳 Solid Wood Mockup'}
+                {locale === 'tr' ? '🏷️ Akrilik Hibrit Donanım' : '🏷️ Acrylic Hybrid Hardware'}
               </span>
               <span className="text-[11px] font-black px-3 py-1 rounded-full bg-gradient-to-r from-amber-500/20 to-yellow-500/20 text-amber-300 border border-amber-500/40">
-                {t.sticker.unitPrice}
+                175 TL / Adet
               </span>
             </div>
 
-            {/* Wood Switcher */}
-            <div className="flex items-center gap-1.5 bg-black/50 p-1 rounded-xl border border-white/10">
-              <button
-                type="button"
-                onClick={() => setWoodTheme('walnut')}
-                className={`px-2.5 py-0.5 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
-                  woodTheme === 'walnut'
-                    ? 'bg-amber-500 text-black font-black'
-                    : 'text-white/60 hover:text-white'
-                }`}
-              >
-                Ceviz
-              </button>
-              <button
-                type="button"
-                onClick={() => setWoodTheme('oak')}
-                className={`px-2.5 py-0.5 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
-                  woodTheme === 'oak'
-                    ? 'bg-amber-500 text-black font-black'
-                    : 'text-white/60 hover:text-white'
-                }`}
-              >
-                Meşe
-              </button>
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[11px] text-white/50">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              <span>{locale === 'tr' ? '3M Endüstriyel VHB' : '3M Industrial VHB'}</span>
             </div>
           </div>
 
           {/* Center Realistic Circular Acrylic Sticker Disc */}
-          <div className="relative my-auto flex items-center justify-center py-6">
-            {/* Ambient Drop Shadow on Wood */}
-            <div className="absolute w-64 h-64 sm:w-72 sm:h-72 rounded-full bg-black/90 blur-2xl pointer-events-none transform translate-y-6" />
+          <div className="relative my-auto flex items-center justify-center py-6 z-10">
+            {/* Ambient Drop Shadow */}
+            <div className="absolute w-64 h-64 sm:w-72 sm:h-72 rounded-full bg-black/80 blur-2xl pointer-events-none transform translate-y-6" />
 
             {/* 2mm Acrylic Disc Body */}
             <motion.div
-              key={`${stickerPattern}-${stickerVenueName}-${stickerTableNumber}-${stickerCurvedText}`}
+              key={`${stickerVenueName}-${stickerTableNumber}-${stickerCurvedText}`}
               initial={{ scale: 0.94, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: 'spring', damping: 22, stiffness: 280 }}
@@ -135,7 +111,7 @@ export function StickerSection({ locale = 'tr', onOrderClick }: StickerSectionPr
                 }}
               />
 
-              {/* ── SVG HIGH PRECISION VECTOR GRAPHIC (MATCHES EXACT PHOTO) ── */}
+              {/* ── SVG HIGH PRECISION VECTOR GRAPHIC ── */}
               <svg
                 viewBox="0 0 320 320"
                 className="w-full h-full p-2 relative z-10"
@@ -190,12 +166,10 @@ export function StickerSection({ locale = 'tr', onOrderClick }: StickerSectionPr
 
                 {/* ── 1. TOP VENUE LOGO SLOT ── */}
                 <g transform="translate(160, 48)">
-                  {/* Crown / Star Logo Emblem */}
                   <path
                     d="M -14,-8 L -7,-2 L 0,-10 L 7,-2 L 14,-8 L 11,2 L -11,2 Z"
                     fill="url(#goldGrad)"
                   />
-                  {/* Venue Name */}
                   <text
                     y="18"
                     textAnchor="middle"
@@ -244,7 +218,6 @@ export function StickerSection({ locale = 'tr', onOrderClick }: StickerSectionPr
                 {/* ── 4. DUAL SMARTPHONE TAP GESTURE ICONS ON SIDES ── */}
                 {/* Left Smartphone */}
                 <g transform="translate(42, 160) rotate(14)">
-                  {/* Phone Body */}
                   <rect
                     x="-10"
                     y="-18"
@@ -255,7 +228,6 @@ export function StickerSection({ locale = 'tr', onOrderClick }: StickerSectionPr
                     stroke="#fbbf24"
                     strokeWidth="1.8"
                   />
-                  {/* Screen */}
                   <rect
                     x="-7"
                     y="-13"
@@ -264,7 +236,6 @@ export function StickerSection({ locale = 'tr', onOrderClick }: StickerSectionPr
                     rx="2"
                     fill="#0d0d10"
                   />
-                  {/* NFC Wave on phone top */}
                   <path
                     d="M 12,-6 A 8,8 0 0,1 12,6"
                     stroke="#f59e0b"
@@ -319,7 +290,6 @@ export function StickerSection({ locale = 'tr', onOrderClick }: StickerSectionPr
 
                 {/* ── 5. CENTRAL QR CODE CONTAINER CARD ── */}
                 <g transform="translate(160, 160)">
-                  {/* White QR Background Box with Gold Border */}
                   <rect
                     x="-46"
                     y="-46"
@@ -332,22 +302,18 @@ export function StickerSection({ locale = 'tr', onOrderClick }: StickerSectionPr
                   />
 
                   {/* Scannable Crisp QR Code Matrix */}
-                  {/* Top-Left Finder */}
                   <rect x="-36" y="-36" width="24" height="24" fill="#0a0a0c" rx="4" />
                   <rect x="-32" y="-32" width="16" height="16" fill="#ffffff" rx="2" />
                   <rect x="-28" y="-28" width="8" height="8" fill="#0a0a0c" rx="1.5" />
 
-                  {/* Top-Right Finder */}
                   <rect x="12" y="-36" width="24" height="24" fill="#0a0a0c" rx="4" />
                   <rect x="16" y="-32" width="16" height="16" fill="#ffffff" rx="2" />
                   <rect x="20" y="-28" width="8" height="8" fill="#0a0a0c" rx="1.5" />
 
-                  {/* Bottom-Left Finder */}
                   <rect x="-36" y="12" width="24" height="24" fill="#0a0a0c" rx="4" />
                   <rect x="-32" y="16" width="16" height="16" fill="#ffffff" rx="2" />
                   <rect x="-28" y="20" width="8" height="8" fill="#0a0a0c" rx="1.5" />
 
-                  {/* Data Modules */}
                   <rect x="-6" y="-36" width="4" height="4" fill="#0a0a0c" />
                   <rect x="2" y="-36" width="4" height="4" fill="#0a0a0c" />
                   <rect x="-6" y="-28" width="4" height="4" fill="#0a0a0c" />
@@ -379,7 +345,6 @@ export function StickerSection({ locale = 'tr', onOrderClick }: StickerSectionPr
 
                 {/* ── 6. BOTTOM TABLE NUMBER BADGE ── */}
                 <g transform="translate(160, 260)">
-                  {/* Table Badge Pill */}
                   <rect
                     x="-55"
                     y="-14"
@@ -577,3 +542,4 @@ export function StickerSection({ locale = 'tr', onOrderClick }: StickerSectionPr
 }
 
 export default StickerSection;
+

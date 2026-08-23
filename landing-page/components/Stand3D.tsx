@@ -21,88 +21,6 @@ export interface Stand3DProps {
 }
 
 /**
- * Draws the official multicolored Google logo wordmark (Google)
- */
-function drawGoogleWordmark(
-  ctx: CanvasRenderingContext2D,
-  cx: number,
-  cy: number,
-  fontSize: number = 72
-) {
-  ctx.save();
-  ctx.font = `800 ${fontSize}px "Product Sans", "Google Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
-  ctx.textBaseline = 'middle';
-
-  const letters = [
-    { char: 'G', color: '#4285F4' },
-    { char: 'o', color: '#EA4335' },
-    { char: 'o', color: '#FBBC05' },
-    { char: 'g', color: '#4285F4' },
-    { char: 'l', color: '#34A853' },
-    { char: 'e', color: '#EA4335' },
-  ];
-
-  let totalWidth = 0;
-  const widths = letters.map((item) => {
-    const w = ctx.measureText(item.char).width;
-    totalWidth += w;
-    return w;
-  });
-
-  let currentX = cx - totalWidth / 2;
-  letters.forEach((item, idx) => {
-    ctx.fillStyle = item.color;
-    ctx.textAlign = 'left';
-    ctx.fillText(item.char, currentX, cy);
-    currentX += widths[idx];
-  });
-
-  ctx.restore();
-}
-
-/**
- * Draws Google'da with official colors + suffix
- */
-function drawGoogleDa(
-  ctx: CanvasRenderingContext2D,
-  cx: number,
-  cy: number,
-  fontSize: number = 68,
-  suffixColor: string = '#ffffff'
-) {
-  ctx.save();
-  ctx.font = `800 ${fontSize}px "Product Sans", "Google Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
-  ctx.textBaseline = 'middle';
-
-  const letters = [
-    { char: 'G', color: '#4285F4' },
-    { char: 'o', color: '#EA4335' },
-    { char: 'o', color: '#FBBC05' },
-    { char: 'g', color: '#4285F4' },
-    { char: 'l', color: '#34A853' },
-    { char: 'e', color: '#EA4335' },
-    { char: "'da", color: suffixColor },
-  ];
-
-  let totalWidth = 0;
-  const widths = letters.map((item) => {
-    const w = ctx.measureText(item.char).width;
-    totalWidth += w;
-    return w;
-  });
-
-  let currentX = cx - totalWidth / 2;
-  letters.forEach((item, idx) => {
-    ctx.fillStyle = item.color;
-    ctx.textAlign = 'left';
-    ctx.fillText(item.char, currentX, cy);
-    currentX += widths[idx];
-  });
-
-  ctx.restore();
-}
-
-/**
  * Draws the official Google 'G' icon badge
  */
 function drawGoogleGIcon(ctx: CanvasRenderingContext2D, cx: number, cy: number, size: number) {
@@ -148,6 +66,48 @@ function drawGoogleGIcon(ctx: CanvasRenderingContext2D, cx: number, cy: number, 
   const barHeight = lineWidth;
   const barWidth = radius * 0.95;
   ctx.fillRect(cx - 2, cy - barHeight / 2, barWidth, barHeight);
+
+  ctx.restore();
+}
+
+/**
+ * Draws Google'da bizi with official Google colors + suffix
+ */
+function drawGoogleDaBizi(
+  ctx: CanvasRenderingContext2D,
+  cx: number,
+  cy: number,
+  fontSize: number = 62,
+  suffixColor: string = '#ffffff'
+) {
+  ctx.save();
+  ctx.font = `800 ${fontSize}px "Product Sans", "Google Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+  ctx.textBaseline = 'middle';
+
+  const letters = [
+    { char: 'G', color: '#4285F4' },
+    { char: 'o', color: '#EA4335' },
+    { char: 'o', color: '#FBBC05' },
+    { char: 'g', color: '#4285F4' },
+    { char: 'l', color: '#34A853' },
+    { char: 'e', color: '#EA4335' },
+    { char: "'da bizi", color: suffixColor },
+  ];
+
+  let totalWidth = 0;
+  const widths = letters.map((item) => {
+    const w = ctx.measureText(item.char).width;
+    totalWidth += w;
+    return w;
+  });
+
+  let currentX = cx - totalWidth / 2;
+  letters.forEach((item, idx) => {
+    ctx.fillStyle = item.color;
+    ctx.textAlign = 'left';
+    ctx.fillText(item.char, currentX, cy);
+    currentX += widths[idx];
+  });
 
   ctx.restore();
 }
@@ -252,7 +212,7 @@ function roundRect(
 }
 
 /**
- * QR Code pattern drawing helper
+ * QR Code pattern drawing helper for Direct UV Screen Print
  */
 function drawQRMatrix(
   ctx: CanvasRenderingContext2D,
@@ -260,28 +220,30 @@ function drawQRMatrix(
   qrBoxY: number,
   qrBoxSize: number,
   qrText: string,
-  qrModuleColor: string = '#0a0a0c',
-  qrBgColor: string = '#ffffff'
+  isWhite: boolean
 ) {
-  roundRect(ctx, qrBoxX, qrBoxY, qrBoxSize, qrBoxSize, 20);
-  ctx.fillStyle = qrBgColor;
-  ctx.fill();
-  ctx.strokeStyle = '#f59e0b';
-  ctx.lineWidth = 3.5;
-  ctx.stroke();
-
-  const qrPadding = 20;
+  const qrPadding = 22;
   const qrInnerX = qrBoxX + qrPadding;
   const qrInnerY = qrBoxY + qrPadding;
   const qrInnerSize = qrBoxSize - qrPadding * 2;
   const moduleCount = 25;
   const cellSize = qrInnerSize / moduleCount;
 
+  // Background Box
+  roundRect(ctx, qrBoxX, qrBoxY, qrBoxSize, qrBoxSize, 22);
+  ctx.fillStyle = '#ffffff';
+  ctx.fill();
+  ctx.strokeStyle = '#f59e0b';
+  ctx.lineWidth = 3.5;
+  ctx.stroke();
+
   let hash = 0;
   for (let i = 0; i < qrText.length; i++) {
     hash = (hash << 5) - hash + qrText.charCodeAt(i);
     hash |= 0;
   }
+
+  const qrModuleColor = '#0a0a0c';
 
   const drawFinder = (fx: number, fy: number) => {
     ctx.fillStyle = qrModuleColor;
@@ -326,8 +288,8 @@ function drawQRMatrix(
 }
 
 /**
- * MASTER DECAL TEXTURE GENERATOR FOR STAND3D:
- * Supports TEMPLATE A (doremusic / Turkish Google Değerlendirme) & TEMPLATE B (Google Classic)
+ * EXACT DOREMUSIC DIRECT UV SCREEN PRINT DECAL GENERATOR FOR STAND3D
+ * Transparent alpha background: meshPhysicalMaterial shines directly through behind ink!
  */
 function createLStandDecalTexture(
   template: StandTemplate,
@@ -344,384 +306,208 @@ function createLStandDecalTexture(
   const ctx = canvas.getContext('2d');
   if (!ctx) return canvas;
 
+  // 1. Direct UV Print Physics: Clear transparent canvas (NO background card fill!)
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  const primaryText = isWhite ? '#0f172a' : '#ffffff';
+  const primaryText = isWhite ? '#111827' : '#ffffff';
   const secondaryText = isWhite ? '#475569' : '#cbd5e1';
   const accentGold = '#f59e0b';
 
-  // Base Acrylic Outer Rounded Border Card
-  roundRect(ctx, 24, 24, canvas.width - 48, canvas.height - 48, 40);
-  if (isWhite) {
-    ctx.fillStyle = '#f8f9fa';
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(203, 213, 225, 0.85)';
-    ctx.lineWidth = 4;
-    ctx.stroke();
-  } else {
-    ctx.fillStyle = '#0d0d0e';
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-    ctx.lineWidth = 4;
-    ctx.stroke();
-  }
+  // Subtle outer edge alignment hairline
+  roundRect(ctx, 30, 30, canvas.width - 60, canvas.height - 60, 40);
+  ctx.strokeStyle = isWhite ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.12)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
 
   // ═════════════════════════════════════════════════════════════
-  // TEMPLATE A: DOREMUSIC / TURKISH GOOGLE DEĞERLENDİRME STYLE
+  // EXACT DOREMUSIC TURKISH PRINT LAYOUT
   // ═════════════════════════════════════════════════════════════
-  if (template === 'templateA') {
-    const topBrandText = logoText || 'doremusic';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-
-    // 1. Top Brand Pill
-    roundRect(ctx, 512 - 240, 70, 480, 64, 32);
-    ctx.fillStyle = isWhite ? '#0f172a' : 'rgba(251, 191, 36, 0.12)';
-    ctx.fill();
-    ctx.strokeStyle = accentGold;
-    ctx.lineWidth = 2.5;
-    ctx.stroke();
-
-    ctx.font = '900 32px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-    ctx.fillStyle = isWhite ? '#ffffff' : '#fbbf24';
-    ctx.letterSpacing = '2px';
-    ctx.fillText(topBrandText, 512, 102);
-
-    // 2. Title: "Google'da bizi değerlendirin"
-    drawGoogleDa(ctx, 512, 185, 62, primaryText);
-
-    ctx.font = '800 42px "Google Sans", "Product Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-    ctx.fillStyle = primaryText;
-    ctx.letterSpacing = '0.5px';
-    ctx.fillText('bizi değerlendirin', 512, 245);
-
-    // 5 Gold Stars
-    if (showStars) {
-      const starY = 305;
-      const starSpacing = 42;
-      const startX = 512 - 2 * starSpacing;
-      for (let i = 0; i < 5; i++) {
-        drawStar(ctx, startX + i * starSpacing, starY, 5, 17, 8);
-      }
-    }
-
-    // 4-Color Accent Line
-    draw4ColorAccentLine(ctx, 512, 355, 540, 6);
-
-    // 3. Middle Section: QR (Left) + NFC Badge (Right)
-    const midRowY = 590;
-
-    // Left QR Box
-    const qrCenterX = 295;
-    const qrSize = 250;
-    const qrX = qrCenterX - qrSize / 2;
-    const qrY = midRowY - qrSize / 2;
-
-    ctx.font = '900 26px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-    ctx.fillStyle = primaryText;
-    ctx.textAlign = 'center';
-    ctx.fillText('KODU TARAYIN', qrCenterX, qrY - 26);
-
-    drawQRMatrix(ctx, qrX, qrY, qrSize, qrText);
-
-    ctx.font = '600 16px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-    ctx.fillStyle = secondaryText;
-    ctx.fillText('Kamera ile okutunuz', qrCenterX, qrY + qrSize + 28);
-
-    // Center "VEYA" badge
-    ctx.beginPath();
-    ctx.arc(512, midRowY, 28, 0, Math.PI * 2);
-    ctx.fillStyle = isWhite ? '#e2e8f0' : '#1e1e24';
-    ctx.fill();
-    ctx.strokeStyle = accentGold;
-    ctx.lineWidth = 2.5;
-    ctx.stroke();
-
-    ctx.font = '900 16px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-    ctx.fillStyle = accentGold;
-    ctx.textAlign = 'center';
-    ctx.fillText('VEYA', 512, midRowY);
-
-    // Right Circular NFC Badge
-    const nfcCenterX = 729;
-    const nfcCenterY = midRowY;
-    const nfcRadius = 120;
-
-    ctx.font = '900 26px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-    ctx.fillStyle = primaryText;
-    ctx.textAlign = 'center';
-    ctx.fillText('YAKLAŞTIRIN', nfcCenterX, qrY - 26);
-
-    ctx.beginPath();
-    ctx.arc(nfcCenterX, nfcCenterY, nfcRadius, 0, Math.PI * 2);
-    ctx.fillStyle = isWhite ? '#0f172a' : '#15151c';
-    ctx.fill();
-    ctx.strokeStyle = accentGold;
-    ctx.lineWidth = 4;
-    ctx.stroke();
-
-    // Golden wave arcs
-    ctx.strokeStyle = '#fbbf24';
-    ctx.lineWidth = 4.5;
-    ctx.lineCap = 'round';
-
-    ctx.beginPath();
-    ctx.arc(nfcCenterX, nfcCenterY, 32, -Math.PI * 0.75, Math.PI * 0.75);
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.arc(nfcCenterX, nfcCenterY, 58, -Math.PI * 0.75, Math.PI * 0.75);
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.arc(nfcCenterX, nfcCenterY, 84, -Math.PI * 0.75, Math.PI * 0.75);
-    ctx.stroke();
-
-    // Center NFC circle
-    ctx.beginPath();
-    ctx.arc(nfcCenterX, nfcCenterY, 26, 0, Math.PI * 2);
-    ctx.fillStyle = '#f59e0b';
-    ctx.fill();
-
-    ctx.font = '900 22px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-    ctx.fillStyle = '#0a0a0c';
-    ctx.textAlign = 'center';
-    ctx.fillText('NFC', nfcCenterX, nfcCenterY + 1);
-
-    ctx.font = '600 16px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-    ctx.fillStyle = secondaryText;
-    ctx.fillText('Telefonu yaklaştırınız', nfcCenterX, qrY + qrSize + 28);
-
-    // 4. Bottom Instruction Text Card
-    const instructCardY = 875;
-    const instructCardW = 860;
-    const instructCardH = 145;
-    const instructCardX = 512 - instructCardW / 2;
-
-    roundRect(ctx, instructCardX, instructCardY, instructCardW, instructCardH, 26);
-    ctx.fillStyle = isWhite ? 'rgba(15, 23, 42, 0.05)' : 'rgba(251, 191, 36, 0.08)';
-    ctx.fill();
-    ctx.strokeStyle = isWhite ? 'rgba(15, 23, 42, 0.15)' : 'rgba(251, 191, 36, 0.4)';
-    ctx.lineWidth = 2.5;
-    ctx.stroke();
-
-    ctx.font = '700 26px -apple-system, sans-serif';
-    ctx.fillStyle = accentGold;
-    ctx.fillText('✦', instructCardX + 45, instructCardY + 45);
-    ctx.fillText('✨', instructCardX + instructCardW - 45, instructCardY + instructCardH - 40);
-
-    ctx.font = '800 25px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-    ctx.fillStyle = primaryText;
-    ctx.textAlign = 'center';
-    ctx.fillText(
-      'Kodu tarayın veya telefonunuzu yaklaştırınız',
-      512,
-      instructCardY + 52
-    );
-
-    ctx.font = '700 23px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-    ctx.fillStyle = isWhite ? '#b45309' : '#fbbf24';
-    ctx.fillText(
-      've ne düşündüğünüzü bize söyleyin.',
-      512,
-      instructCardY + 98
-    );
-
-    // 5. Footer: Business Name & Powered by
-    const footerY = 1070;
-    if (businessName) {
-      roundRect(ctx, 512 - 280, footerY, 560, 56, 28);
-      ctx.fillStyle = isWhite ? '#f1f5f9' : '#18181c';
-      ctx.fill();
-      ctx.strokeStyle = isWhite ? '#cbd5e1' : 'rgba(255,255,255,0.12)';
-      ctx.lineWidth = 1.8;
-      ctx.stroke();
-
-      ctx.font = '700 20px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-      ctx.fillStyle = isWhite ? '#334155' : '#e2e8f0';
-      ctx.textAlign = 'center';
-      ctx.fillText(businessName, 512, footerY + 28);
-    }
-
-    ctx.font = '600 15px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-    ctx.fillStyle = isWhite ? '#94a3b8' : '#71717a';
-    ctx.textAlign = 'center';
-    ctx.fillText('⚡ Powered by NFCMyPlace® • Temassız Google Yorum Standı', 512, 1370);
-
-    return canvas;
-  }
-
-  // ═════════════════════════════════════════════════════════════
-  // TEMPLATE B: GOOGLE CLASSIC MINIMALIST STYLE
-  // ═════════════════════════════════════════════════════════════
+  const topBrandText = logoText || 'doremusic';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.font = '700 36px "Google Sans", "Product Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-  ctx.fillStyle = primaryText;
-  ctx.fillText('Review us on', 512, 105);
 
-  drawGoogleWordmark(ctx, 512, 175, 78);
-
-  if (showStars) {
-    const starY = 250;
-    const starSpacing = 44;
-    const startX = 512 - 2 * starSpacing;
-    for (let i = 0; i < 5; i++) {
-      drawStar(ctx, startX + i * starSpacing, starY, 5, 18, 8.5);
-    }
-  }
-
-  draw4ColorAccentLine(ctx, 512, 305, 580, 7);
-
-  // Middle Row: TAP ME | OR | SCAN QR
-  const midRowY = 560;
-  const tapCenterX = 280;
-
-  const phoneW = 76;
-  const phoneH = 120;
-  const phoneX = tapCenterX - phoneW / 2;
-  const phoneY = midRowY - 110;
-
-  roundRect(ctx, phoneX, phoneY, phoneW, phoneH, 16);
-  ctx.fillStyle = isWhite ? '#0f172a' : '#1e1e24';
-  ctx.fill();
-  ctx.strokeStyle = accentGold;
-  ctx.lineWidth = 4;
-  ctx.stroke();
-
-  roundRect(ctx, phoneX + 8, phoneY + 12, phoneW - 16, phoneH - 24, 8);
-  ctx.fillStyle = isWhite ? '#ffffff' : '#0d0d10';
-  ctx.fill();
-
-  ctx.strokeStyle = accentGold;
-  ctx.lineWidth = 3.5;
-  ctx.lineCap = 'round';
-  ctx.beginPath();
-  ctx.arc(tapCenterX, phoneY - 12, 18, -Math.PI * 0.75, -Math.PI * 0.25);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.arc(tapCenterX, phoneY - 12, 32, -Math.PI * 0.75, -Math.PI * 0.25);
-  ctx.stroke();
-
-  ctx.font = '900 36px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-  ctx.fillStyle = primaryText;
-  ctx.textAlign = 'center';
-  ctx.fillText('TAP ME', tapCenterX, midRowY + 50);
-
-  ctx.font = '600 18px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-  ctx.fillStyle = secondaryText;
-  ctx.fillText('Touch phone here', tapCenterX, midRowY + 86);
-
-  // Center OR badge
-  ctx.beginPath();
-  ctx.arc(512, midRowY, 32, 0, Math.PI * 2);
-  ctx.fillStyle = isWhite ? '#e2e8f0' : '#1e1e24';
+  // 1. Top Brand / Logo Pill
+  roundRect(ctx, 512 - 240, 58, 480, 64, 32);
+  ctx.fillStyle = isWhite ? 'rgba(17, 24, 39, 0.08)' : 'rgba(251, 191, 36, 0.12)';
   ctx.fill();
   ctx.strokeStyle = accentGold;
   ctx.lineWidth = 2.5;
   ctx.stroke();
 
-  ctx.font = '900 22px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-  ctx.fillStyle = accentGold;
-  ctx.textAlign = 'center';
-  ctx.fillText('OR', 512, midRowY);
+  ctx.font = '900 32px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  ctx.fillStyle = isWhite ? '#111827' : '#fbbf24';
+  ctx.letterSpacing = '2.5px';
+  ctx.fillText(topBrandText, 512, 90);
 
-  // Right SCAN QR
-  const qrCenterX = 744;
-  const qrBoxSize = 250;
-  const qrBoxX = qrCenterX - qrBoxSize / 2;
-  const qrBoxY = midRowY - 145;
+  // 2. Main Title: Line 1: "Google'da bizi" & Line 2: "değerlendirin"
+  drawGoogleDaBizi(ctx, 512, 185, 60, primaryText);
 
-  ctx.font = '900 34px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  ctx.font = '800 46px "Google Sans", "Product Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  ctx.fillStyle = primaryText;
+  ctx.letterSpacing = '0.5px';
+  ctx.fillText('değerlendirin', 512, 250);
+
+  // 4-Color Accent Line
+  draw4ColorAccentLine(ctx, 512, 310, 520, 6);
+
+  // 3. Middle Row: Clean QR Box (Left) + Prominent Circular NFC Badge (Right)
+  const midRowY = 560;
+
+  // Left QR Box
+  const qrCenterX = 285;
+  const qrSize = 260;
+  const qrX = qrCenterX - qrSize / 2;
+  const qrY = midRowY - qrSize / 2;
+
+  ctx.font = '900 24px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
   ctx.fillStyle = primaryText;
   ctx.textAlign = 'center';
-  ctx.fillText('SCAN QR', qrCenterX, qrBoxY - 26);
+  ctx.fillText('KODU TARAYIN', qrCenterX, qrY - 26);
 
-  drawQRMatrix(ctx, qrBoxX, qrBoxY, qrBoxSize, qrText);
+  drawQRMatrix(ctx, qrX, qrY, qrSize, qrText, isWhite);
 
   ctx.font = '600 16px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
   ctx.fillStyle = secondaryText;
-  ctx.textAlign = 'center';
-  ctx.fillText('Use camera to scan', qrCenterX, qrBoxY + qrBoxSize + 28);
+  ctx.fillText('Kamera ile okutunuz', qrCenterX, qrY + qrSize + 28);
 
-  // Horizontal Divider
-  ctx.strokeStyle = isWhite ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.1)';
-  ctx.lineWidth = 2;
+  // Center "VEYA" badge
   ctx.beginPath();
-  ctx.moveTo(90, 890);
-  ctx.lineTo(934, 890);
+  ctx.arc(512, midRowY, 28, 0, Math.PI * 2);
+  ctx.fillStyle = isWhite ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.08)';
+  ctx.fill();
+  ctx.strokeStyle = accentGold;
+  ctx.lineWidth = 2.5;
   ctx.stroke();
 
-  // Footer Branding Pills
-  const footerX = 90;
-  const footerY = 940;
-  const pillWidth = 560;
+  ctx.font = '900 16px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+  ctx.fillStyle = accentGold;
+  ctx.textAlign = 'center';
+  ctx.fillText('VEYA', 512, midRowY);
 
-  if (branding) {
-    roundRect(ctx, footerX, footerY, pillWidth, 74, 37);
-    ctx.fillStyle = isWhite ? '#0f172a' : 'rgba(251, 191, 36, 0.12)';
-    ctx.fill();
-    ctx.strokeStyle = accentGold;
-    ctx.lineWidth = 2.5;
-    ctx.stroke();
+  // Right Circular NFC Badge
+  const nfcCenterX = 739;
+  const nfcCenterY = midRowY;
+  const nfcRadius = 125;
 
-    ctx.font = '900 28px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-    ctx.fillStyle = isWhite ? '#ffffff' : '#fbbf24';
-    ctx.textAlign = 'center';
-    ctx.fillText(logoText || 'Your Logo / Business Name', footerX + pillWidth / 2, footerY + 37);
+  ctx.font = '900 24px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  ctx.fillStyle = primaryText;
+  ctx.textAlign = 'center';
+  ctx.fillText('YAKLAŞTIRIN', nfcCenterX, qrY - 26);
 
-    const subPillY = footerY + 92;
-    roundRect(ctx, footerX, subPillY, pillWidth, 68, 34);
-    ctx.fillStyle = isWhite ? '#f1f5f9' : '#18181c';
-    ctx.fill();
-    ctx.strokeStyle = isWhite ? '#cbd5e1' : 'rgba(255,255,255,0.14)';
-    ctx.lineWidth = 2;
-    ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(nfcCenterX, nfcCenterY, nfcRadius, 0, Math.PI * 2);
+  ctx.fillStyle = isWhite ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.06)';
+  ctx.fill();
+  ctx.strokeStyle = accentGold;
+  ctx.lineWidth = 4;
+  ctx.stroke();
 
-    ctx.font = '700 22px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-    ctx.fillStyle = isWhite ? '#334155' : '#e2e8f0';
-    ctx.textAlign = 'center';
-    ctx.fillText(businessName || 'Business Name (Optional)', footerX + pillWidth / 2, subPillY + 34);
+  // Golden wave arcs
+  ctx.strokeStyle = '#fbbf24';
+  ctx.lineWidth = 4.5;
+  ctx.lineCap = 'round';
 
-    ctx.font = '600 16px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-    ctx.fillStyle = isWhite ? '#94a3b8' : '#71717a';
-    ctx.textAlign = 'left';
-    ctx.fillText('⚡ Instant Google Review • Powered by NFCMyPlace', footerX + 12, subPillY + 104);
+  ctx.beginPath();
+  ctx.arc(nfcCenterX, nfcCenterY, 34, -Math.PI * 0.75, Math.PI * 0.75);
+  ctx.stroke();
 
-    // Bottom-Right Contactless Wave Icon
-    const nfcCircleX = 810;
-    const nfcCircleY = footerY + 76;
-    const nfcRadius = 58;
+  ctx.beginPath();
+  ctx.arc(nfcCenterX, nfcCenterY, 62, -Math.PI * 0.75, Math.PI * 0.75);
+  ctx.stroke();
 
-    ctx.beginPath();
-    ctx.arc(nfcCircleX, nfcCircleY, nfcRadius, 0, Math.PI * 2);
-    ctx.fillStyle = isWhite ? '#0f172a' : '#141418';
-    ctx.fill();
-    ctx.strokeStyle = accentGold;
-    ctx.lineWidth = 3;
-    ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(nfcCenterX, nfcCenterY, 90, -Math.PI * 0.75, Math.PI * 0.75);
+  ctx.stroke();
 
-    ctx.strokeStyle = '#fbbf24';
-    ctx.lineWidth = 4;
-    ctx.lineCap = 'round';
+  // Center NFC circle
+  ctx.beginPath();
+  ctx.arc(nfcCenterX, nfcCenterY, 26, 0, Math.PI * 2);
+  ctx.fillStyle = '#f59e0b';
+  ctx.fill();
 
-    ctx.beginPath();
-    ctx.arc(nfcCircleX - 8, nfcCircleY, 14, -Math.PI / 2.6, Math.PI / 2.6);
-    ctx.stroke();
+  ctx.font = '900 22px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  ctx.fillStyle = '#0a0a0c';
+  ctx.textAlign = 'center';
+  ctx.fillText('NFC', nfcCenterX, nfcCenterY + 1);
 
-    ctx.beginPath();
-    ctx.arc(nfcCircleX - 8, nfcCircleY, 26, -Math.PI / 2.6, Math.PI / 2.6);
-    ctx.stroke();
+  ctx.font = '600 16px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+  ctx.fillStyle = secondaryText;
+  ctx.fillText('Telefonu yaklaştırınız', nfcCenterX, qrY + qrSize + 28);
 
-    ctx.beginPath();
-    ctx.arc(nfcCircleX - 8, nfcCircleY, 38, -Math.PI / 2.6, Math.PI / 2.6);
-    ctx.stroke();
+  // 4. Body Text: Instruction Card
+  const instructCardY = 845;
+  const instructCardW = 860;
+  const instructCardH = 138;
+  const instructCardX = 512 - instructCardW / 2;
 
-    ctx.beginPath();
-    ctx.arc(nfcCircleX - 10, nfcCircleY, 5, 0, Math.PI * 2);
-    ctx.fillStyle = '#fbbf24';
-    ctx.fill();
+  roundRect(ctx, instructCardX, instructCardY, instructCardW, instructCardH, 24);
+  ctx.fillStyle = isWhite ? 'rgba(17, 24, 39, 0.04)' : 'rgba(251, 191, 36, 0.06)';
+  ctx.fill();
+  ctx.strokeStyle = isWhite ? 'rgba(17, 24, 39, 0.15)' : 'rgba(251, 191, 36, 0.35)';
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+
+  ctx.font = '700 24px -apple-system, sans-serif';
+  ctx.fillStyle = accentGold;
+  ctx.fillText('✦', instructCardX + 42, instructCardY + 44);
+  ctx.fillText('✨', instructCardX + instructCardW - 42, instructCardY + instructCardH - 40);
+
+  ctx.font = '800 25px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  ctx.fillStyle = primaryText;
+  ctx.textAlign = 'center';
+  ctx.fillText(
+    'Kodu tarayın veya telefonunuzu yaklaştırınız',
+    512,
+    instructCardY + 48
+  );
+
+  ctx.font = '700 23px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  ctx.fillStyle = isWhite ? '#b45309' : '#fbbf24';
+  ctx.fillText(
+    've ne düşündüğünüzü bize söyleyin.',
+    512,
+    instructCardY + 94
+  );
+
+  // 5. Bottom: Official Google 'G' Emblem + 5 Golden Stars ⭐⭐⭐⭐⭐
+  const bottomBarY = 1040;
+  const bottomBarW = 680;
+  const bottomBarH = 116;
+  const bottomBarX = 512 - bottomBarW / 2;
+
+  roundRect(ctx, bottomBarX, bottomBarY, bottomBarW, bottomBarH, 32);
+  ctx.fillStyle = isWhite ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.06)';
+  ctx.fill();
+  ctx.strokeStyle = isWhite ? '#cbd5e1' : 'rgba(251, 191, 36, 0.35)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Google G Icon Badge (Left)
+  const gIconX = bottomBarX + 80;
+  const gIconY = bottomBarY + bottomBarH / 2;
+  drawGoogleGIcon(ctx, gIconX, gIconY, 56);
+
+  // Vertical Separator
+  ctx.strokeStyle = isWhite ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.15)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(gIconX + 54, bottomBarY + 22);
+  ctx.lineTo(gIconX + 54, bottomBarY + bottomBarH - 22);
+  ctx.stroke();
+
+  // 5 Gold Stars (Right)
+  const starCenterY = bottomBarY + bottomBarH / 2;
+  const starStartX = gIconX + 110;
+  const starSpacing = 48;
+  for (let i = 0; i < 5; i++) {
+    drawStar(ctx, starStartX + i * starSpacing, starCenterY, 5, 20, 9.5);
   }
+
+  // Footer Powered by Tagline
+  ctx.font = '600 15px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+  ctx.fillStyle = isWhite ? '#94a3b8' : 'rgba(255, 255, 255, 0.7)';
+  ctx.textAlign = 'center';
+  ctx.fillText('⚡ Powered by NFCMyPlace® • Temassız Google Yorum Standı', 512, 1370);
 
   return canvas;
 }
@@ -861,14 +647,27 @@ function StandMesh({
               />
             ) : (
               <meshPhysicalMaterial
-                color="#0d0d0e"
-                roughness={0.18}
-                metalness={0.2}
-                clearcoat={0.65}
-                clearcoatRoughness={0.08}
-                specularIntensity={0.8}
+                color="#16161a"
+                roughness={0.14}
+                metalness={0.12}
+                clearcoat={1.0}
+                clearcoatRoughness={0.06}
+                reflectivity={0.9}
+                specularIntensity={1.0}
+                specularColor="#ffffff"
               />
             )}
+          </mesh>
+
+          {/* Polished Foot Chamfer Outline Rim */}
+          <mesh position={[0, 0, 0]}>
+            <boxGeometry args={[standWidth + 0.005, acrylicThickness + 0.005, baseDepth + 0.005]} />
+            <meshStandardMaterial
+              color={isWhite ? '#38bdf8' : '#fbbf24'}
+              transparent
+              opacity={isWhite ? 0.2 : 0.15}
+              wireframe
+            />
           </mesh>
 
           {/* Front Bevel Accent Glow Line */}
@@ -879,7 +678,7 @@ function StandMesh({
               metalness={0.9}
               roughness={0.1}
               emissive={isWhite ? '#38bdf8' : '#d97706'}
-              emissiveIntensity={0.35}
+              emissiveIntensity={0.45}
             />
           </mesh>
 
@@ -900,11 +699,12 @@ function StandMesh({
         <mesh position={[0, baseTopY, frontEdgeZ]} rotation={[0, 0, Math.PI / 2]}>
           <cylinderGeometry args={[acrylicThickness / 2, acrylicThickness / 2, standWidth, 16]} />
           <meshPhysicalMaterial
-            color={isWhite ? '#f8f9fa' : '#0d0d0e'}
+            color={isWhite ? '#f8f9fa' : '#16161a'}
             roughness={0.08}
             transmission={isWhite ? 0.92 : 0}
             clearcoat={1}
             clearcoatRoughness={0.05}
+            specularIntensity={1.0}
           />
         </mesh>
 
@@ -929,12 +729,14 @@ function StandMesh({
               />
             ) : (
               <meshPhysicalMaterial
-                color="#0d0d0e"
-                roughness={0.18}
-                metalness={0.2}
-                clearcoat={0.6}
-                clearcoatRoughness={0.1}
-                specularIntensity={0.8}
+                color="#16161a"
+                roughness={0.14}
+                metalness={0.12}
+                clearcoat={1.0}
+                clearcoatRoughness={0.06}
+                reflectivity={0.9}
+                specularIntensity={1.0}
+                specularColor="#ffffff"
               />
             )}
           </mesh>
@@ -945,7 +747,7 @@ function StandMesh({
             <meshStandardMaterial
               color={isWhite ? '#bae6fd' : '#f59e0b'}
               transparent
-              opacity={isWhite ? 0.2 : 0.12}
+              opacity={isWhite ? 0.22 : 0.14}
               wireframe
             />
           </mesh>
@@ -965,14 +767,8 @@ function StandMesh({
             </mesh>
           )}
 
-          {/* 3D Pulsing Gold NFC Emission Rings */}
-          <group
-            position={
-              template === 'templateA'
-                ? [0.55, -0.22, acrylicThickness / 2 + 0.006] // Over right-side NFC badge
-                : [0.72, -1.2, acrylicThickness / 2 + 0.006] // Over bottom-right corner badge
-            }
-          >
+          {/* 3D Pulsing Gold NFC Emission Rings over right-side NFC badge */}
+          <group position={[0.58, -0.15, acrylicThickness / 2 + 0.006]}>
             <mesh ref={pulseRingRef}>
               <torusGeometry args={[0.18, 0.008, 16, 32]} />
               <meshStandardMaterial
@@ -980,9 +776,9 @@ function StandMesh({
                 metalness={0.9}
                 roughness={0.1}
                 transparent
-                opacity={0.6}
+                opacity={0.65}
                 emissive="#f59e0b"
-                emissiveIntensity={0.5}
+                emissiveIntensity={0.55}
               />
             </mesh>
             <mesh ref={pulseRing2Ref}>
@@ -992,9 +788,9 @@ function StandMesh({
                 metalness={0.8}
                 roughness={0.2}
                 transparent
-                opacity={0.35}
+                opacity={0.4}
                 emissive="#eab308"
-                emissiveIntensity={0.4}
+                emissiveIntensity={0.45}
               />
             </mesh>
           </group>
@@ -1005,7 +801,7 @@ function StandMesh({
 }
 
 /**
- * Complete Stand3D Canvas Component
+ * Complete Stand3D Canvas Component with Studio Pedestal Lighting
  */
 export default function Stand3D({
   white = false,
@@ -1030,40 +826,52 @@ export default function Stand3D({
       }}
       className={className}
     >
-      {/* Studio Lighting */}
-      <ambientLight intensity={0.85} />
+      {/* ── HIGH-END STUDIO LIGHTING RIG ── */}
+      <ambientLight intensity={1.1} />
 
+      {/* Main Warm Key Light */}
       <directionalLight
-        position={[5, 8, 6]}
-        intensity={2.4}
+        position={[4, 7, 5]}
+        intensity={2.8}
         castShadow
         shadow-mapSize-width={1024}
         shadow-mapSize-height={1024}
         shadow-bias={-0.0001}
-        color="#fffbeb"
+        color="#fffbf0"
       />
 
+      {/* Cyan Rim Silhouette Light (Highlights Back & Side Edges of Black Acrylic) */}
       <directionalLight
         position={[-6, 4, -4]}
-        intensity={1.2}
-        color="#06b6d4"
+        intensity={2.4}
+        color="#38bdf8"
       />
 
+      {/* Cool White Secondary Rim Light */}
+      <directionalLight
+        position={[6, -2, -4]}
+        intensity={1.8}
+        color="#e0f2fe"
+      />
+
+      {/* Warm Golden Bottom Fill Light (Illuminates the Base Foot) */}
       <pointLight
-        position={[0, -2.5, 3]}
-        intensity={1.6}
-        color="#f59e0b"
-        distance={8}
+        position={[0, -2.2, 3.5]}
+        intensity={2.4}
+        color="#fbbf24"
+        distance={9}
       />
 
+      {/* High-Key Top Spot */}
       <spotLight
-        position={[0, 7, 1]}
-        intensity={1.3}
-        angle={0.6}
+        position={[0, 8, 2]}
+        intensity={2.0}
+        angle={0.7}
         penumbra={0.8}
         color="#ffffff"
       />
 
+      {/* Studio Reflection Environment */}
       <Environment preset="city" />
 
       {/* Stand 3D Mesh */}
@@ -1078,12 +886,12 @@ export default function Stand3D({
         autoRotate={autoRotate}
       />
 
-      {/* Contact Floor Shadow */}
+      {/* Contact Floor Shadow Plane */}
       <ContactShadows
-        position={[0, -2.1, 0]}
-        opacity={0.75}
-        scale={10}
-        blur={2.4}
+        position={[0, -1.56, 0]}
+        opacity={0.65}
+        scale={9}
+        blur={2.2}
         far={4.5}
         color="#000000"
       />
@@ -1100,3 +908,4 @@ export default function Stand3D({
 }
 
 export { Stand3D };
+
