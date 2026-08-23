@@ -55,73 +55,75 @@ export default function LandingPage() {
       buttonText: t.saas.erenkoyBtn,
       highlights:
         locale === 'tr'
-          ? ['V60 Özel Menü', 'Masa Rozetleri', 'Alerjen & Kalori Filtresi']
-          : ['V60 Pour Over', 'Table Badges', 'Allergen & Calorie Filters'],
+          ? ['V60 Özel Menü', 'Masa Rozetleri', 'Alerjen & Kategori Filtreleri']
+          : ['V60 Specialty Coffee', 'Table Badges', 'Allergen & Category Filters'],
     },
   ];
 
   const PRICING_CARDS = [
     {
       id: 'stand',
-      badge: locale === 'tr' ? 'En Popüler Donanım' : 'Most Popular Hardware',
+      badge: locale === 'tr' ? 'Donanım Odaklı' : 'Hardware Focused',
       title: locale === 'tr' ? 'Google Değerlendirme Standı' : 'Google Review Stand',
       price: '1.750 TL',
       unit: locale === 'tr' ? '/ adet' : '/ unit',
       subtitle:
         locale === 'tr'
-          ? '75° ergonomik açılı akıllı akrilik masa standı'
-          : '75° ergonomic inclined smart acrylic stand',
+          ? 'Restoranınıza özel kurumsal logo, renk ve özel tasarım UV baskı dahil.'
+          : 'Includes custom corporate logo, color theme, and custom UV print for your venue.',
       features:
         locale === 'tr'
           ? [
-              '75° Ergonomik Açılı Monolitik Akrilik Gövde',
-              'Google G Logosu & 5 Altın Yıldız Rozeti',
-              'NTAG213 Dual-Coil NFC + Yüksek Kontrast QR',
-              'Mat Siyah veya Parlak Beyaz Seçenekleri',
-              'Özel Logo & İşletme Adı Lazer/UV Baskısı',
-              'Tak-Çalıştır Ön Yapılandırma & Hızlı Teslimat',
+              'Restoranınıza Özel Kurumsal Logo & Renk Teması Baskısı',
+              '75° Ergonomik Açılı Monolitik Pleksi Akrilik Gövde',
+              'Mat Siyah veya Mat Beyaz (Frost) Renk Seçenekleri',
+              'NTAG213 Dual-Coil Hızlı NFC Çipi (<0.2sn Okuma)',
+              'Yüksek Kontrastlı Özel Lazer UV QR Kod Matrisi',
+              '5 Yıldızlı Google Yorum Teşvik Tasarımı',
+              'Önceden Programlanmış Tak-Çalıştır Teslimat',
             ]
           : [
-              '75° Ergonomic Monolithic Acrylic Body',
-              'Google G Logo & 5 Gold Stars Rating Badge',
-              'NTAG213 Dual-Coil NFC + High Contrast QR',
-              'Matte Obsidian Black or Glossy Frost White',
-              'Custom Logo & Business Name Engraving',
+              'Custom Corporate Logo & Color Theme Print Included',
+              '75° Ergonomic Inclined Monolithic Acrylic Body',
+              'Matte Obsidian Black or Matte Frost White Options',
+              'NTAG213 Dual-Coil Fast NFC Chip (<0.2s Response)',
+              'High-Contrast Custom UV Screen QR Code Matrix',
+              '5-Star Google Review Encouragement Layout',
               'Plug & Play Pre-Configured Fast Delivery',
             ],
-      cta: locale === 'tr' ? 'Hemen Sipariş Ver' : 'Order Now',
-      popular: true,
+      cta: locale === 'tr' ? 'Stand Siparişi Ver' : 'Order Stand',
+      popular: false,
       action: () => setIsDiscountOpen(true),
     },
     {
-      id: 'sticker',
-      badge: locale === 'tr' ? 'Masa Çözümleri' : 'Table Solutions',
-      title: locale === 'tr' ? 'Akrilik Masa Stickerları' : 'Acrylic Table Stickers',
-      price: '175 TL',
-      unit: locale === 'tr' ? '/ adet (Min. 10 adet)' : '/ unit (Min. 10 units)',
+      id: 'hybrid',
+      badge: locale === 'tr' ? 'Hibrit Menü Çözümü' : 'Hybrid Menu Solution',
+      title: locale === 'tr' ? 'Akrilik Masa Stickerı + Menü SaaS' : 'Acrylic Table Sticker + Menu SaaS',
+      price: '175 TL + 3.000 TL',
+      unit: locale === 'tr' ? '/ adet (Sticker) + Yıllık SaaS' : '/ unit (Sticker) + Annual SaaS',
       subtitle:
         locale === 'tr'
-          ? 'Kompakt, suya dayanıklı ve masa numaralı diskler'
-          : 'Compact, waterproof & numbered table discs',
+          ? 'Masalar için lazer kesim akrilik stickerlar ve bulut tabanlı dijital menü yazılımı.'
+          : 'Laser-cut acrylic stickers for tables plus cloud digital menu SaaS software.',
       features:
         locale === 'tr'
           ? [
-              'Ø 65mm, 2mm Lazer Kesim Pleksi Akrilik',
-              'Konsantrik NFC Dalgaları & Çift Telefon İkonu',
-              '3M Endüstriyel VHB Güçlü Yapışkan',
-              'IP68 Sıvı Geçirmez & Çizilmeye Dayanıklı',
-              'Masif Ahşap, Mermer ve Cam Masalarla %100 Uyumlu',
-              '10x (1.750 TL), 25x (4.375 TL), 50x (8.750 TL)',
+              'Ø 65mm, 2mm Lazer Kesim Pleksi Akrilik Masa Stickerı (175 TL / adet)',
+              '3M Endüstriyel VHB Su Geçirmez Güçlü Yapışkan (IP68)',
+              'Bulut Yönetim Paneli (admin.nfcmyplace.com)',
+              'Çoklu Dil Desteği (Türkçe, İngilizce, Arapça)',
+              'Akıllı Kategori & Alerjen Filtreleme',
+              'Hızlı 3D Mobil Web Menü Arayüzü (Sıfır Uygulama İndirme)',
             ]
           : [
-              'Ø 65mm, 2mm Laser Cut Acrylic Disc',
-              'Concentric NFC Wave Arcs & Dual Phone Badges',
-              '3M Industrial VHB Heavy-Duty Adhesive',
-              'IP68 Waterproof & Scratch-Resistant Resin',
-              '100% Compatible with Walnut Wood, Marble & Glass',
-              '10x (1,750 TL), 25x (4,375 TL), 50x (8,750 TL)',
+              'Ø 65mm, 2mm Laser-Cut Acrylic Table Sticker (175 TL / unit)',
+              '3M Industrial VHB Heavy-Duty Waterproof Bond (IP68)',
+              'Real-Time Cloud Admin Dashboard (admin.nfcmyplace.com)',
+              'Multi-Language Support (Turkish, English, Arabic)',
+              'Smart Category & Allergen Filtering',
+              'Fast 3D Mobile Web Menu UI (Zero App Download)',
             ],
-      cta: locale === 'tr' ? 'Adet Seç & Sipariş Ver' : 'Select Quantity & Order',
+      cta: locale === 'tr' ? 'Menü Sistemini Başlat' : 'Launch Menu System',
       popular: false,
       action: () => {
         const el = document.getElementById('sticker');
@@ -130,35 +132,35 @@ export default function LandingPage() {
       },
     },
     {
-      id: 'saas',
-      badge: locale === 'tr' ? 'Eksiksiz Bulut Altyapısı' : 'Complete Cloud Platform',
-      title: locale === 'tr' ? 'Dijital Menü SaaS' : 'Digital Menu SaaS',
-      price: '3.000 TL',
-      unit: locale === 'tr' ? '(Kurulum & Yıllık)' : '(Setup & Annual)',
+      id: 'full-package',
+      badge: locale === 'tr' ? 'Önerilen • Hepsi Dahil Paket' : 'Recommended • All-In-One Pack',
+      title: locale === 'tr' ? 'Full Dijital Restoran Paketi' : 'Full Digital Restaurant Package',
+      price: '5.000 TL',
+      unit: locale === 'tr' ? 'Özel İndirimli Paket' : 'Special Discounted Bundle',
       subtitle:
         locale === 'tr'
-          ? 'Sıfır komisyonlu, çok dilli restoran menü altyapısı'
-          : 'Zero commission multi-language restaurant SaaS',
+          ? '1x L-Stand + 10x Masa Stickerı + 1 Yıllık Menü SaaS + Ücretsiz Kurulum'
+          : '1x L-Stand + 10x Table Stickers + 1-Year Menu SaaS + Free Setup',
       features:
         locale === 'tr'
           ? [
-              'Çoklu Şube ve 3 Dil Desteği (TR / EN / AR)',
-              'Anlık Menü, Fiyat ve Stok Yönetim Paneli',
-              'Alerjen, Kalori & Dinamik Kategori Filtreleri',
-              'Mobil Uyumlu 3D Kart Arayüzü & Yapışkan Bar',
-              'Masa Bazlı Trafik & Ziyaretçi Analitiği',
-              '%99.9 Bulut Güvenilirliği & 7/24 Kesintisiz Destek',
+              '1x Özel Tasarım NFC & QR Google Değerlendirme Standı (1.750 TL Değerinde)',
+              '10x Numaralı Akrilik Masa Stickerı (1.750 TL Değerinde)',
+              '1 Yıllık Tam Kapsamlı Restoran Dijital Menü SaaS Altyapısı (3.000 TL Değerinde)',
+              'Ücretsiz Menü Veri Girişi, Tasarım & Yerinde Kurulum Desteği',
+              'Çoklu Şube & admin.nfcmyplace.com Yönetim Paneli Erişimi',
+              '7/24 Öncelikli Teknik Destek & Ömür Boyu Donanım Garantisi',
             ]
           : [
-              'Multi-Branch & 3-Language Support (TR / EN / AR)',
-              'Instant Menu, Price & Stock Admin Dashboard',
-              'Allergen, Calorie & Category Dynamic Filters',
-              'Mobile-Optimized 3D Card UI & Sticky Bar',
-              'Table-Level Analytics & Dwell Time Insights',
-              '99.9% Cloud Uptime & 24/7 Priority Support',
+              '1x Custom Designed NFC & QR Google Review Stand (Valued at 1,750 TL)',
+              '10x Numbered Acrylic Table Stickers (Valued at 1,750 TL)',
+              '1-Year Complete Digital Menu SaaS Infrastructure (Valued at 3,000 TL)',
+              'Free Menu Data Onboarding, Custom Styling & Setup Support',
+              'Multi-Branch & admin.nfcmyplace.com Cloud Panel Access',
+              '24/7 Priority Support & Lifetime Hardware Warranty',
             ],
-      cta: locale === 'tr' ? 'Hemen Başla' : 'Get Started',
-      popular: false,
+      cta: locale === 'tr' ? 'Tüm Paketi Satın Al' : 'Buy Complete Package',
+      popular: true,
       action: () => setIsDiscountOpen(true),
     },
   ];
@@ -295,9 +297,9 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* 4 Core Features Grid (Bento Box) */}
+        {/* 4 Core Features Grid (Bento Box - Multi-Branch, Cloud Admin, Allergen Filters, 3D Mobile UI) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-14">
-          {/* Feature 1: Multi-Branch & Multi-Language */}
+          {/* Feature 1: Multi-Branch & Multi-Language (TR/EN/AR) */}
           <div className="group rounded-3xl p-8 bg-neutral-900/60 border border-white/10 hover:border-amber-500/30 backdrop-blur-xl transition-all duration-300 relative overflow-hidden flex flex-col justify-between">
             <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/20 transition-all pointer-events-none" />
             <div className="space-y-4 relative z-10">
@@ -306,22 +308,22 @@ export default function LandingPage() {
               </div>
               <h3 className="text-2xl font-bold text-white tracking-tight">
                 {locale === 'tr'
-                  ? 'Çoklu Şube ve Dil Desteği (TR / EN / AR)'
+                  ? 'Çoklu Şube & Dil Yönetimi (TR / EN / AR)'
                   : 'Multi-Branch & Multi-Language (TR/EN/AR)'}
               </h3>
               <p className="text-sm text-white/60 leading-relaxed">
                 {locale === 'tr'
-                  ? 'Türkçe, İngilizce ve Arapça dil seçenekleriyle yerli ve yabancı misafirlerinize anında kendi dillerinde kusursuz dijital menü sunun.'
-                  : 'Deliver dynamic digital menus in Turkish, English, and Arabic to delight both local guests and international travelers.'}
+                  ? 'Türkçe, İngilizce ve Arapça dil seçenekleriyle yerli ve yabancı misafirlerinize anında kendi dillerinde kusursuz dijital menü sunun. Şubelerinizi tek merkezden zahmetsizce yönetin.'
+                  : 'Deliver dynamic digital menus in Turkish, English, and Arabic to delight both local guests and international travelers without requiring app installation.'}
               </p>
             </div>
             <div className="mt-6 pt-4 border-t border-white/5 flex items-center gap-2 text-xs font-bold text-amber-400">
-              <span>Otomatik Dil Algılama & Şube Yönetimi</span>
+              <span>{locale === 'tr' ? 'Otomatik Dil Algılama & Şube Yönetimi' : 'Auto Language Detection & Multi-Branch'}</span>
               <ChevronRight className="w-3.5 h-3.5" />
             </div>
           </div>
 
-          {/* Feature 2: Instant Menu & Price Updating Panel */}
+          {/* Feature 2: Instant Menu & Price Updating Panel (admin.nfcmyplace.com) */}
           <div className="group rounded-3xl p-8 bg-neutral-900/60 border border-white/10 hover:border-amber-500/30 backdrop-blur-xl transition-all duration-300 relative overflow-hidden flex flex-col justify-between">
             <div className="absolute top-0 right-0 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl group-hover:bg-amber-500/20 transition-all pointer-events-none" />
             <div className="space-y-4 relative z-10">
@@ -330,22 +332,22 @@ export default function LandingPage() {
               </div>
               <h3 className="text-2xl font-bold text-white tracking-tight">
                 {locale === 'tr'
-                  ? 'Anlık Menü ve Fiyat Güncelleme Paneli'
-                  : 'Real-Time Menu & Price Update Panel'}
+                  ? 'Anlık Menü & Fiyat Güncelleme'
+                  : 'Instant Menu & Price Updates'}
               </h3>
               <p className="text-sm text-white/60 leading-relaxed">
                 {locale === 'tr'
-                  ? 'Yönetici panelinden saniyeler içinde ürün fiyatlarını revize edin, tükenen ürünleri anında gizleyin ve yeni kampanyalarınızı yayınlayın.'
-                  : 'Update item prices in seconds from your cloud dashboard, instantly toggle out-of-stock items, and launch seasonal promotions.'}
+                  ? 'admin.nfcmyplace.com bulut paneli üzerinden saniyeler içinde ürün fiyatlarını, kategorileri, görselleri ve stok durumunu güncelleyin; yeni kampanyaları anında canlıya alın.'
+                  : 'Instantly update item prices, categories, and stock availability in seconds via admin.nfcmyplace.com dashboard and launch promotions.'}
               </p>
             </div>
             <div className="mt-6 pt-4 border-t border-white/5 flex items-center gap-2 text-xs font-bold text-amber-400">
-              <span>https://admin.nfcmyplace.com Entegrasyonu</span>
+              <span>https://admin.nfcmyplace.com</span>
               <ChevronRight className="w-3.5 h-3.5" />
             </div>
           </div>
 
-          {/* Feature 3: Allergen / Calorie / Dynamic Filters */}
+          {/* Feature 3: Smart Category & Allergen Filters */}
           <div className="group rounded-3xl p-8 bg-neutral-900/60 border border-white/10 hover:border-amber-500/30 backdrop-blur-xl transition-all duration-300 relative overflow-hidden flex flex-col justify-between">
             <div className="absolute top-0 right-0 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl group-hover:bg-emerald-500/20 transition-all pointer-events-none" />
             <div className="space-y-4 relative z-10">
@@ -354,22 +356,22 @@ export default function LandingPage() {
               </div>
               <h3 className="text-2xl font-bold text-white tracking-tight">
                 {locale === 'tr'
-                  ? 'Alerjen, Kalori & Kategori Filtreleri'
-                  : 'Allergen, Calorie & Category Filters'}
+                  ? 'Akıllı Kategori & Alerjen Filtreleri'
+                  : 'Smart Category & Allergen Filters'}
               </h3>
               <p className="text-sm text-white/60 leading-relaxed">
                 {locale === 'tr'
-                  ? 'Glutensiz, vegan, vejetaryen, acı seviyesi ve kalori filtreleri ile misafirlerinizin aradığı lezzete saniyeler içinde ulaşmasını sağlayın.'
-                  : 'Gluten-free, vegan, vegetarian, spice levels, and calorie counts let customers filter their preferences effortlessly.'}
+                  ? 'Vejetaryen, vegan, glutensiz, şefin önerisi ve alerjen etiketleri ile misafirlerinizin menüdeki ürün içeriklerini şeffaf, hızlı ve güvenle filtrelemesini sağlayın.'
+                  : 'Vegetarian, vegan, gluten-free, chef special, and allergen tags allow guests to filter menu ingredients transparently and with complete safety.'}
               </p>
             </div>
             <div className="mt-6 pt-4 border-t border-white/5 flex items-center gap-2 text-xs font-bold text-amber-400">
-              <span>Akıllı Beslenme & Diyet Etiketleri</span>
+              <span>{locale === 'tr' ? 'Şeffaf İçerik & Güvenli Sipariş Deneyimi' : 'Transparent Ingredients & Safe Ordering'}</span>
               <ChevronRight className="w-3.5 h-3.5" />
             </div>
           </div>
 
-          {/* Feature 4: Mobile-Optimized 3D Card UI & Sticky Bar */}
+          {/* Feature 4: Fast 3D Mobile Web UI (60 FPS, Zero App Download) */}
           <div className="group rounded-3xl p-8 bg-neutral-900/60 border border-white/10 hover:border-amber-500/30 backdrop-blur-xl transition-all duration-300 relative overflow-hidden flex flex-col justify-between">
             <div className="absolute top-0 right-0 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl group-hover:bg-purple-500/20 transition-all pointer-events-none" />
             <div className="space-y-4 relative z-10">
@@ -378,17 +380,17 @@ export default function LandingPage() {
               </div>
               <h3 className="text-2xl font-bold text-white tracking-tight">
                 {locale === 'tr'
-                  ? 'Mobil Uyumlu 3D Kart Arayüzü & Yapışkan Bar'
-                  : 'Mobile 3D Card UI & Sticky Category Bar'}
+                  ? 'Hızlı 3D Mobil Web Arayüzü'
+                  : 'Fast 3D Mobile Web Interface'}
               </h3>
               <p className="text-sm text-white/60 leading-relaxed">
                 {locale === 'tr'
-                  ? 'iPhone ve Android telefonlarda 60 FPS ultra akıcı kaydırma, yapışkan kategori sekmeleri ve yüksek çözünürlüklü görsel 3D kartlar.'
-                  : 'Ultra-smooth 60 FPS scrolling on iOS and Android, sticky category navigation, and high-res 3D food cards.'}
+                  ? 'iPhone ve Android telefonlarda 60 FPS ultra akıcı kaydırma, yapışkan kategori sekmeleri ve yüksek çözünürlüklü 3D kart tasarımı. Sıfır uygulama indirme, anında açılış.'
+                  : 'Ultra-smooth 60 FPS scrolling on iOS and Android, sticky category navigation, high-res 3D food cards, and zero app download requirements.'}
               </p>
             </div>
             <div className="mt-6 pt-4 border-t border-white/5 flex items-center gap-2 text-xs font-bold text-amber-400">
-              <span>Sıfır Uygulama İndirme, Anında Açılış</span>
+              <span>{locale === 'tr' ? '60 FPS Akıcı Web Performansı' : '60 FPS Ultra Fast Web Performance'}</span>
               <ChevronRight className="w-3.5 h-3.5" />
             </div>
           </div>
@@ -487,7 +489,7 @@ export default function LandingPage() {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          UNIFIED PRICING GRID (#pricing)
+          UNIFIED PRICING GRID (#pricing) - 3 CORE PACKAGES
           ───────────────────────────────────────────────────────────── */}
       <section
         id="pricing"
@@ -519,7 +521,7 @@ export default function LandingPage() {
                 }`}
               >
                 {card.popular && (
-                  <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-black text-[10px] uppercase tracking-widest shadow-md">
+                  <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-black text-[10px] uppercase tracking-widest shadow-md whitespace-nowrap">
                     ★ {card.badge}
                   </span>
                 )}
@@ -532,10 +534,10 @@ export default function LandingPage() {
                   <p className="text-xs text-white/50 mt-1">{card.subtitle}</p>
 
                   <div className="my-6">
-                    <span className="text-4xl font-black text-amber-400 tracking-tight">
+                    <span className="text-3xl sm:text-4xl font-black text-amber-400 tracking-tight">
                       {card.price}
                     </span>
-                    <span className="text-xs text-white/50 ml-1.5 font-semibold">
+                    <span className="text-xs text-white/50 ml-1.5 font-semibold block sm:inline mt-1 sm:mt-0">
                       {card.unit}
                     </span>
                   </div>

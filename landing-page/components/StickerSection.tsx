@@ -9,12 +9,9 @@ import {
   Minus,
   ArrowUpRight,
   ShieldCheck,
-  Smartphone,
-  QrCode,
+  CheckCircle2,
   Layers,
   Radio,
-  Award,
-  CheckCircle2,
 } from 'lucide-react';
 import type { Locale } from '@/lib/translations';
 import { translations } from '@/lib/translations';
@@ -25,15 +22,12 @@ export interface StickerSectionProps {
 }
 
 export function StickerSection({ locale = 'tr', onOrderClick }: StickerSectionProps) {
-  const [stickerVenueName, setStickerVenueName] = useState<string>('THE CAFE');
-  const [stickerTableNumber, setStickerTableNumber] = useState<string>('MASA 12');
-  const [stickerCurvedText, setStickerCurvedText] = useState<string>(
-    'Menü için qr veya nfc okutabilirsiniz'
-  );
+  const [stickerColor, setStickerColor] = useState<'black' | 'white'>('black');
   const [stickerQuantity, setStickerQuantity] = useState<number>(10);
 
   const t = translations[locale];
   const stickerSubtotal = stickerQuantity * 175;
+  const isWhite = stickerColor === 'white';
 
   return (
     <section
@@ -61,7 +55,7 @@ export function StickerSection({ locale = 'tr', onOrderClick }: StickerSectionPr
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
         {/* ── LEFT: STUDIO PEDESTAL ACRYLIC STICKER SHOWCASE ── */}
-        <div className="lg:col-span-7 relative min-h-[490px] sm:min-h-[540px] rounded-3xl border border-white/10 overflow-hidden p-6 sm:p-8 shadow-2xl flex flex-col justify-between bg-gradient-to-b from-[#16161a] via-[#1a1a22] to-[#222228] backdrop-blur-2xl">
+        <div className="lg:col-span-7 relative min-h-[500px] sm:min-h-[550px] rounded-3xl border border-white/10 overflow-hidden p-6 sm:p-8 shadow-2xl flex flex-col justify-between bg-gradient-to-b from-[#16161a] via-[#1a1a22] to-[#222228] backdrop-blur-2xl">
           {/* Studio Pedestal Lighting */}
           <div
             className="absolute inset-0 pointer-events-none"
@@ -70,7 +64,7 @@ export function StickerSection({ locale = 'tr', onOrderClick }: StickerSectionPr
                 'radial-gradient(ellipse at 50% 45%, rgba(60, 60, 75, 0.35) 0%, rgba(26, 26, 32, 0.7) 60%, rgba(18, 18, 22, 0.95) 100%)',
             }}
           />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-tr from-amber-500/10 via-cyan-500/5 to-transparent blur-3xl pointer-events-none" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-tr from-amber-500/10 via-yellow-500/5 to-transparent blur-3xl pointer-events-none" />
 
           {/* Top Bar: Badges */}
           <div className="relative z-20 flex items-center justify-between flex-wrap gap-2">
@@ -89,57 +83,63 @@ export function StickerSection({ locale = 'tr', onOrderClick }: StickerSectionPr
             </div>
           </div>
 
-          {/* Center Realistic Circular Acrylic Sticker Disc */}
+          {/* Center Realistic Circular Acrylic Sticker Disc (Reference Image 2) */}
           <div className="relative my-auto flex items-center justify-center py-6 z-10">
             {/* Ambient Drop Shadow */}
-            <div className="absolute w-64 h-64 sm:w-72 sm:h-72 rounded-full bg-black/80 blur-2xl pointer-events-none transform translate-y-6" />
+            <div className="absolute w-64 h-64 sm:w-76 sm:h-76 rounded-full bg-black/80 blur-2xl pointer-events-none transform translate-y-6" />
 
-            {/* 2mm Acrylic Disc Body */}
+            {/* 2mm Acrylic Disc Body with Glass Edge Bevels */}
             <motion.div
-              key={`${stickerVenueName}-${stickerTableNumber}-${stickerCurvedText}`}
+              key={stickerColor}
               initial={{ scale: 0.94, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: 'spring', damping: 22, stiffness: 280 }}
-              className="relative w-64 h-64 sm:w-76 sm:h-76 aspect-square rounded-full border-4 border-amber-400/90 bg-gradient-to-b from-[#18181f] via-[#101014] to-[#070709] shadow-2xl flex items-center justify-center select-none ring-2 ring-amber-400/50 group cursor-pointer overflow-hidden"
+              className={`relative w-64 h-64 sm:w-76 sm:h-76 aspect-square rounded-full border-4 shadow-2xl flex items-center justify-center select-none group cursor-pointer overflow-hidden ${
+                isWhite
+                  ? 'border-amber-400/80 bg-gradient-to-b from-[#ffffff] via-[#f8fafc] to-[#e2e8f0] ring-2 ring-amber-400/40'
+                  : 'border-amber-400/90 bg-gradient-to-b from-[#18181f] via-[#101014] to-[#070709] ring-2 ring-amber-400/50'
+              }`}
             >
               {/* Glossy Acrylic Diagonal Clearcoat Reflection */}
               <div
                 className="absolute inset-0 pointer-events-none rounded-full"
                 style={{
                   background:
-                    'linear-gradient(135deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.05) 38%, transparent 58%, rgba(255,255,255,0.12) 100%)',
+                    'linear-gradient(135deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.06) 38%, transparent 58%, rgba(255,255,255,0.15) 100%)',
                 }}
               />
 
-              {/* ── SVG HIGH PRECISION VECTOR GRAPHIC ── */}
+              {/* Polished Glass Outer Bevel Rim */}
+              <div
+                className="absolute inset-1 rounded-full pointer-events-none border"
+                style={{
+                  borderColor: isWhite ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.15)',
+                }}
+              />
+
+              {/* ── SVG HIGH PRECISION VECTOR GRAPHIC (IMAGE 2 EXACT SPEC) ── */}
               <svg
                 viewBox="0 0 320 320"
-                className="w-full h-full p-2 relative z-10"
+                className="w-full h-full p-2.5 relative z-10"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <defs>
-                  {/* Arc Path for Curved Text (Upper Arc) */}
+                  {/* Arc Path for Bottom Curved Text "MENÜYÜ GÖRÜNTÜLEYİN" */}
                   <path
-                    id="topTextArc"
-                    d="M 36,160 A 124,124 0 1,1 284,160"
-                    fill="none"
-                  />
-                  {/* Arc Path for Curved Text (Lower Arc) */}
-                  <path
-                    id="bottomTextArc"
+                    id="stickerBottomArc"
                     d="M 38,160 A 122,122 0 0,0 282,160"
                     fill="none"
                   />
 
                   {/* Golden Metallic Gradient */}
-                  <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <linearGradient id="stickerGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" stopColor="#fde047" />
                     <stop offset="50%" stopColor="#f59e0b" />
                     <stop offset="100%" stopColor="#d97706" />
                   </linearGradient>
 
-                  <linearGradient id="goldGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <linearGradient id="stickerGoldGlow" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%" stopColor="#fbbf24" stopOpacity="0.8" />
                     <stop offset="100%" stopColor="#f59e0b" stopOpacity="0.8" />
                   </linearGradient>
@@ -150,175 +150,160 @@ export function StickerSection({ locale = 'tr', onOrderClick }: StickerSectionPr
                   cx="160"
                   cy="160"
                   r="148"
-                  stroke="url(#goldGrad)"
-                  strokeWidth="2"
-                  strokeDasharray="4 2"
+                  stroke="url(#stickerGoldGrad)"
+                  strokeWidth="2.2"
                 />
 
                 {/* Inner Precision Hairline Ring */}
                 <circle
                   cx="160"
                   cy="160"
-                  r="138"
-                  stroke="rgba(251, 191, 36, 0.4)"
+                  r="140"
+                  stroke="rgba(251, 191, 36, 0.45)"
                   strokeWidth="1.2"
                 />
 
-                {/* ── 1. TOP VENUE LOGO SLOT ── */}
-                <g transform="translate(160, 48)">
-                  <path
-                    d="M -14,-8 L -7,-2 L 0,-10 L 7,-2 L 14,-8 L 11,2 L -11,2 Z"
-                    fill="url(#goldGrad)"
-                  />
+                {/* ── 1. HEADER: CROSSED FORK & KNIFE EMBLEM + "MENU" + "— TARAYIN —" ── */}
+                <g transform="translate(160, 44)">
+                  {/* Crossed Fork & Knife (🍴) Emblem */}
+                  <g transform="translate(0, 0)">
+                    {/* Fork (Left to Right crossing) */}
+                    <g transform="rotate(-30)">
+                      {/* Fork Handle */}
+                      <path
+                        d="M 0,2 L 0,16"
+                        stroke="url(#stickerGoldGrad)"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                      />
+                      {/* Fork Base */}
+                      <path
+                        d="M -4,-2 C -4,2 4,2 4,-2"
+                        stroke="url(#stickerGoldGrad)"
+                        strokeWidth="1.4"
+                        fill="none"
+                      />
+                      {/* 3 Prongs */}
+                      <line x1="-3.5" y1="-2" x2="-3.5" y2="-9" stroke="url(#stickerGoldGrad)" strokeWidth="1.2" strokeLinecap="round" />
+                      <line x1="0" y1="-2" x2="0" y2="-10" stroke="url(#stickerGoldGrad)" strokeWidth="1.2" strokeLinecap="round" />
+                      <line x1="3.5" y1="-2" x2="3.5" y2="-9" stroke="url(#stickerGoldGrad)" strokeWidth="1.2" strokeLinecap="round" />
+                    </g>
+
+                    {/* Knife (Right to Left crossing) */}
+                    <g transform="rotate(30)">
+                      {/* Knife Handle */}
+                      <path
+                        d="M 0,2 L 0,16"
+                        stroke="url(#stickerGoldGrad)"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                      />
+                      {/* Knife Blade */}
+                      <path
+                        d="M 0,2 L 0,-10 C 0,-10 4.5,-7 4.5,-2 C 4.5,2 0,2 0,2 Z"
+                        fill="url(#stickerGoldGrad)"
+                      />
+                    </g>
+                  </g>
+
+                  {/* "MENU" Typography */}
                   <text
-                    y="18"
+                    y="27"
                     textAnchor="middle"
-                    fill="#fde047"
-                    fontSize="13"
+                    fill="url(#stickerGoldGrad)"
+                    fontSize="16"
                     fontWeight="900"
                     letterSpacing="3.5"
                     className="uppercase font-sans"
                   >
-                    {stickerVenueName || 'THE CAFE'}
+                    MENU
+                  </text>
+
+                  {/* Sub-line: "— TARAYIN —" */}
+                  <text
+                    y="39"
+                    textAnchor="middle"
+                    fill={isWhite ? '#b45309' : '#fbbf24'}
+                    fontSize="8.5"
+                    fontWeight="800"
+                    letterSpacing="2"
+                    className="uppercase font-sans opacity-90"
+                  >
+                    — TARAYIN —
                   </text>
                 </g>
 
-                {/* ── 2. ARCHED CURVED TEXT: "Menü için qr veya nfc okutabilirsiniz" ── */}
-                <text
-                  fontSize="9.2"
-                  fontWeight="700"
-                  fill="#ffffff"
-                  letterSpacing="1.2"
-                  className="uppercase tracking-widest font-sans drop-shadow-sm"
-                >
-                  <textPath
-                    href="#topTextArc"
-                    startOffset="50%"
-                    textAnchor="middle"
-                  >
-                    {stickerCurvedText || 'Menü için qr veya nfc okutabilirsiniz'}
-                  </textPath>
-                </text>
-
-                {/* ── 3. CONCENTRIC ARC LINES AROUND CENTRAL QR CODE ── */}
-                {/* Left Concentric NFC Waves */}
-                <g stroke="#fbbf24" strokeWidth="2.2" strokeLinecap="round" opacity="0.85">
-                  <path d="M 88,132 A 40,40 0 0,0 88,188" />
-                  <path d="M 74,122 A 56,56 0 0,0 74,198" strokeWidth="1.8" opacity="0.65" />
-                  <path d="M 60,112 A 72,72 0 0,0 60,208" strokeWidth="1.4" opacity="0.45" />
+                {/* ── 2. SIDES: GOLD CONCENTRIC NFC RADAR ARCS ((( ))) ── */}
+                {/* Left Concentric Radar Arcs */}
+                <g stroke="url(#stickerGoldGrad)" strokeWidth="2.4" strokeLinecap="round" opacity="0.9">
+                  <path d="M 88,136 A 36,36 0 0,0 88,184" />
+                  <path d="M 74,124 A 52,52 0 0,0 74,196" strokeWidth="2.0" opacity="0.7" />
+                  <path d="M 60,112 A 68,68 0 0,0 60,208" strokeWidth="1.5" opacity="0.45" />
                 </g>
 
-                {/* Right Concentric NFC Waves */}
-                <g stroke="#fbbf24" strokeWidth="2.2" strokeLinecap="round" opacity="0.85">
-                  <path d="M 232,132 A 40,40 0 0,1 232,188" />
-                  <path d="M 246,122 A 56,56 0 0,1 246,198" strokeWidth="1.8" opacity="0.65" />
-                  <path d="M 260,112 A 72,72 0 0,1 260,208" strokeWidth="1.4" opacity="0.45" />
+                {/* Right Concentric Radar Arcs */}
+                <g stroke="url(#stickerGoldGrad)" strokeWidth="2.4" strokeLinecap="round" opacity="0.9">
+                  <path d="M 232,136 A 36,36 0 0,1 232,184" />
+                  <path d="M 246,124 A 52,52 0 0,1 246,196" strokeWidth="2.0" opacity="0.7" />
+                  <path d="M 260,112 A 68,68 0 0,1 260,208" strokeWidth="1.5" opacity="0.45" />
                 </g>
 
-                {/* ── 4. DUAL SMARTPHONE TAP GESTURE ICONS ON SIDES ── */}
-                {/* Left Smartphone */}
-                <g transform="translate(42, 160) rotate(14)">
-                  <rect
-                    x="-10"
-                    y="-18"
-                    width="20"
-                    height="36"
-                    rx="4"
-                    fill="#15151c"
-                    stroke="#fbbf24"
-                    strokeWidth="1.8"
-                  />
-                  <rect
-                    x="-7"
-                    y="-13"
-                    width="14"
-                    height="26"
-                    rx="2"
-                    fill="#0d0d10"
-                  />
-                  <path
-                    d="M 12,-6 A 8,8 0 0,1 12,6"
-                    stroke="#f59e0b"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    fill="none"
-                  />
-                  <path
-                    d="M 16,-10 A 14,14 0 0,1 16,10"
-                    stroke="#fde047"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    fill="none"
-                  />
-                </g>
-
-                {/* Right Smartphone */}
-                <g transform="translate(278, 160) rotate(-14)">
-                  <rect
-                    x="-10"
-                    y="-18"
-                    width="20"
-                    height="36"
-                    rx="4"
-                    fill="#15151c"
-                    stroke="#fbbf24"
-                    strokeWidth="1.8"
-                  />
-                  <rect
-                    x="-7"
-                    y="-13"
-                    width="14"
-                    height="26"
-                    rx="2"
-                    fill="#0d0d10"
-                  />
-                  <path
-                    d="M -12,-6 A 8,8 0 0,0 -12,6"
-                    stroke="#f59e0b"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    fill="none"
-                  />
-                  <path
-                    d="M -16,-10 A 14,14 0 0,0 -16,10"
-                    stroke="#fde047"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    fill="none"
-                  />
-                </g>
-
-                {/* ── 5. CENTRAL QR CODE CONTAINER CARD ── */}
+                {/* ── 3. CENTER: SQUARE QR MATRIX WITH DOUBLE ROUNDED CORNER BRACKETS [ QR ] ── */}
                 <g transform="translate(160, 160)">
+                  {/* Outer Corner Brackets [ ] */}
+                  <g stroke="url(#stickerGoldGrad)" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" fill="none">
+                    {/* Top-Left Bracket */}
+                    <path d="M -54,-38 L -54,-50 A 6,6 0 0,1 -48,-56 L -36,-56" />
+                    {/* Top-Right Bracket */}
+                    <path d="M 36,-56 L 48,-56 A 6,6 0 0,1 54,-50 L 54,-38" />
+                    {/* Bottom-Left Bracket */}
+                    <path d="M -54,38 L -54,50 A 6,6 0 0,0 -48,56 L -36,56" />
+                    {/* Bottom-Right Bracket */}
+                    <path d="M 36,56 L 48,56 A 6,6 0 0,0 54,50 L 54,38" />
+                  </g>
+
+                  {/* Inner Fine Corner Brackets */}
+                  <g stroke="rgba(251, 191, 36, 0.5)" strokeWidth="1.2" strokeLinecap="round" fill="none">
+                    <path d="M -48,-36 L -48,-46 A 3,3 0 0,1 -45,-49 L -35,-49" />
+                    <path d="M 35,-49 L 45,-49 A 3,3 0 0,1 48,-46 L 48,-36" />
+                    <path d="M -48,36 L -48,46 A 3,3 0 0,0 -45,49 L -35,49" />
+                    <path d="M 35,49 L 45,49 A 3,3 0 0,0 48,46 L 48,36" />
+                  </g>
+
+                  {/* QR Background Card */}
                   <rect
-                    x="-46"
-                    y="-46"
-                    width="92"
-                    height="92"
-                    rx="14"
+                    x="-42"
+                    y="-42"
+                    width="84"
+                    height="84"
+                    rx="12"
                     fill="#ffffff"
-                    stroke="url(#goldGrad)"
-                    strokeWidth="3.2"
+                    stroke="url(#stickerGoldGrad)"
+                    strokeWidth="2.2"
                   />
 
                   {/* Scannable Crisp QR Code Matrix */}
-                  <rect x="-36" y="-36" width="24" height="24" fill="#0a0a0c" rx="4" />
-                  <rect x="-32" y="-32" width="16" height="16" fill="#ffffff" rx="2" />
-                  <rect x="-28" y="-28" width="8" height="8" fill="#0a0a0c" rx="1.5" />
+                  {/* Top-Left Finder */}
+                  <rect x="-34" y="-34" width="22" height="22" fill="#0a0a0c" rx="3.5" />
+                  <rect x="-30" y="-30" width="14" height="14" fill="#ffffff" rx="2" />
+                  <rect x="-27" y="-27" width="8" height="8" fill="#0a0a0c" rx="1.5" />
 
-                  <rect x="12" y="-36" width="24" height="24" fill="#0a0a0c" rx="4" />
-                  <rect x="16" y="-32" width="16" height="16" fill="#ffffff" rx="2" />
-                  <rect x="20" y="-28" width="8" height="8" fill="#0a0a0c" rx="1.5" />
+                  {/* Top-Right Finder */}
+                  <rect x="12" y="-34" width="22" height="22" fill="#0a0a0c" rx="3.5" />
+                  <rect x="16" y="-30" width="14" height="14" fill="#ffffff" rx="2" />
+                  <rect x="19" y="-27" width="8" height="8" fill="#0a0a0c" rx="1.5" />
 
-                  <rect x="-36" y="12" width="24" height="24" fill="#0a0a0c" rx="4" />
-                  <rect x="-32" y="16" width="16" height="16" fill="#ffffff" rx="2" />
-                  <rect x="-28" y="20" width="8" height="8" fill="#0a0a0c" rx="1.5" />
+                  {/* Bottom-Left Finder */}
+                  <rect x="-34" y="12" width="22" height="22" fill="#0a0a0c" rx="3.5" />
+                  <rect x="-30" y="16" width="14" height="14" fill="#ffffff" rx="2" />
+                  <rect x="-27" y="19" width="8" height="8" fill="#0a0a0c" rx="1.5" />
 
-                  <rect x="-6" y="-36" width="4" height="4" fill="#0a0a0c" />
-                  <rect x="2" y="-36" width="4" height="4" fill="#0a0a0c" />
-                  <rect x="-6" y="-28" width="4" height="4" fill="#0a0a0c" />
-                  <rect x="-36" y="-6" width="4" height="4" fill="#0a0a0c" />
-                  <rect x="-28" y="-6" width="4" height="4" fill="#0a0a0c" />
+                  {/* QR Data Cells */}
+                  <rect x="-6" y="-34" width="4" height="4" fill="#0a0a0c" />
+                  <rect x="2" y="-34" width="4" height="4" fill="#0a0a0c" />
+                  <rect x="-6" y="-26" width="4" height="4" fill="#0a0a0c" />
+                  <rect x="-34" y="-6" width="4" height="4" fill="#0a0a0c" />
+                  <rect x="-26" y="-6" width="4" height="4" fill="#0a0a0c" />
                   <rect x="20" y="-6" width="4" height="4" fill="#0a0a0c" />
                   <rect x="28" y="-6" width="4" height="4" fill="#0a0a0c" />
                   <rect x="-6" y="20" width="4" height="4" fill="#0a0a0c" />
@@ -330,51 +315,50 @@ export function StickerSection({ locale = 'tr', onOrderClick }: StickerSectionPr
                   <rect x="12" y="28" width="4" height="4" fill="#0a0a0c" />
 
                   {/* Center Mini NFC Badge */}
-                  <circle cx="0" cy="0" r="10" fill="#ffffff" stroke="#f59e0b" strokeWidth="1.5" />
+                  <circle cx="0" cy="0" r="9" fill="#ffffff" stroke="#f59e0b" strokeWidth="1.5" />
                   <text
                     x="0"
                     y="3"
                     textAnchor="middle"
                     fill="#0a0a0c"
-                    fontSize="7"
+                    fontSize="6.5"
                     fontWeight="900"
                   >
                     NFC
                   </text>
                 </g>
 
-                {/* ── 6. BOTTOM TABLE NUMBER BADGE ── */}
-                <g transform="translate(160, 260)">
-                  <rect
-                    x="-55"
-                    y="-14"
-                    width="110"
-                    height="28"
-                    rx="14"
-                    fill="#15151c"
-                    stroke="url(#goldGrad)"
-                    strokeWidth="1.8"
-                  />
-                  <text
-                    y="4"
+                {/* ── 4. BOTTOM: CURVED SUBTEXT "MENÜYÜ GÖRÜNTÜLEYİN" + 3 GOLD ACCENT DOTS ── */}
+                <text
+                  fontSize="10"
+                  fontWeight="800"
+                  fill={isWhite ? '#1e293b' : '#ffffff'}
+                  letterSpacing="2.2"
+                  className="uppercase tracking-widest font-sans drop-shadow-sm"
+                >
+                  <textPath
+                    href="#stickerBottomArc"
+                    startOffset="50%"
                     textAnchor="middle"
-                    fill="#fde047"
-                    fontSize="11.5"
-                    fontWeight="900"
-                    letterSpacing="2"
-                    className="font-mono uppercase"
                   >
-                    {stickerTableNumber || 'MASA 12'}
-                  </text>
+                    MENÜYÜ GÖRÜNTÜLEYİN
+                  </textPath>
+                </text>
+
+                {/* 3 Gold Accent Dots ••• */}
+                <g transform="translate(160, 276)">
+                  <circle cx="-12" cy="0" r="2.8" fill="url(#stickerGoldGrad)" />
+                  <circle cx="0" cy="0" r="3.4" fill="url(#stickerGoldGrad)" />
+                  <circle cx="12" cy="0" r="2.8" fill="url(#stickerGoldGrad)" />
                 </g>
 
-                {/* Bottom Micro Tag */}
+                {/* Micro Footer Tag */}
                 <text
                   x="160"
                   y="298"
                   textAnchor="middle"
-                  fill="rgba(255,255,255,0.4)"
-                  fontSize="7.5"
+                  fill={isWhite ? 'rgba(0,0,0,0.35)' : 'rgba(255,255,255,0.35)'}
+                  fontSize="7"
                   fontWeight="600"
                   letterSpacing="1"
                 >
@@ -391,7 +375,9 @@ export function StickerSection({ locale = 'tr', onOrderClick }: StickerSectionPr
                 {locale === 'tr' ? 'Ø 65mm Lazer Pleksi Akrilik & 3M VHB' : 'Ø 65mm Laser Acrylic & 3M VHB'}
               </h4>
               <p className="text-xs text-white/50">
-                {locale === 'tr' ? 'IP68 Sıvı Geçirmez, solmaz UV baskı' : 'IP68 Waterproof, UV-resistant print'}
+                {isWhite
+                  ? (locale === 'tr' ? 'Kristal Beyaz Akrilik • IP68 Sıvı Geçirmez' : 'Crystal White Acrylic • IP68 Waterproof')
+                  : (locale === 'tr' ? 'Obsidyen Siyah Akrilik • IP68 Sıvı Geçirmez' : 'Obsidian Black Acrylic • IP68 Waterproof')}
               </p>
             </div>
             <div className="text-right">
@@ -403,53 +389,62 @@ export function StickerSection({ locale = 'tr', onOrderClick }: StickerSectionPr
 
         {/* ── RIGHT: LIVE CUSTOMIZER & QUANTITY CALCULATOR ── */}
         <div className="lg:col-span-5 flex flex-col justify-between gap-6">
-          {/* Customizer Card */}
+          {/* Color Switcher Card */}
           <div className="rounded-3xl border border-white/10 bg-neutral-900/80 backdrop-blur-xl p-6 shadow-2xl space-y-4">
             <h4 className="text-sm font-black uppercase tracking-wider text-amber-400 flex items-center gap-2">
               <Palette className="w-4 h-4 text-amber-400" />
-              <span>{locale === 'tr' ? 'Masa Stickerı Kişiselleştirme' : 'Table Sticker Customizer'}</span>
+              <span>{locale === 'tr' ? 'Masa Stickerı Rengi' : 'Table Sticker Color'}</span>
             </h4>
 
-            {/* Venue Name Input */}
-            <div className="space-y-1">
-              <label className="text-xs font-bold text-white/70 block">
-                {locale === 'tr' ? 'Mekan Adı / Logo Başlığı' : 'Venue Name / Logo'}
-              </label>
-              <input
-                type="text"
-                value={stickerVenueName}
-                onChange={(e) => setStickerVenueName(e.target.value)}
-                placeholder="THE CAFE"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-950 border border-white/10 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-amber-500 transition-all font-bold uppercase tracking-wider"
-              />
+            {/* Color Switcher: Siyah Akrilik vs Beyaz Akrilik */}
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setStickerColor('black')}
+                className={`p-3.5 rounded-2xl border text-left text-xs font-bold flex items-center gap-2.5 transition-all cursor-pointer ${
+                  stickerColor === 'black'
+                    ? 'border-amber-500 bg-amber-500/15 text-white ring-2 ring-amber-500/40 shadow-lg shadow-amber-500/10'
+                    : 'border-white/10 bg-white/[0.03] text-white/60 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <span className="w-4 h-4 rounded-full border border-neutral-700 bg-neutral-950 shrink-0 shadow-inner" />
+                <div className="truncate">
+                  <span className="block font-bold">{locale === 'tr' ? 'Siyah Akrilik' : 'Black Acrylic'}</span>
+                </div>
+                {stickerColor === 'black' && <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 ml-auto shrink-0" />}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setStickerColor('white')}
+                className={`p-3.5 rounded-2xl border text-left text-xs font-bold flex items-center gap-2.5 transition-all cursor-pointer ${
+                  stickerColor === 'white'
+                    ? 'border-amber-500 bg-amber-500/15 text-white ring-2 ring-amber-500/40 shadow-lg shadow-amber-500/10'
+                    : 'border-white/10 bg-white/[0.03] text-white/60 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <span className="w-4 h-4 rounded-full border border-slate-300 bg-white shrink-0 shadow-sm" />
+                <div className="truncate">
+                  <span className="block font-bold">{locale === 'tr' ? 'Beyaz Akrilik' : 'White Acrylic'}</span>
+                </div>
+                {stickerColor === 'white' && <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 ml-auto shrink-0" />}
+              </button>
             </div>
 
-            {/* Table Number Badge Input */}
-            <div className="space-y-1">
-              <label className="text-xs font-bold text-white/70 block">
-                {locale === 'tr' ? 'Masa Numarası Rozeti' : 'Table Number Badge'}
-              </label>
-              <input
-                type="text"
-                value={stickerTableNumber}
-                onChange={(e) => setStickerTableNumber(e.target.value)}
-                placeholder="MASA 12"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-950 border border-white/10 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-amber-500 transition-all font-mono font-bold uppercase"
-              />
-            </div>
-
-            {/* Arched Curved Text Input */}
-            <div className="space-y-1">
-              <label className="text-xs font-bold text-white/70 block">
-                {locale === 'tr' ? 'Kavisli Kenar Yazısı' : 'Arched Curved Border Text'}
-              </label>
-              <input
-                type="text"
-                value={stickerCurvedText}
-                onChange={(e) => setStickerCurvedText(e.target.value)}
-                placeholder="Menü için qr veya nfc okutabilirsiniz"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-950 border border-white/10 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-amber-500 transition-all font-semibold"
-              />
+            {/* Feature specs list */}
+            <div className="pt-2 space-y-2 text-xs text-white/70">
+              <div className="flex items-center gap-2 p-2 rounded-xl bg-white/[0.02] border border-white/5">
+                <Layers className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <span>{locale === 'tr' ? '2mm Lazer Kesim Pleksi Akrilik Gövde' : '2mm Laser Cut Plexi Acrylic Body'}</span>
+              </div>
+              <div className="flex items-center gap-2 p-2 rounded-xl bg-white/[0.02] border border-white/5">
+                <Radio className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <span>{locale === 'tr' ? 'NTAG213 Çip & Yüksek Kontrastlı QR Matrisi' : 'NTAG213 Chip & High Contrast QR Matrix'}</span>
+              </div>
+              <div className="flex items-center gap-2 p-2 rounded-xl bg-white/[0.02] border border-white/5">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <span>{locale === 'tr' ? '3M Endüstriyel VHB Güçlü Su Geçirmez Yapışkan' : '3M Industrial VHB Heavy-Duty Waterproof Bond'}</span>
+              </div>
             </div>
           </div>
 
@@ -542,4 +537,3 @@ export function StickerSection({ locale = 'tr', onOrderClick }: StickerSectionPr
 }
 
 export default StickerSection;
-

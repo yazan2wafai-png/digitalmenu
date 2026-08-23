@@ -1,7 +1,6 @@
 'use client';
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { motion } from 'framer-motion';
 import {
   Sparkles,
   Layers,
@@ -16,7 +15,6 @@ import {
 } from 'lucide-react';
 import type { Locale } from '@/lib/translations';
 import { translations } from '@/lib/translations';
-import type { StandTemplate } from './Stand3D';
 export { StickerSection } from './StickerSection';
 
 // Dynamic SSR-safe import for Three.js WebGL 3D L-Stand
@@ -76,9 +74,9 @@ export function NFCShowcase({ locale = 'tr', onOrderClick }: Props) {
           <span>{t.stand.badge}</span>
         </div>
         <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-white">
-          {locale === 'tr' ? 'Özel Desenli NFC & QR ' : 'Custom Pattern NFC & QR '}
+          {locale === 'tr' ? 'Özel Kurumsal Tasarım ' : 'Custom Corporate Design '}
           <span className="bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 bg-clip-text text-transparent">
-            {locale === 'tr' ? 'Google Değerlendirme Standı' : 'Google Review Stand'}
+            {locale === 'tr' ? 'NFC & QR Google Değerlendirme Standı' : 'NFC & QR Google Review Stand'}
           </span>
         </h2>
         <p className="text-sm sm:text-base text-white/60 max-w-2xl mx-auto leading-relaxed">
@@ -156,7 +154,7 @@ export function NFCShowcase({ locale = 'tr', onOrderClick }: Props) {
               <h3 className="text-base sm:text-lg font-black text-white">{t.stand.title}</h3>
               <p className="text-xs text-white/50">
                 {whiteMode
-                  ? (locale === 'tr' ? 'Parlak Buzlu Beyaz Akrilik Gövde' : 'Glossy Frost White Acrylic Body')
+                  ? (locale === 'tr' ? 'Mat Frost Beyaz Akrilik Gövde' : 'Matte Frost White Acrylic Body')
                   : (locale === 'tr' ? 'Mat Obsidyen Siyah Akrilik Gövde' : 'Matte Obsidian Black Acrylic Body')}
                 {' • '}
                 {locale === 'tr' ? '75° Ergonomik Görüş Açısı' : '75° Ergonomic Inclination'}
@@ -188,7 +186,7 @@ export function NFCShowcase({ locale = 'tr', onOrderClick }: Props) {
               <span>{locale === 'tr' ? 'Gövde Rengi Seçimi' : 'Body Color Selection'}</span>
             </h4>
 
-            {/* Gövde Rengi: Mat Siyah vs Parlak Beyaz */}
+            {/* Gövde Rengi: Mat Siyah vs Mat Beyaz */}
             <div className="space-y-2">
               <label className="text-xs font-bold text-white/80 flex items-center gap-1.5">
                 <Palette className="w-3.5 h-3.5 text-amber-400" />
@@ -222,7 +220,7 @@ export function NFCShowcase({ locale = 'tr', onOrderClick }: Props) {
                 >
                   <span className="w-4 h-4 rounded-full border border-slate-300 bg-white shrink-0 shadow-sm" />
                   <div className="truncate">
-                    <span className="block font-bold">{locale === 'tr' ? 'Parlak Beyaz' : 'Glossy White'}</span>
+                    <span className="block font-bold">{locale === 'tr' ? 'Mat Beyaz' : 'Matte White'}</span>
                   </div>
                   {whiteMode && <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 ml-auto shrink-0" />}
                 </button>
@@ -239,7 +237,7 @@ export function NFCShowcase({ locale = 'tr', onOrderClick }: Props) {
                   <span className="text-xl font-black text-amber-400">1.750 TL <span className="text-xs font-medium text-white/50">{locale === 'tr' ? '/ Adet' : '/ Unit'}</span></span>
                 </div>
                 <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">
-                  {locale === 'tr' ? 'Stokta Hazır' : 'In Stock'}
+                  {locale === 'tr' ? 'Özel Baskı Dahil' : 'Custom Print Included'}
                 </span>
               </div>
 
@@ -254,7 +252,7 @@ export function NFCShowcase({ locale = 'tr', onOrderClick }: Props) {
             </div>
           </div>
 
-          {/* Donanım Özellikleri Kartı (75° Monolitik Pleksi, NTAG213 Hibrit Çip, <0.2sn Temassız Okuma) */}
+          {/* Donanım Özellikleri Kartı */}
           <div className="rounded-3xl border border-white/10 bg-neutral-900/60 backdrop-blur-xl p-5 shadow-2xl space-y-3.5">
             <h4 className="text-xs font-black uppercase tracking-wider text-amber-400 flex items-center gap-2">
               <Cpu className="w-3.5 h-3.5 text-amber-400" />
@@ -301,4 +299,3 @@ export function NFCShowcase({ locale = 'tr', onOrderClick }: Props) {
 }
 
 export default NFCShowcase;
-

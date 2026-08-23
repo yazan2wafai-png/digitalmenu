@@ -14,7 +14,7 @@ export const translations = {
       badge: '⚡ Fiziksel NFC Donanımları & Akıllı Menü SaaS',
       title: 'Fiziksel dünyayı dijitalle buluştur.',
       tagline: 'Restoranlar ve kafeler için yeni nesil NFC & QR akıllı masa donanımları ve bulut tabanlı dijital menü SaaS altyapısı.',
-      primaryCta: '3D Standı Özelleştir ↓',
+      primaryCta: '3D Standı İncele ↓',
       secondaryCta: 'Canlı Demoları İncele →',
       stats: {
         venues: '500+ Aktif Masa',
@@ -25,8 +25,8 @@ export const translations = {
     },
     stand: {
       badge: 'Hizmet 1: Amiral Gemisi Donanım',
-      title: 'Özel Desenli NFC & QR Google Değerlendirme Standı',
-      subtitle: '75° ergonomik açılı monolitik akrilik gövde, Google 5 yıldız yorum rozeti ve çift kanallı NFC çipi ile Google Haritalar puanınızı katlayın.',
+      title: 'NFC & QR Google Değerlendirme Standı',
+      subtitle: '75° ergonomik açılı monolitik akrilik gövde, NTAG213 temassız çip ve restoranınıza özel kurumsal tasarım baskı ile Google puanınızı katlayın.',
       unitPrice: '1.750 TL / Adet',
       dragHint: '🖱️ 360° Döndürmek İçin Sürükleyin',
     },
@@ -40,7 +40,7 @@ export const translations = {
     saas: {
       badge: 'Hizmet 3: Bulut Menü Altyapısı',
       title: 'Restoran Dijital Menü SaaS Altyapısı',
-      subtitle: 'Sıfır komisyon, anlık fiyat ve stok güncelleme, çoklu dil desteği ve mobil uyumlu 3D kart arayüzü ile eksiksiz restoran menü yazılımı.',
+      subtitle: 'Sıfır komisyon, anlık bulut yönetim paneli, çoklu dil desteği (TR/EN/AR) ve alerjen bilgilendirmeli mobil 3D kart arayüzü ile eksiksiz restoran menü altyapısı.',
       price: '3.000 TL',
       priceSub: 'Kurulum & Yıllık Altyapı',
       baltazarTag: 'Gourmet Burger & Bistro',
@@ -52,7 +52,7 @@ export const translations = {
     },
     pricing: {
       badge: 'Şeffaf Fiyatlandırma',
-      title: 'İhtiyacınıza Uygun 3 Temel Hizmet',
+      title: 'İhtiyacınıza Uygun 3 Temel Çözüm & Paket',
       subtitle: 'Gizli ücret yok. Donanım ve SaaS çözümlerimizle mekanınızı 24 saatte dönüştürün.',
     },
     modal: {
@@ -85,7 +85,7 @@ export const translations = {
       badge: '⚡ Physical NFC Hardware & Smart Menu SaaS',
       title: 'Bridge the physical world with digital.',
       tagline: 'Next-generation NFC & QR smart table hardware and cloud digital menu SaaS infrastructure for restaurants and cafes.',
-      primaryCta: 'Customize 3D Stand ↓',
+      primaryCta: 'Explore 3D Stand ↓',
       secondaryCta: 'Explore Live Demos →',
       stats: {
         venues: '500+ Active Tables',
@@ -96,8 +96,8 @@ export const translations = {
     },
     stand: {
       badge: 'Service 1: Flagship Hardware',
-      title: 'Custom Pattern NFC & QR Google Review Stand',
-      subtitle: '75° ergonomic inclined acrylic monolithic body, Google 5-star review badge, and dual-coil NFC chip to multiply your Google Maps rating.',
+      title: 'NFC & QR Google Review Stand',
+      subtitle: '75° ergonomic inclined acrylic monolithic body, NTAG213 contactless chip, and custom corporate design print to multiply your Google Maps rating.',
       unitPrice: '1,750 TL / Unit',
       dragHint: '🖱️ Drag to Rotate 360°',
     },
@@ -111,7 +111,7 @@ export const translations = {
     saas: {
       badge: 'Service 3: Cloud Menu Platform',
       title: 'Restaurant Digital Menu SaaS Infrastructure',
-      subtitle: 'Zero commission, instant price/stock updates, multi-language support, and mobile-ready 3D card UI for modern dining venues.',
+      subtitle: 'Zero commission, instant cloud dashboard, multi-language support (TR/EN/AR), and allergen-aware mobile 3D card UI for modern dining venues.',
       price: '3,000 TL',
       priceSub: 'Setup & Annual Cloud Infrastructure',
       baltazarTag: 'Gourmet Burger & Bistro',
@@ -123,7 +123,7 @@ export const translations = {
     },
     pricing: {
       badge: 'Transparent Pricing',
-      title: '3 Core Services Built for Hospitality',
+      title: '3 Core Packages Built for Hospitality',
       subtitle: 'No hidden fees. Transform your venue with our smart hardware and cloud SaaS in 24 hours.',
     },
     modal: {
@@ -144,4 +144,3 @@ export const translations = {
     },
   },
 };
-
