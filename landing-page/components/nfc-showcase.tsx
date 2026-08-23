@@ -72,6 +72,7 @@ export function NFCShowcase({ locale = 'tr' }: Props) {
 
   // L-Stand Customizer State
   const [whiteMode, setWhiteMode] = useState<boolean>(true); // Default to Glossy Frost White as in reference image
+  const [branding, setBranding] = useState<boolean>(true);
   const [logoText, setLogoText] = useState<string>('Baltazar');
   const [businessName, setBusinessName] = useState<string>('Gourmet Burger & Bistro');
   const [qrText, setQrText] = useState<string>('baltazar.nfcmyplace.com');
@@ -306,6 +307,7 @@ export function NFCShowcase({ locale = 'tr' }: Props) {
               <div className="w-full h-full cursor-grab active:cursor-grabbing">
                 <DynamicStand3D
                   white={whiteMode}
+                  branding={branding}
                   logoText={logoText}
                   businessName={businessName}
                   qrText={qrText}
@@ -549,6 +551,32 @@ export function NFCShowcase({ locale = 'tr' }: Props) {
                   <span
                     className={`block w-4 h-4 rounded-full bg-white transition-transform ${
                       showStars ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {/* Branding Badges Toggle */}
+              <div className="pt-2 border-t border-white/5 flex items-center justify-between">
+                <div>
+                  <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                    <Award className="w-3.5 h-3.5 text-amber-400" />
+                    <span>{locale === 'tr' ? 'Özel Marka Rozetleri' : 'Custom Brand Badges'}</span>
+                  </div>
+                  <div className="text-[11px] text-white/50">
+                    {locale === 'tr' ? 'Logo ve işletme adı rozetlerini göster' : 'Show logo & business name pills'}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setBranding(!branding)}
+                  className={`w-11 h-6 rounded-full transition-colors relative cursor-pointer ${
+                    branding ? 'bg-amber-500' : 'bg-neutral-800'
+                  }`}
+                >
+                  <span
+                    className={`block w-4 h-4 rounded-full bg-white transition-transform ${
+                      branding ? 'translate-x-6' : 'translate-x-1'
                     }`}
                   />
                 </button>
