@@ -10,8 +10,6 @@ import {
   RotateCw,
   Eye,
   Sliders,
-  QrCode,
-  Award,
   ArrowUpRight,
   Palette,
   CheckCircle2,
@@ -45,10 +43,8 @@ interface Props {
 }
 
 export function NFCShowcase({ locale = 'tr', onOrderClick }: Props) {
-  // L-Stand Customizer State - Streamlined to 4 intuitive settings
+  // L-Stand Customizer State - Streamlined to color selection & auto-rotate
   const [whiteMode, setWhiteMode] = useState<boolean>(false); // Default: Matte Obsidian Black
-  const [logoText, setLogoText] = useState<string>('doremusic');
-  const [qrText, setQrText] = useState<string>('g.page/r/doremusic');
   const [autoRotate, setAutoRotate] = useState<boolean>(true);
 
   const t = translations[locale];
@@ -56,22 +52,17 @@ export function NFCShowcase({ locale = 'tr', onOrderClick }: Props) {
   const SPECS = [
     {
       label: locale === 'tr' ? 'Gövde & Eğim Açısı' : 'Body & Tilt Angle',
-      value: locale === 'tr' ? '75° Ergonomik Eğimli Monolitik Akrilik' : '75° Ergonomic Monolithic Acrylic Face',
+      value: locale === 'tr' ? '75° Monolitik Pleksi Akrilik' : '75° Monolithic Plexi Acrylic Face',
       icon: Layers,
     },
     {
-      label: locale === 'tr' ? 'Baskı & Decal Düzeni' : 'Decal Layout & Badges',
-      value: locale === 'tr' ? 'Google G + 5 Altın Yıldız + Özel Logo & İsim Rozetleri' : 'Google G + 5 Gold Stars + Custom Brand Pills',
-      icon: Award,
-    },
-    {
-      label: locale === 'tr' ? 'NFC & QR Hibrit Donanımı' : 'NFC & QR Hardware',
-      value: 'NTAG213 Dual-Coil + Yüksek Kontrast QR Matrix',
+      label: locale === 'tr' ? 'NFC & QR Hibrit Çip' : 'NFC & QR Hybrid Chip',
+      value: locale === 'tr' ? 'NTAG213 Hibrit Çip + Yüksek Kontrast QR' : 'NTAG213 Hybrid Chip + High Contrast QR',
       icon: Cpu,
     },
     {
       label: locale === 'tr' ? 'Okuma Hızı & Mesafe' : 'Read Speed & Range',
-      value: '< 0.2s Anında Temassız (2 - 4 cm)',
+      value: locale === 'tr' ? '<0.2sn Temassız Okuma (2 - 4 cm)' : '<0.2s Contactless Read (2 - 4 cm)',
       icon: Sparkles,
     },
   ];
@@ -149,9 +140,9 @@ export function NFCShowcase({ locale = 'tr', onOrderClick }: Props) {
             <DynamicStand3D
               white={whiteMode}
               branding={true}
-              logoText={logoText}
-              businessName={logoText}
-              qrText={qrText}
+              logoText="doremusic"
+              businessName="doremusic Akasya AVM"
+              qrText="g.page/r/doremusic"
               showStars={true}
               template="templateA"
               material={whiteMode ? 'white' : 'black'}
@@ -188,20 +179,20 @@ export function NFCShowcase({ locale = 'tr', onOrderClick }: Props) {
           </div>
         </div>
 
-        {/* Right: Streamlined 4-Control Customizer Panel & Specs */}
+        {/* Right: Streamlined Customizer Panel & Specs */}
         <div className="lg:col-span-4 flex flex-col justify-between gap-6">
-          {/* Customizer Controls Card (4 Essential Controls) */}
+          {/* Customizer Controls Card (Color Switcher + Price & CTA) */}
           <div className="rounded-3xl border border-white/10 bg-neutral-900/80 backdrop-blur-xl p-6 shadow-2xl space-y-5">
             <h4 className="text-sm font-black uppercase tracking-wider text-amber-400 flex items-center gap-2">
               <Sliders className="w-4 h-4 text-amber-400" />
-              <span>{locale === 'tr' ? 'Stand Kişiselleştirme' : 'Stand Customizer'}</span>
+              <span>{locale === 'tr' ? 'Gövde Rengi Seçimi' : 'Body Color Selection'}</span>
             </h4>
 
-            {/* CONTROL 1: Renk Seçimi (Mat Siyah vs Parlak Beyaz) */}
+            {/* Gövde Rengi: Mat Siyah vs Parlak Beyaz */}
             <div className="space-y-2">
               <label className="text-xs font-bold text-white/80 flex items-center gap-1.5">
                 <Palette className="w-3.5 h-3.5 text-amber-400" />
-                <span>{locale === 'tr' ? '1. Renk Seçimi' : '1. Color Selection'}</span>
+                <span>{locale === 'tr' ? 'Gövde Rengi' : 'Body Color'}</span>
               </label>
               <div className="grid grid-cols-2 gap-2.5">
                 <button
@@ -238,50 +229,14 @@ export function NFCShowcase({ locale = 'tr', onOrderClick }: Props) {
               </div>
             </div>
 
-            {/* CONTROL 2: İşletme Adı / Logo (Single Text Input) */}
-            <div className="space-y-1.5 pt-2 border-t border-white/5">
-              <label className="text-xs font-bold text-white/80 flex items-center gap-1.5">
-                <Award className="w-3.5 h-3.5 text-amber-400" />
-                <span>{locale === 'tr' ? '2. İşletme Adı / Logo' : '2. Business Name / Logo'}</span>
-              </label>
-              <input
-                type="text"
-                value={logoText}
-                onChange={(e) => setLogoText(e.target.value)}
-                placeholder="doremusic"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-950 border border-white/10 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all font-bold tracking-wide"
-              />
-              <p className="text-[10px] text-white/40">
-                {locale === 'tr' ? 'Standın üst tepe rozetinde canlı olarak güncellenir.' : 'Updates live on top stand brand header.'}
-              </p>
-            </div>
-
-            {/* CONTROL 3: QR Yönlendirme Linki (Single Text Input) */}
-            <div className="space-y-1.5 pt-2 border-t border-white/5">
-              <label className="text-xs font-bold text-white/80 flex items-center gap-1.5">
-                <QrCode className="w-3.5 h-3.5 text-amber-400" />
-                <span>{locale === 'tr' ? '3. QR Yönlendirme Linki' : '3. QR Destination Link'}</span>
-              </label>
-              <input
-                type="text"
-                value={qrText}
-                onChange={(e) => setQrText(e.target.value)}
-                placeholder="g.page/r/doremusic"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-950 border border-white/10 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all font-mono"
-              />
-              <p className="text-[10px] text-white/40">
-                {locale === 'tr' ? 'Google Haritalar inceleme linkiniz veya web adresiniz.' : 'Your Google Maps review URL or web link.'}
-              </p>
-            </div>
-
-            {/* CONTROL 4: Fiyat & Sipariş CTA */}
+            {/* Fiyat: 1.750 TL / Adet & Sipariş CTA */}
             <div className="pt-3 border-t border-white/10 space-y-3">
               <div className="flex items-center justify-between bg-neutral-950 p-3.5 rounded-2xl border border-white/10">
                 <div>
                   <span className="text-[11px] font-semibold text-white/50 block">
-                    {locale === 'tr' ? 'Stand Birim Fiyatı' : 'Stand Unit Price'}
+                    {locale === 'tr' ? 'Stand Fiyatı' : 'Stand Price'}
                   </span>
-                  <span className="text-xl font-black text-amber-400">1.750 TL</span>
+                  <span className="text-xl font-black text-amber-400">1.750 TL <span className="text-xs font-medium text-white/50">{locale === 'tr' ? '/ Adet' : '/ Unit'}</span></span>
                 </div>
                 <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">
                   {locale === 'tr' ? 'Stokta Hazır' : 'In Stock'}
@@ -299,11 +254,11 @@ export function NFCShowcase({ locale = 'tr', onOrderClick }: Props) {
             </div>
           </div>
 
-          {/* Technical Specifications Card */}
+          {/* Donanım Özellikleri Kartı (75° Monolitik Pleksi, NTAG213 Hibrit Çip, <0.2sn Temassız Okuma) */}
           <div className="rounded-3xl border border-white/10 bg-neutral-900/60 backdrop-blur-xl p-5 shadow-2xl space-y-3.5">
             <h4 className="text-xs font-black uppercase tracking-wider text-amber-400 flex items-center gap-2">
               <Cpu className="w-3.5 h-3.5 text-amber-400" />
-              <span>{locale === 'tr' ? 'Teknik Donanım Özellikleri' : 'Hardware Specifications'}</span>
+              <span>{locale === 'tr' ? 'Donanım Özellikleri' : 'Hardware Specifications'}</span>
             </h4>
 
             <div className="space-y-2">

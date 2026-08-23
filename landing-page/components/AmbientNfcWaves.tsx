@@ -20,18 +20,35 @@ export function AmbientNfcWaves() {
   ];
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 select-none">
+    <div
+      className="fixed inset-0 pointer-events-none overflow-hidden z-0 select-none"
+      style={{
+        transform: 'translate3d(0, 0, 0)',
+        willChange: 'transform',
+      }}
+      aria-hidden="true"
+    >
       {/* ── AMBIENT NFC RADIO WAVE EMITTERS ── */}
       {emitters.map((emitter, idx) => (
         <div
           key={idx}
-          className="absolute -translate-x-1/2 -translate-y-1/2"
-          style={{ top: emitter.top, left: emitter.left }}
+          className="absolute"
+          style={{
+            top: emitter.top,
+            left: emitter.left,
+            transform: 'translate3d(-50%, -50%, 0)',
+            willChange: 'transform',
+          }}
         >
           {/* Wave 1 */}
           <motion.div
-            className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full border border-amber-500/25"
-            style={{ width: emitter.size, height: emitter.size }}
+            className="absolute rounded-full border border-amber-500/25"
+            style={{
+              width: emitter.size,
+              height: emitter.size,
+              transform: 'translate3d(-50%, -50%, 0)',
+              willChange: 'transform, opacity',
+            }}
             animate={{
               scale: [0.6, 1.4, 2.2],
               opacity: [0.35, 0.15, 0],
@@ -46,8 +63,13 @@ export function AmbientNfcWaves() {
 
           {/* Wave 2 */}
           <motion.div
-            className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full border border-amber-400/20"
-            style={{ width: emitter.size, height: emitter.size }}
+            className="absolute rounded-full border border-amber-400/20"
+            style={{
+              width: emitter.size,
+              height: emitter.size,
+              transform: 'translate3d(-50%, -50%, 0)',
+              willChange: 'transform, opacity',
+            }}
             animate={{
               scale: [0.6, 1.4, 2.2],
               opacity: [0.35, 0.15, 0],
@@ -62,8 +84,13 @@ export function AmbientNfcWaves() {
 
           {/* Wave 3 */}
           <motion.div
-            className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full border border-yellow-300/15"
-            style={{ width: emitter.size, height: emitter.size }}
+            className="absolute rounded-full border border-yellow-300/15"
+            style={{
+              width: emitter.size,
+              height: emitter.size,
+              transform: 'translate3d(-50%, -50%, 0)',
+              willChange: 'transform, opacity',
+            }}
             animate={{
               scale: [0.6, 1.4, 2.2],
               opacity: [0.35, 0.15, 0],
@@ -77,7 +104,10 @@ export function AmbientNfcWaves() {
           />
 
           {/* Emitter Core Glow */}
-          <div className="w-2.5 h-2.5 rounded-full bg-amber-400/40 blur-xs shadow-lg shadow-amber-500/30" />
+          <div
+            className="w-2.5 h-2.5 rounded-full bg-amber-400/40 blur-xs shadow-lg shadow-amber-500/30 -translate-x-1/2 -translate-y-1/2"
+            style={{ transform: 'translate3d(-50%, -50%, 0)' }}
+          />
         </div>
       ))}
 
@@ -91,6 +121,7 @@ export function AmbientNfcWaves() {
             left: p.x,
             width: p.size,
             height: p.size,
+            willChange: 'transform, opacity',
           }}
           animate={{
             y: [-12, 14, -12],

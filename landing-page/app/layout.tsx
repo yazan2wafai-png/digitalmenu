@@ -25,6 +25,11 @@ export const metadata: Metadata = {
     locale: "tr_TR",
     type: "website",
   },
+  icons: {
+    icon: '/icon',
+    shortcut: '/icon',
+    apple: '/icon',
+  },
 };
 
 export default function RootLayout({
