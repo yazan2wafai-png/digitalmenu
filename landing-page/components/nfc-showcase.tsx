@@ -15,9 +15,12 @@ import {
   Award,
   ArrowUpRight,
   CheckCircle2,
+  LayoutTemplate,
 } from 'lucide-react';
 import type { Locale } from '@/lib/translations';
 import { translations } from '@/lib/translations';
+import type { StandTemplate } from './Stand3D';
+export { StickerSection } from './StickerSection';
 
 // Dynamic SSR-safe import for Three.js WebGL 3D L-Stand
 const DynamicStand3D = dynamic(() => import('./Stand3D'), {
@@ -44,11 +47,12 @@ interface Props {
 
 export function NFCShowcase({ locale = 'tr', onOrderClick }: Props) {
   // L-Stand Customizer State
+  const [template, setTemplate] = useState<StandTemplate>('templateA'); // Template A: doremusic Turkish, Template B: Google Classic
   const [whiteMode, setWhiteMode] = useState<boolean>(true); // Glossy Frost White vs Matte Obsidian Black
   const [branding, setBranding] = useState<boolean>(true);
-  const [logoText, setLogoText] = useState<string>('Baltazar');
-  const [businessName, setBusinessName] = useState<string>('Gourmet Burger & Bistro');
-  const [qrText, setQrText] = useState<string>('baltazar.nfcmyplace.com');
+  const [logoText, setLogoText] = useState<string>('doremusic');
+  const [businessName, setBusinessName] = useState<string>('doremusic Akasya AVM');
+  const [qrText, setQrText] = useState<string>('g.page/r/doremusic');
   const [showStars, setShowStars] = useState<boolean>(true);
   const [autoRotate, setAutoRotate] = useState<boolean>(true);
 
@@ -99,7 +103,7 @@ export function NFCShowcase({ locale = 'tr', onOrderClick }: Props) {
       {/* ── MAIN 3D WORKSPACE GRID ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
         {/* Left / Center: 3D Interactive WebGL Stand */}
-        <div className="lg:col-span-8 relative min-h-[500px] sm:min-h-[560px] rounded-3xl border border-white/10 overflow-hidden bg-neutral-950/90 backdrop-blur-2xl shadow-2xl flex flex-col justify-between p-6">
+        <div className="lg:col-span-8 relative min-h-[520px] sm:min-h-[580px] rounded-3xl border border-white/10 overflow-hidden bg-neutral-950/90 backdrop-blur-2xl shadow-2xl flex flex-col justify-between p-6">
           {/* Radial Studio Ambient Glow */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-gradient-to-tr from-amber-500/15 via-yellow-500/5 to-transparent blur-3xl pointer-events-none" />
 
@@ -139,7 +143,7 @@ export function NFCShowcase({ locale = 'tr', onOrderClick }: Props) {
           </div>
 
           {/* Center 3D Viewport */}
-          <div className="relative w-full h-[390px] sm:h-[430px] my-auto flex items-center justify-center cursor-grab active:cursor-grabbing">
+          <div className="relative w-full h-[400px] sm:h-[450px] my-auto flex items-center justify-center cursor-grab active:cursor-grabbing">
             <DynamicStand3D
               white={whiteMode}
               branding={branding}
@@ -147,6 +151,7 @@ export function NFCShowcase({ locale = 'tr', onOrderClick }: Props) {
               businessName={businessName}
               qrText={qrText}
               showStars={showStars}
+              template={template}
               material={whiteMode ? 'crystal' : 'black'}
               autoRotate={autoRotate}
             />
@@ -157,9 +162,13 @@ export function NFCShowcase({ locale = 'tr', onOrderClick }: Props) {
             <div>
               <h3 className="text-base sm:text-lg font-black text-white">{t.stand.title}</h3>
               <p className="text-xs text-white/50">
+                {template === 'templateA'
+                  ? (locale === 'tr' ? 'Template A: doremusic / Türkçe Değerlendirme Düzeni' : 'Template A: Turkish Review Layout')
+                  : (locale === 'tr' ? 'Template B: Google Classic Minimalist Düzeni' : 'Template B: Google Classic Minimalist')}
+                {' • '}
                 {whiteMode
-                  ? (locale === 'tr' ? 'Parlak Buzlu Beyaz Akrilik Gövde' : 'Glossy Frost White Acrylic Body')
-                  : (locale === 'tr' ? 'Mat Obsidyen Siyah Akrilik Gövde' : 'Matte Obsidian Black Acrylic Body')}
+                  ? (locale === 'tr' ? 'Parlak Buzlu Beyaz Akrilik' : 'Glossy Frost White Acrylic')
+                  : (locale === 'tr' ? 'Mat Obsidyen Siyah Akrilik' : 'Matte Obsidian Black Acrylic')}
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -188,8 +197,69 @@ export function NFCShowcase({ locale = 'tr', onOrderClick }: Props) {
               <span>{locale === 'tr' ? 'Stand Kişiselleştirme' : 'Stand Customizer'}</span>
             </h4>
 
-            {/* Acrylic Color Switcher: Matte Obsidian vs Glossy Frost */}
+            {/* Template Selector: Template A (doremusic) vs Template B (Google Classic) */}
             <div className="space-y-2">
+              <label className="text-xs font-bold text-white/70 flex items-center gap-1.5">
+                <LayoutTemplate className="w-3.5 h-3.5 text-amber-400" />
+                <span>{locale === 'tr' ? 'Decal Tasarım Şablonu' : 'Decal Template Style'}</span>
+              </label>
+              <div className="grid grid-cols-1 gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTemplate('templateA');
+                    if (logoText === 'Baltazar') setLogoText('doremusic');
+                    if (businessName === 'Gourmet Burger & Bistro') setBusinessName('doremusic Akasya AVM');
+                  }}
+                  className={`p-3 rounded-xl border text-left text-xs transition-all cursor-pointer ${
+                    template === 'templateA'
+                      ? 'border-amber-500 bg-amber-500/10 text-white ring-1 ring-amber-500/40'
+                      : 'border-white/10 bg-white/[0.03] text-white/60 hover:text-white'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-white">
+                      {locale === 'tr' ? 'Şablon A: Türkçe Google Değerlendirme' : 'Template A: Turkish Review Style'}
+                    </span>
+                    {template === 'templateA' && <CheckCircle2 className="w-4 h-4 text-amber-400" />}
+                  </div>
+                  <div className="text-[10px] text-white/50 mt-0.5">
+                    {locale === 'tr'
+                      ? 'doremusic stili: Özel Logo + QR & NFC Yan Yana + Türkçe Açıklama'
+                      : 'doremusic style: Brand Logo + Side-by-side QR & NFC + Instruction Card'}
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTemplate('templateB');
+                    if (logoText === 'doremusic') setLogoText('Baltazar');
+                    if (businessName === 'doremusic Akasya AVM') setBusinessName('Gourmet Burger & Bistro');
+                  }}
+                  className={`p-3 rounded-xl border text-left text-xs transition-all cursor-pointer ${
+                    template === 'templateB'
+                      ? 'border-amber-500 bg-amber-500/10 text-white ring-1 ring-amber-500/40'
+                      : 'border-white/10 bg-white/[0.03] text-white/60 hover:text-white'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-white">
+                      {locale === 'tr' ? 'Şablon B: Google Classic Minimalist' : 'Template B: Google Classic Minimalist'}
+                    </span>
+                    {template === 'templateB' && <CheckCircle2 className="w-4 h-4 text-amber-400" />}
+                  </div>
+                  <div className="text-[10px] text-white/50 mt-0.5">
+                    {locale === 'tr'
+                      ? 'Google G + 5 Yıldız + TAP ME / SCAN QR + Marka Rozeti'
+                      : 'Google G + 5 Stars + TAP ME / SCAN QR + Brand Pills'}
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            {/* Acrylic Color Switcher: Matte Obsidian vs Glossy Frost */}
+            <div className="space-y-2 pt-1 border-t border-white/5">
               <label className="text-xs font-bold text-white/70 block">
                 {locale === 'tr' ? 'Renk Seçeneği' : 'Color Selection'}
               </label>
@@ -232,72 +302,40 @@ export function NFCShowcase({ locale = 'tr', onOrderClick }: Props) {
                 type="text"
                 value={qrText}
                 onChange={(e) => setQrText(e.target.value)}
-                placeholder="baltazar.nfcmyplace.com"
+                placeholder="g.page/r/doremusic"
                 className="w-full px-3.5 py-2 rounded-xl bg-neutral-950 border border-white/10 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-amber-500 transition-all font-mono"
               />
             </div>
 
-            {/* Custom Branding Toggle */}
-            <div className="pt-2 border-t border-white/5 flex items-center justify-between">
-              <div>
-                <div className="text-xs font-bold text-white flex items-center gap-1.5">
+            {/* Custom Branding Inputs */}
+            <div className="space-y-3 pt-2 border-t border-white/5">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-white/70 flex items-center gap-1.5">
                   <Award className="w-3.5 h-3.5 text-amber-400" />
-                  <span>{locale === 'tr' ? 'Özel Markalama' : 'Custom Branding'}</span>
-                </div>
-                <div className="text-[11px] text-white/50">
-                  {locale === 'tr' ? 'Logo ve işletme adı rozetlerini etkinleştir' : 'Enable logo & venue name badges'}
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setBranding(!branding)}
-                className={`w-11 h-6 rounded-full transition-colors relative cursor-pointer ${
-                  branding ? 'bg-amber-500' : 'bg-neutral-800'
-                }`}
-              >
-                <span
-                  className={`block w-4 h-4 rounded-full bg-white transition-transform ${
-                    branding ? 'translate-x-6' : 'translate-x-1'
-                  }`}
+                  <span>{locale === 'tr' ? 'Logo / Marka Yazısı' : 'Logo / Brand Name'}</span>
+                </label>
+                <input
+                  type="text"
+                  value={logoText}
+                  onChange={(e) => setLogoText(e.target.value)}
+                  placeholder="doremusic"
+                  className="w-full px-3.5 py-2 rounded-xl bg-neutral-950 border border-white/10 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-amber-500 transition-all font-semibold"
                 />
-              </button>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-white/70 block">
+                  {locale === 'tr' ? 'İşletme / Şube Adı' : 'Business / Branch Name'}
+                </label>
+                <input
+                  type="text"
+                  value={businessName}
+                  onChange={(e) => setBusinessName(e.target.value)}
+                  placeholder="doremusic Akasya AVM"
+                  className="w-full px-3.5 py-2 rounded-xl bg-neutral-950 border border-white/10 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-amber-500 transition-all text-white/90"
+                />
+              </div>
             </div>
-
-            {/* Conditional Logo and Business Name inputs */}
-            {branding && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="space-y-3 pt-2"
-              >
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-white/70 block">
-                    {locale === 'tr' ? 'Logo / Marka Yazısı' : 'Logo / Brand Name'}
-                  </label>
-                  <input
-                    type="text"
-                    value={logoText}
-                    onChange={(e) => setLogoText(e.target.value)}
-                    placeholder="Baltazar"
-                    className="w-full px-3.5 py-2 rounded-xl bg-neutral-950 border border-white/10 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-amber-500 transition-all font-semibold"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-white/70 block">
-                    {locale === 'tr' ? 'İşletme Alt Başlığı' : 'Business Tagline'}
-                  </label>
-                  <input
-                    type="text"
-                    value={businessName}
-                    onChange={(e) => setBusinessName(e.target.value)}
-                    placeholder="Gourmet Burger & Bistro"
-                    className="w-full px-3.5 py-2 rounded-xl bg-neutral-950 border border-white/10 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-amber-500 transition-all text-white/90"
-                  />
-                </div>
-              </motion.div>
-            )}
 
             {/* 5-Star Badge Toggle */}
             <div className="pt-2 border-t border-white/5 flex items-center justify-between">
@@ -307,7 +345,7 @@ export function NFCShowcase({ locale = 'tr', onOrderClick }: Props) {
                   <span>{locale === 'tr' ? 'Google 5 Altın Yıldız' : 'Google 5 Gold Stars'}</span>
                 </div>
                 <div className="text-[11px] text-white/50">
-                  {locale === 'tr' ? 'Google G altında 5 altın yıldız göster' : 'Show 5 gold stars under Google G'}
+                  {locale === 'tr' ? 'Başlık altında 5 altın yıldız göster' : 'Show 5 gold stars rating'}
                 </div>
               </div>
               <button

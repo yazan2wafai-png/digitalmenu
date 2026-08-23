@@ -15,6 +15,7 @@ export function TableStand({
   businessName = 'Business Name (Optional)',
   qrText = 'nfcmyplace.com',
   showStars = true,
+  template = 'templateA',
 }: {
   isHovered?: boolean;
   material?: StandMaterialType | string;
@@ -24,6 +25,7 @@ export function TableStand({
   businessName?: string;
   qrText?: string;
   showStars?: boolean;
+  template?: 'templateA' | 'templateB';
 }) {
   return (
     <LStand3DModel
@@ -35,6 +37,7 @@ export function TableStand({
       showStars={showStars}
       material={material}
       isHovered={isHovered}
+      template={template}
     />
   );
 }
