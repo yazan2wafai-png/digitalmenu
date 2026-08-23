@@ -40,9 +40,9 @@ export function StickerSection({ locale = 'tr', onOrderClick }: StickerSectionPr
           <Sparkles className="w-3.5 h-3.5 text-amber-400" />
           <span>{locale === 'tr' ? 'Hizmet 2: Masa Çözümleri' : 'Service 2: Table Solutions'}</span>
         </div>
-        <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-white">
+        <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-zinc-100 drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]">
           {locale === 'tr' ? 'Premium Akrilik Masa Stickerı ' : 'Premium Acrylic Table Sticker '}
-          <span className="bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 bg-clip-text text-transparent">
+          <span className="text-zinc-100 font-extrabold tracking-tight bg-gradient-to-r from-white via-zinc-200 to-amber-400 bg-clip-text text-transparent drop-shadow-sm inline-block">
             (NFC & QR Hibrit)
           </span>
         </h2>
@@ -86,41 +86,44 @@ export function StickerSection({ locale = 'tr', onOrderClick }: StickerSectionPr
           {/* Center Realistic Circular Acrylic Sticker Disc (Reference Image 2) */}
           <div className="relative my-auto flex items-center justify-center py-6 z-10">
             {/* Ambient Drop Shadow */}
-            <div className="absolute w-64 h-64 sm:w-76 sm:h-76 rounded-full bg-black/80 blur-2xl pointer-events-none transform translate-y-6" />
+            <div className="absolute w-64 h-64 sm:w-76 sm:h-76 rounded-full bg-black/85 blur-2xl pointer-events-none transform translate-y-6" />
 
-            {/* 2mm Acrylic Disc Body with Glass Edge Bevels */}
+            {/* 2mm Acrylic Disc Body with Glass Edge Bevels & Specular Reflection */}
             <motion.div
               key={stickerColor}
               initial={{ scale: 0.94, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: 'spring', damping: 22, stiffness: 280 }}
-              className={`relative w-64 h-64 sm:w-76 sm:h-76 aspect-square rounded-full border-4 shadow-2xl flex items-center justify-center select-none group cursor-pointer overflow-hidden ${
+              className={`relative w-64 h-64 sm:w-80 sm:h-80 aspect-square rounded-full flex items-center justify-center select-none group cursor-pointer overflow-hidden transition-all duration-300 ${
                 isWhite
-                  ? 'border-amber-400/80 bg-gradient-to-b from-[#ffffff] via-[#f8fafc] to-[#e2e8f0] ring-2 ring-amber-400/40'
-                  : 'border-amber-400/90 bg-gradient-to-b from-[#18181f] via-[#101014] to-[#070709] ring-2 ring-amber-400/50'
+                  ? 'border-[5px] border-amber-400/90 bg-gradient-to-b from-[#ffffff] via-[#f8fafc] to-[#e2e8f0] ring-2 ring-amber-400/50 shadow-[0_20px_50px_rgba(0,0,0,0.35),0_0_30px_rgba(245,158,11,0.2),inset_0_2px_4px_rgba(255,255,255,0.9),inset_0_-2px_6px_rgba(0,0,0,0.12)]'
+                  : 'border-[5px] border-amber-400 bg-gradient-to-b from-[#181820] via-[#101015] to-[#08080a] ring-2 ring-amber-400/60 shadow-[0_20px_50px_rgba(0,0,0,0.9),0_0_35px_rgba(245,158,11,0.3),inset_0_2px_4px_rgba(255,255,255,0.35),inset_0_-2px_6px_rgba(0,0,0,0.85)]'
               }`}
             >
               {/* Glossy Acrylic Diagonal Clearcoat Reflection */}
               <div
-                className="absolute inset-0 pointer-events-none rounded-full"
+                className="absolute inset-0 pointer-events-none rounded-full z-20"
                 style={{
                   background:
-                    'linear-gradient(135deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.06) 38%, transparent 58%, rgba(255,255,255,0.15) 100%)',
+                    'linear-gradient(135deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.10) 36%, transparent 56%, rgba(255,255,255,0.05) 75%, rgba(255,255,255,0.22) 100%)',
                 }}
               />
 
-              {/* Polished Glass Outer Bevel Rim */}
+              {/* Polished Glass 2mm Outer Clearcoat Bevel Rim */}
               <div
-                className="absolute inset-1 rounded-full pointer-events-none border"
+                className="absolute inset-1 rounded-full pointer-events-none border z-20"
                 style={{
-                  borderColor: isWhite ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.15)',
+                  borderColor: isWhite ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.2)',
+                  boxShadow: isWhite
+                    ? 'inset 0 1px 2px rgba(255,255,255,0.8)'
+                    : 'inset 0 1px 3px rgba(255,255,255,0.25)',
                 }}
               />
 
               {/* ── SVG HIGH PRECISION VECTOR GRAPHIC (IMAGE 2 EXACT SPEC) ── */}
               <svg
-                viewBox="0 0 320 320"
-                className="w-full h-full p-2.5 relative z-10"
+                viewBox="0 0 360 360"
+                className="w-full h-full p-2 relative z-10"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
               >
@@ -128,79 +131,81 @@ export function StickerSection({ locale = 'tr', onOrderClick }: StickerSectionPr
                   {/* Arc Path for Bottom Curved Text "MENÜYÜ GÖRÜNTÜLEYİN" */}
                   <path
                     id="stickerBottomArc"
-                    d="M 38,160 A 122,122 0 0,0 282,160"
+                    d="M 46,180 A 134,134 0 0,0 314,180"
                     fill="none"
                   />
 
                   {/* Golden Metallic Gradient */}
                   <linearGradient id="stickerGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#fde047" />
-                    <stop offset="50%" stopColor="#f59e0b" />
-                    <stop offset="100%" stopColor="#d97706" />
+                    <stop offset="0%" stopColor="#FFF2A3" />
+                    <stop offset="25%" stopColor="#F5BE4E" />
+                    <stop offset="60%" stopColor="#D98A1E" />
+                    <stop offset="100%" stopColor="#B36E08" />
                   </linearGradient>
 
                   <linearGradient id="stickerGoldGlow" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#fbbf24" stopOpacity="0.8" />
-                    <stop offset="100%" stopColor="#f59e0b" stopOpacity="0.8" />
+                    <stop offset="0%" stopColor="#FDE68A" />
+                    <stop offset="50%" stopColor="#F59E0B" />
+                    <stop offset="100%" stopColor="#D97706" />
                   </linearGradient>
                 </defs>
 
                 {/* Outer Delicate Gold Rim Circle */}
                 <circle
-                  cx="160"
-                  cy="160"
-                  r="148"
+                  cx="180"
+                  cy="180"
+                  r="168"
                   stroke="url(#stickerGoldGrad)"
-                  strokeWidth="2.2"
+                  strokeWidth="2.5"
                 />
 
                 {/* Inner Precision Hairline Ring */}
                 <circle
-                  cx="160"
-                  cy="160"
-                  r="140"
+                  cx="180"
+                  cy="180"
+                  r="159"
                   stroke="rgba(251, 191, 36, 0.45)"
                   strokeWidth="1.2"
                 />
 
                 {/* ── 1. HEADER: CROSSED FORK & KNIFE EMBLEM + "MENU" + "— TARAYIN —" ── */}
-                <g transform="translate(160, 44)">
+                <g transform="translate(180, 52)">
                   {/* Crossed Fork & Knife (🍴) Emblem */}
                   <g transform="translate(0, 0)">
                     {/* Fork (Left to Right crossing) */}
-                    <g transform="rotate(-30)">
+                    <g transform="rotate(-28)">
                       {/* Fork Handle */}
                       <path
-                        d="M 0,2 L 0,16"
+                        d="M 0,2 L 0,17"
                         stroke="url(#stickerGoldGrad)"
                         strokeWidth="1.8"
                         strokeLinecap="round"
                       />
                       {/* Fork Base */}
                       <path
-                        d="M -4,-2 C -4,2 4,2 4,-2"
+                        d="M -4.5,-2 C -4.5,2.5 4.5,2.5 4.5,-2"
                         stroke="url(#stickerGoldGrad)"
                         strokeWidth="1.4"
                         fill="none"
                       />
                       {/* 3 Prongs */}
-                      <line x1="-3.5" y1="-2" x2="-3.5" y2="-9" stroke="url(#stickerGoldGrad)" strokeWidth="1.2" strokeLinecap="round" />
-                      <line x1="0" y1="-2" x2="0" y2="-10" stroke="url(#stickerGoldGrad)" strokeWidth="1.2" strokeLinecap="round" />
-                      <line x1="3.5" y1="-2" x2="3.5" y2="-9" stroke="url(#stickerGoldGrad)" strokeWidth="1.2" strokeLinecap="round" />
+                      <line x1="-3.5" y1="-2" x2="-3.5" y2="-9.5" stroke="url(#stickerGoldGrad)" strokeWidth="1.2" strokeLinecap="round" />
+                      <line x1="0" y1="-2" x2="0" y2="-11" stroke="url(#stickerGoldGrad)" strokeWidth="1.2" strokeLinecap="round" />
+                      <line x1="3.5" y1="-2" x2="3.5" y2="-9.5" stroke="url(#stickerGoldGrad)" strokeWidth="1.2" strokeLinecap="round" />
                     </g>
 
                     {/* Knife (Right to Left crossing) */}
-                    <g transform="rotate(30)">
+                    <g transform="rotate(28)">
                       {/* Knife Handle */}
                       <path
-                        d="M 0,2 L 0,16"
+                        d="M 0,2 L 0,17"
                         stroke="url(#stickerGoldGrad)"
                         strokeWidth="1.8"
                         strokeLinecap="round"
                       />
                       {/* Knife Blade */}
                       <path
-                        d="M 0,2 L 0,-10 C 0,-10 4.5,-7 4.5,-2 C 4.5,2 0,2 0,2 Z"
+                        d="M 0,2 L 0,-11 C 0,-11 5,-8 5,-2 C 5,2 0,2 0,2 Z"
                         fill="url(#stickerGoldGrad)"
                       />
                     </g>
@@ -208,12 +213,12 @@ export function StickerSection({ locale = 'tr', onOrderClick }: StickerSectionPr
 
                   {/* "MENU" Typography */}
                   <text
-                    y="27"
+                    y="29"
                     textAnchor="middle"
                     fill="url(#stickerGoldGrad)"
-                    fontSize="16"
+                    fontSize="18"
                     fontWeight="900"
-                    letterSpacing="3.5"
+                    letterSpacing="4"
                     className="uppercase font-sans"
                   >
                     MENU
@@ -221,13 +226,13 @@ export function StickerSection({ locale = 'tr', onOrderClick }: StickerSectionPr
 
                   {/* Sub-line: "— TARAYIN —" */}
                   <text
-                    y="39"
+                    y="42"
                     textAnchor="middle"
                     fill={isWhite ? '#b45309' : '#fbbf24'}
-                    fontSize="8.5"
+                    fontSize="9.5"
                     fontWeight="800"
-                    letterSpacing="2"
-                    className="uppercase font-sans opacity-90"
+                    letterSpacing="2.2"
+                    className="uppercase font-sans opacity-95"
                   >
                     — TARAYIN —
                   </text>
@@ -235,94 +240,95 @@ export function StickerSection({ locale = 'tr', onOrderClick }: StickerSectionPr
 
                 {/* ── 2. SIDES: GOLD CONCENTRIC NFC RADAR ARCS ((( ))) ── */}
                 {/* Left Concentric Radar Arcs */}
-                <g stroke="url(#stickerGoldGrad)" strokeWidth="2.4" strokeLinecap="round" opacity="0.9">
-                  <path d="M 88,136 A 36,36 0 0,0 88,184" />
-                  <path d="M 74,124 A 52,52 0 0,0 74,196" strokeWidth="2.0" opacity="0.7" />
-                  <path d="M 60,112 A 68,68 0 0,0 60,208" strokeWidth="1.5" opacity="0.45" />
+                <g stroke="url(#stickerGoldGrad)" strokeWidth="2.6" strokeLinecap="round" opacity="0.95">
+                  <path d="M 98,152 A 40,40 0 0,0 98,208" />
+                  <path d="M 82,138 A 58,58 0 0,0 82,222" strokeWidth="2.2" opacity="0.75" />
+                  <path d="M 66,124 A 76,76 0 0,0 66,236" strokeWidth="1.6" opacity="0.45" />
                 </g>
 
                 {/* Right Concentric Radar Arcs */}
-                <g stroke="url(#stickerGoldGrad)" strokeWidth="2.4" strokeLinecap="round" opacity="0.9">
-                  <path d="M 232,136 A 36,36 0 0,1 232,184" />
-                  <path d="M 246,124 A 52,52 0 0,1 246,196" strokeWidth="2.0" opacity="0.7" />
-                  <path d="M 260,112 A 68,68 0 0,1 260,208" strokeWidth="1.5" opacity="0.45" />
+                <g stroke="url(#stickerGoldGrad)" strokeWidth="2.6" strokeLinecap="round" opacity="0.95">
+                  <path d="M 262,152 A 40,40 0 0,1 262,208" />
+                  <path d="M 278,138 A 58,58 0 0,1 278,222" strokeWidth="2.2" opacity="0.75" />
+                  <path d="M 294,124 A 76,76 0 0,1 294,236" strokeWidth="1.6" opacity="0.45" />
                 </g>
 
                 {/* ── 3. CENTER: SQUARE QR MATRIX WITH DOUBLE ROUNDED CORNER BRACKETS [ QR ] ── */}
-                <g transform="translate(160, 160)">
+                <g transform="translate(180, 180)">
                   {/* Outer Corner Brackets [ ] */}
-                  <g stroke="url(#stickerGoldGrad)" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" fill="none">
+                  <g stroke="url(#stickerGoldGrad)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none">
                     {/* Top-Left Bracket */}
-                    <path d="M -54,-38 L -54,-50 A 6,6 0 0,1 -48,-56 L -36,-56" />
+                    <path d="M -60,-42 L -60,-56 A 7,7 0 0,1 -53,-63 L -39,-63" />
                     {/* Top-Right Bracket */}
-                    <path d="M 36,-56 L 48,-56 A 6,6 0 0,1 54,-50 L 54,-38" />
+                    <path d="M 39,-63 L 53,-63 A 7,7 0 0,1 60,-56 L 60,-42" />
                     {/* Bottom-Left Bracket */}
-                    <path d="M -54,38 L -54,50 A 6,6 0 0,0 -48,56 L -36,56" />
+                    <path d="M -60,42 L -60,56 A 7,7 0 0,0 -53,63 L -39,63" />
                     {/* Bottom-Right Bracket */}
-                    <path d="M 36,56 L 48,56 A 6,6 0 0,0 54,50 L 54,38" />
+                    <path d="M 39,63 L 53,63 A 7,7 0 0,0 60,56 L 60,42" />
                   </g>
 
                   {/* Inner Fine Corner Brackets */}
                   <g stroke="rgba(251, 191, 36, 0.5)" strokeWidth="1.2" strokeLinecap="round" fill="none">
-                    <path d="M -48,-36 L -48,-46 A 3,3 0 0,1 -45,-49 L -35,-49" />
-                    <path d="M 35,-49 L 45,-49 A 3,3 0 0,1 48,-46 L 48,-36" />
-                    <path d="M -48,36 L -48,46 A 3,3 0 0,0 -45,49 L -35,49" />
-                    <path d="M 35,49 L 45,49 A 3,3 0 0,0 48,46 L 48,36" />
+                    <path d="M -54,-40 L -54,-51 A 4,4 0 0,1 -50,-55 L -39,-55" />
+                    <path d="M 39,-55 L 50,-55 A 4,4 0 0,1 54,-51 L 54,-40" />
+                    <path d="M -54,40 L -54,51 A 4,4 0 0,0 -50,55 L -39,55" />
+                    <path d="M 39,55 L 50,55 A 4,4 0 0,0 54,51 L 54,40" />
                   </g>
 
                   {/* QR Background Card */}
                   <rect
-                    x="-42"
-                    y="-42"
-                    width="84"
-                    height="84"
-                    rx="12"
+                    x="-47"
+                    y="-47"
+                    width="94"
+                    height="94"
+                    rx="14"
                     fill="#ffffff"
                     stroke="url(#stickerGoldGrad)"
-                    strokeWidth="2.2"
+                    strokeWidth="2.4"
                   />
 
                   {/* Scannable Crisp QR Code Matrix */}
                   {/* Top-Left Finder */}
-                  <rect x="-34" y="-34" width="22" height="22" fill="#0a0a0c" rx="3.5" />
-                  <rect x="-30" y="-30" width="14" height="14" fill="#ffffff" rx="2" />
-                  <rect x="-27" y="-27" width="8" height="8" fill="#0a0a0c" rx="1.5" />
+                  <rect x="-38" y="-38" width="24" height="24" fill="#0a0a0c" rx="4" />
+                  <rect x="-34" y="-34" width="16" height="16" fill="#ffffff" rx="2.5" />
+                  <rect x="-31" y="-31" width="10" height="10" fill="#0a0a0c" rx="1.5" />
 
                   {/* Top-Right Finder */}
-                  <rect x="12" y="-34" width="22" height="22" fill="#0a0a0c" rx="3.5" />
-                  <rect x="16" y="-30" width="14" height="14" fill="#ffffff" rx="2" />
-                  <rect x="19" y="-27" width="8" height="8" fill="#0a0a0c" rx="1.5" />
+                  <rect x="14" y="-38" width="24" height="24" fill="#0a0a0c" rx="4" />
+                  <rect x="18" y="-34" width="16" height="16" fill="#ffffff" rx="2.5" />
+                  <rect x="21" y="-31" width="10" height="10" fill="#0a0a0c" rx="1.5" />
 
                   {/* Bottom-Left Finder */}
-                  <rect x="-34" y="12" width="22" height="22" fill="#0a0a0c" rx="3.5" />
-                  <rect x="-30" y="16" width="14" height="14" fill="#ffffff" rx="2" />
-                  <rect x="-27" y="19" width="8" height="8" fill="#0a0a0c" rx="1.5" />
+                  <rect x="-38" y="14" width="24" height="24" fill="#0a0a0c" rx="4" />
+                  <rect x="-34" y="18" width="16" height="16" fill="#ffffff" rx="2.5" />
+                  <rect x="-31" y="21" width="10" height="10" fill="#0a0a0c" rx="1.5" />
 
                   {/* QR Data Cells */}
-                  <rect x="-6" y="-34" width="4" height="4" fill="#0a0a0c" />
-                  <rect x="2" y="-34" width="4" height="4" fill="#0a0a0c" />
-                  <rect x="-6" y="-26" width="4" height="4" fill="#0a0a0c" />
-                  <rect x="-34" y="-6" width="4" height="4" fill="#0a0a0c" />
-                  <rect x="-26" y="-6" width="4" height="4" fill="#0a0a0c" />
-                  <rect x="20" y="-6" width="4" height="4" fill="#0a0a0c" />
-                  <rect x="28" y="-6" width="4" height="4" fill="#0a0a0c" />
-                  <rect x="-6" y="20" width="4" height="4" fill="#0a0a0c" />
-                  <rect x="2" y="28" width="4" height="4" fill="#0a0a0c" />
-                  <rect x="12" y="12" width="4" height="4" fill="#0a0a0c" />
-                  <rect x="20" y="20" width="4" height="4" fill="#0a0a0c" />
-                  <rect x="28" y="28" width="4" height="4" fill="#0a0a0c" />
-                  <rect x="28" y="12" width="4" height="4" fill="#0a0a0c" />
-                  <rect x="12" y="28" width="4" height="4" fill="#0a0a0c" />
+                  <rect x="-7" y="-38" width="4.5" height="4.5" fill="#0a0a0c" />
+                  <rect x="2.5" y="-38" width="4.5" height="4.5" fill="#0a0a0c" />
+                  <rect x="-7" y="-29" width="4.5" height="4.5" fill="#0a0a0c" />
+                  <rect x="-38" y="-7" width="4.5" height="4.5" fill="#0a0a0c" />
+                  <rect x="-29" y="-7" width="4.5" height="4.5" fill="#0a0a0c" />
+                  <rect x="22" y="-7" width="4.5" height="4.5" fill="#0a0a0c" />
+                  <rect x="31" y="-7" width="4.5" height="4.5" fill="#0a0a0c" />
+                  <rect x="-7" y="22" width="4.5" height="4.5" fill="#0a0a0c" />
+                  <rect x="2.5" y="31" width="4.5" height="4.5" fill="#0a0a0c" />
+                  <rect x="13.5" y="13.5" width="4.5" height="4.5" fill="#0a0a0c" />
+                  <rect x="22" y="22" width="4.5" height="4.5" fill="#0a0a0c" />
+                  <rect x="31" y="31" width="4.5" height="4.5" fill="#0a0a0c" />
+                  <rect x="31" y="13.5" width="4.5" height="4.5" fill="#0a0a0c" />
+                  <rect x="13.5" y="31" width="4.5" height="4.5" fill="#0a0a0c" />
 
                   {/* Center Mini NFC Badge */}
-                  <circle cx="0" cy="0" r="9" fill="#ffffff" stroke="#f59e0b" strokeWidth="1.5" />
+                  <circle cx="0" cy="0" r="10" fill="#ffffff" stroke="url(#stickerGoldGrad)" strokeWidth="1.8" />
                   <text
                     x="0"
-                    y="3"
+                    y="3.5"
                     textAnchor="middle"
                     fill="#0a0a0c"
-                    fontSize="6.5"
+                    fontSize="7.5"
                     fontWeight="900"
+                    letterSpacing="0.5"
                   >
                     NFC
                   </text>
@@ -330,10 +336,10 @@ export function StickerSection({ locale = 'tr', onOrderClick }: StickerSectionPr
 
                 {/* ── 4. BOTTOM: CURVED SUBTEXT "MENÜYÜ GÖRÜNTÜLEYİN" + 3 GOLD ACCENT DOTS ── */}
                 <text
-                  fontSize="10"
+                  fontSize="11.5"
                   fontWeight="800"
                   fill={isWhite ? '#1e293b' : '#ffffff'}
-                  letterSpacing="2.2"
+                  letterSpacing="2.6"
                   className="uppercase tracking-widest font-sans drop-shadow-sm"
                 >
                   <textPath
@@ -346,21 +352,21 @@ export function StickerSection({ locale = 'tr', onOrderClick }: StickerSectionPr
                 </text>
 
                 {/* 3 Gold Accent Dots ••• */}
-                <g transform="translate(160, 276)">
-                  <circle cx="-12" cy="0" r="2.8" fill="url(#stickerGoldGrad)" />
-                  <circle cx="0" cy="0" r="3.4" fill="url(#stickerGoldGrad)" />
-                  <circle cx="12" cy="0" r="2.8" fill="url(#stickerGoldGrad)" />
+                <g transform="translate(180, 312)">
+                  <circle cx="-14" cy="0" r="3" fill="url(#stickerGoldGrad)" />
+                  <circle cx="0" cy="0" r="3.8" fill="url(#stickerGoldGrad)" />
+                  <circle cx="14" cy="0" r="3" fill="url(#stickerGoldGrad)" />
                 </g>
 
                 {/* Micro Footer Tag */}
                 <text
-                  x="160"
-                  y="298"
+                  x="180"
+                  y="336"
                   textAnchor="middle"
-                  fill={isWhite ? 'rgba(0,0,0,0.35)' : 'rgba(255,255,255,0.35)'}
-                  fontSize="7"
-                  fontWeight="600"
-                  letterSpacing="1"
+                  fill={isWhite ? 'rgba(0,0,0,0.38)' : 'rgba(255,255,255,0.38)'}
+                  fontSize="7.5"
+                  fontWeight="700"
+                  letterSpacing="1.2"
                 >
                   ⚡ NFCMyPlace® Smart Table
                 </text>

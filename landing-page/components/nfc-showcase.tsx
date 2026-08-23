@@ -73,9 +73,9 @@ export function NFCShowcase({ locale = 'tr', onOrderClick }: Props) {
           <Sparkles className="w-3.5 h-3.5 text-amber-400" />
           <span>{t.stand.badge}</span>
         </div>
-        <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-white">
+        <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-zinc-100 drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]">
           {locale === 'tr' ? 'Özel Kurumsal Tasarım ' : 'Custom Corporate Design '}
-          <span className="bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 bg-clip-text text-transparent">
+          <span className="text-zinc-100 font-extrabold tracking-tight bg-gradient-to-r from-white via-zinc-200 to-amber-400 bg-clip-text text-transparent drop-shadow-sm inline-block">
             {locale === 'tr' ? 'NFC & QR Google Değerlendirme Standı' : 'NFC & QR Google Review Stand'}
           </span>
         </h2>
