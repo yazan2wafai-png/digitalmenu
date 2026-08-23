@@ -16,13 +16,6 @@ export const metadata: Metadata = {
   title: "NFCMyPlace® | Fiziksel Dünyayı Dijitalle Buluştur",
   description:
     "Restoranlar ve kafeler için yeni nesil NFC & QR akıllı masa donanımları, Google 5 yıldızlı yorum standları ve dijital menü SaaS altyapısı.",
-  icons: {
-    icon: [
-      { url: "/icon.svg", type: "image/svg+xml" },
-      { url: "/favicon.ico" },
-    ],
-    apple: "/icon.svg",
-  },
   openGraph: {
     title: "NFCMyPlace® | Fiziksel Dünyayı Dijitalle Buluştur",
     description:
