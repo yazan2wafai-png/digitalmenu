@@ -28,12 +28,6 @@ export default function RootPage() {
             >
               Restaurant Admin
             </Link>
-            <Link
-              href="/super-admin/login"
-              className="px-3.5 py-1.5 text-xs font-semibold bg-indigo-600/20 text-indigo-300 hover:bg-indigo-600/30 border border-indigo-500/30 rounded-lg transition"
-            >
-              Super Admin →
-            </Link>
           </div>
         </div>
       </header>
