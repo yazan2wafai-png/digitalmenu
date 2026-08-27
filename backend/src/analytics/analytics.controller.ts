@@ -49,11 +49,14 @@ export class AnalyticsController {
     @Param('slug') slug: string,
     @Req() req: AuthenticatedRequest,
   ): Promise<AnalyticsStatsResponse> {
-    if (req.user.role !== AdminRole.SUPER_ADMIN && req.user.role !== 'SUPER_ADMIN' && req.user.restaurantSlug !== slug) {
+    const isSuperAdmin =
+      req.user.role === AdminRole.SUPER_ADMIN || req.user.role === 'SUPER_ADMIN';
+    if (!isSuperAdmin && req.user.restaurantSlug !== slug) {
       throw new ForbiddenException(
         'You can only access analytics for your own restaurant',
       );
     }
-    return this.analyticsService.getStatsBySlug(slug);
+    // Super admins can always view analytics for oversight, even if a tenant's own toggle is off
+    return this.analyticsService.getStatsBySlug(slug, isSuperAdmin);
   }
 }

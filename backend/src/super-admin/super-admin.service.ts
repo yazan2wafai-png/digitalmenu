@@ -18,6 +18,7 @@ export interface RestaurantPermissions {
   canTrackTables: boolean;
   canManageMenu: boolean;
   canManageStaff: boolean;
+  canViewAnalytics: boolean;
 }
 
 export interface SuperAdminLoginResponse {
@@ -177,6 +178,7 @@ export class SuperAdminService {
           canTrackTables: true,
           canManageMenu: true,
           canManageStaff: true,
+          canViewAnalytics: true,
         },
       });
 
@@ -276,6 +278,7 @@ export class SuperAdminService {
           canTrackTables: r.settings?.canTrackTables ?? true,
           canManageMenu: r.settings?.canManageMenu ?? true,
           canManageStaff: r.settings?.canManageStaff ?? true,
+          canViewAnalytics: r.settings?.canViewAnalytics ?? true,
         },
       };
     });
@@ -302,6 +305,7 @@ export class SuperAdminService {
       ...(dto.canTrackTables !== undefined && { canTrackTables: dto.canTrackTables }),
       ...(dto.canManageMenu !== undefined && { canManageMenu: dto.canManageMenu }),
       ...(dto.canManageStaff !== undefined && { canManageStaff: dto.canManageStaff }),
+      ...(dto.canViewAnalytics !== undefined && { canViewAnalytics: dto.canViewAnalytics }),
     };
 
     const settings = await this.prisma.restaurantSettings.upsert({
@@ -320,6 +324,7 @@ export class SuperAdminService {
         canTrackTables: settings.canTrackTables,
         canManageMenu: settings.canManageMenu,
         canManageStaff: settings.canManageStaff,
+        canViewAnalytics: settings.canViewAnalytics,
       },
     };
   }

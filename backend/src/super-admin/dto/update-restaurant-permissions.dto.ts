@@ -16,4 +16,8 @@ export class UpdateRestaurantPermissionsDto {
   @IsOptional()
   @IsBoolean()
   canManageStaff?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  canViewAnalytics?: boolean;
 }

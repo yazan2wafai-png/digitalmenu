@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import * as crypto from 'crypto';
 
@@ -123,12 +123,19 @@ export class AnalyticsService {
     };
   }
 
-  async getStatsBySlug(slug: string): Promise<AnalyticsStatsResponse> {
+  async getStatsBySlug(
+    slug: string,
+    bypassPermissionCheck = false,
+  ): Promise<AnalyticsStatsResponse> {
     const restaurant = await this.prisma.restaurant.findUnique({
       where: { slug },
+      include: { settings: true },
     });
     if (!restaurant) {
       throw new NotFoundException('Restaurant not found');
+    }
+    if (!bypassPermissionCheck && restaurant.settings?.canViewAnalytics === false) {
+      throw new ForbiddenException('Analytics/Overview is disabled for this tenant');
     }
     return this.getStats(restaurant.id);
   }
