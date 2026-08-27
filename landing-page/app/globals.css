@@ -1,26 +1,32 @@
 @import "tailwindcss";
 
+/* ── NFC myplace Brand Identity ──
+   Krem #F7EFE4 · Bej #E7DAC0 · Mürekkep #2B2118 · Terracotta #C1691E · Zeytin #6B6650
+   Space Grotesk (display/headings) · Manrope (body/UI) */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-cream: #F7EFE4;
+  --color-beige: #E7DAC0;
+  --color-ink: #2B2118;
+  --color-terracotta: #C1691E;
+  --color-terracotta-light: #D98A3D;
+  --color-olive: #6B6650;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-cream: var(--color-cream);
+  --color-beige: var(--color-beige);
+  --color-ink: var(--color-ink);
+  --color-terracotta: var(--color-terracotta);
+  --color-terracotta-light: var(--color-terracotta-light);
+  --color-olive: var(--color-olive);
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body), Arial, Helvetica, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6, .font-display {
+  font-family: var(--font-display), var(--font-body), sans-serif;
 }

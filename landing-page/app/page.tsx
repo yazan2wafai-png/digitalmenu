@@ -72,7 +72,7 @@ export default function LandingPage() {
       name: 'Kahve Erenköy',
       tag: t.saas.erenkoyTag,
       slug: 'kahve-erenkoy',
-      badgeColor: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+      badgeColor: 'bg-terracotta/10 text-terracotta border-terracotta/30',
       url: 'https://kahve-erenkoy.nfcmyplace.com',
       image:
         'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800&auto=format&fit=crop&q=80',
@@ -191,7 +191,7 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white font-sans selection:bg-amber-500 selection:text-black overflow-x-hidden relative">
+    <div className="min-h-screen bg-cream text-ink font-body selection:bg-terracotta selection:text-cream overflow-x-hidden relative">
       {/* ── FLOATING AMBIENT NFC WAVES & PARTICLES ── */}
       <AmbientNfcWaves />
 
@@ -210,37 +210,53 @@ export default function LandingPage() {
       />
 
       {/* ── HERO SECTION ── */}
-      <section className="relative pt-12 sm:pt-20 pb-12 px-4 sm:px-6 text-center overflow-hidden z-10">
-        {/* Glowing Radial Mesh Backgrounds */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[550px] bg-gradient-to-b from-amber-500/20 via-yellow-600/5 to-transparent blur-3xl pointer-events-none" />
-        <div className="absolute top-1/3 -left-32 w-96 h-96 bg-amber-600/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute top-1/3 -right-32 w-96 h-96 bg-yellow-500/10 rounded-full blur-3xl pointer-events-none" />
+      <section className="relative pt-14 sm:pt-24 pb-14 px-4 sm:px-6 text-center overflow-hidden z-10">
+        {/* Warm Radial Mesh Backgrounds */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[550px] bg-gradient-to-b from-terracotta/15 via-beige/40 to-transparent blur-3xl pointer-events-none" />
+        <div className="absolute top-1/3 -left-32 w-96 h-96 bg-olive/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-1/3 -right-32 w-96 h-96 bg-terracotta/10 rounded-full blur-3xl pointer-events-none" />
 
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          className="max-w-4xl mx-auto space-y-6 relative z-10"
+          className="max-w-4xl mx-auto space-y-7 relative z-10"
         >
+          {/* Brand Mark */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.05 }}
+            className="flex items-center justify-center gap-2.5"
+          >
+            <span className="relative flex items-center justify-center w-9 h-9 rounded-full bg-ink text-terracotta">
+              <Radio className="w-4 h-4" />
+              <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-terracotta" />
+            </span>
+            <span className="text-sm font-display font-semibold tracking-tight text-ink/70">
+              {locale === 'tr' ? 'Bir dokunuş, sınırsız deneyim.' : 'One touch, unlimited experience.'}
+            </span>
+          </motion.div>
+
           {/* Top Pill Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold tracking-wider uppercase backdrop-blur-md shadow-inner">
-            <Zap className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-terracotta/10 border border-terracotta/30 text-terracotta text-xs font-bold tracking-wider uppercase backdrop-blur-md">
+            <Zap className="w-3.5 h-3.5 text-terracotta fill-terracotta" />
             <span>{t.hero.badge}</span>
           </div>
 
           {/* Main Headline */}
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-center leading-[1.12] max-w-4xl mx-auto">
-            <span className="bg-gradient-to-b from-white via-zinc-100 to-zinc-400 bg-clip-text text-transparent">
+          <h1 className="font-display text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-center leading-[1.12] max-w-4xl mx-auto text-ink">
+            <span>
               Fiziksel dünyayı
             </span>
             <br />
-            <span className="bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-500 bg-clip-text text-transparent drop-shadow-[0_0_35px_rgba(245,158,11,0.3)]">
+            <span className="text-terracotta">
               dijitalle buluştur.
             </span>
           </h1>
 
           {/* Tagline */}
-          <p className="text-base sm:text-lg text-white/60 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg text-ink/60 max-w-2xl mx-auto leading-relaxed">
             {t.hero.tagline}
           </p>
 
@@ -248,33 +264,36 @@ export default function LandingPage() {
           <div className="pt-2 flex flex-wrap items-center justify-center gap-4">
             <a
               href="#customizer"
-              className="px-7 py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-black font-black text-sm shadow-xl shadow-amber-500/25 transition-all transform hover:-translate-y-0.5 active:scale-98 cursor-pointer flex items-center gap-2"
+              className="px-7 py-4 rounded-2xl bg-ink hover:bg-ink/90 text-cream font-bold text-sm shadow-xl shadow-ink/10 transition-all transform hover:-translate-y-0.5 active:scale-98 cursor-pointer flex items-center gap-2"
             >
               <span>{t.hero.primaryCta}</span>
             </a>
             <a
               href="#saas"
-              className="px-7 py-4 rounded-2xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/15 text-white font-bold text-sm backdrop-blur-xl transition-all hover:-translate-y-0.5 flex items-center gap-2"
+              className="px-7 py-4 rounded-2xl bg-white/60 hover:bg-white/90 border border-ink/10 text-ink font-bold text-sm backdrop-blur-xl transition-all hover:-translate-y-0.5 flex items-center gap-2"
             >
               <span>{t.hero.secondaryCta}</span>
-              <ArrowUpRight className="w-4 h-4 text-white/70" />
+              <ArrowUpRight className="w-4 h-4 text-ink/60" />
             </a>
           </div>
 
           {/* Trust Metric Stats Strip */}
           <div className="pt-8 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl mx-auto">
             {Object.values(t.hero.stats).map((stat, idx) => (
-              <div
+              <motion.div
                 key={idx}
-                className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md text-center"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.15 + idx * 0.08 }}
+                className="p-3.5 rounded-2xl bg-white/50 border border-ink/10 backdrop-blur-md text-center"
               >
-                <div className="text-sm sm:text-base font-extrabold text-amber-400">
+                <div className="text-sm sm:text-base font-display font-bold text-terracotta">
                   {stat.split(' ')[0]}
                 </div>
-                <div className="text-[11px] text-white/50 font-medium mt-0.5">
+                <div className="text-[11px] text-ink/50 font-medium mt-0.5">
                   {stat.substring(stat.indexOf(' ') + 1)}
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </motion.div>
@@ -305,22 +324,22 @@ export default function LandingPage() {
           ───────────────────────────────────────────────────────────── */}
       <section
         id="saas"
-        className="py-20 px-4 sm:px-6 max-w-6xl mx-auto border-t border-white/5 scroll-mt-20 relative z-10"
+        className="py-20 px-4 sm:px-6 max-w-6xl mx-auto border-t border-ink/10 scroll-mt-20 relative z-10"
       >
         {/* Section Header */}
         <div className="text-center space-y-3 mb-14">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold tracking-wider uppercase backdrop-blur-md">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-terracotta/10 border border-terracotta/30 text-terracotta text-xs font-bold tracking-wider uppercase backdrop-blur-md">
+            <Sparkles className="w-3.5 h-3.5 text-terracotta" />
             <span>{t.saas.badge}</span>
           </div>
-          <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-white">
+          <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-ink">
             {t.saas.title}
           </h2>
-          <p className="text-sm sm:text-base text-white/60 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-sm sm:text-base text-ink/60 max-w-2xl mx-auto leading-relaxed">
             {t.saas.subtitle}
           </p>
           <div className="pt-2">
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-sm font-black">
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-terracotta/15 border border-terracotta/40 text-terracotta text-sm font-black">
               ★ {t.saas.price} {t.saas.priceSub}
             </span>
           </div>
@@ -329,96 +348,96 @@ export default function LandingPage() {
         {/* 4 Core Features Grid (Bento Box - Multi-Branch, Cloud Admin, Allergen Filters, 3D Mobile UI) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-14">
           {/* Feature 1: Multi-Branch & Multi-Language (TR/EN/AR) */}
-          <div className="group rounded-3xl p-8 bg-neutral-900/60 border border-white/10 hover:border-amber-500/30 backdrop-blur-xl transition-all duration-300 relative overflow-hidden flex flex-col justify-between">
+          <div className="group rounded-3xl p-8 bg-white/60 border border-ink/10 hover:border-terracotta/40 backdrop-blur-xl transition-all duration-300 relative overflow-hidden flex flex-col justify-between">
             <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/20 transition-all pointer-events-none" />
             <div className="space-y-4 relative z-10">
               <div className="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 shadow-inner">
                 <Globe2 className="w-6 h-6" />
               </div>
-              <h3 className="text-2xl font-bold text-white tracking-tight">
+              <h3 className="text-2xl font-bold text-ink tracking-tight">
                 {locale === 'tr'
                   ? 'Çoklu Şube & Dil Yönetimi (TR / EN / AR)'
                   : 'Multi-Branch & Multi-Language (TR/EN/AR)'}
               </h3>
-              <p className="text-sm text-white/60 leading-relaxed">
+              <p className="text-sm text-ink/60 leading-relaxed">
                 {locale === 'tr'
                   ? 'Türkçe, İngilizce ve Arapça dil seçenekleriyle yerli ve yabancı misafirlerinize anında kendi dillerinde kusursuz dijital menü sunun. Şubelerinizi tek merkezden zahmetsizce yönetin.'
                   : 'Deliver dynamic digital menus in Turkish, English, and Arabic to delight both local guests and international travelers without requiring app installation.'}
               </p>
             </div>
-            <div className="mt-6 pt-4 border-t border-white/5 flex items-center gap-2 text-xs font-bold text-amber-400">
+            <div className="mt-6 pt-4 border-t border-ink/10 flex items-center gap-2 text-xs font-bold text-terracotta">
               <span>{locale === 'tr' ? 'Otomatik Dil Algılama & Şube Yönetimi' : 'Auto Language Detection & Multi-Branch'}</span>
               <ChevronRight className="w-3.5 h-3.5" />
             </div>
           </div>
 
           {/* Feature 2: Instant Menu & Price Updating Panel (admin.nfcmyplace.com) */}
-          <div className="group rounded-3xl p-8 bg-neutral-900/60 border border-white/10 hover:border-amber-500/30 backdrop-blur-xl transition-all duration-300 relative overflow-hidden flex flex-col justify-between">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl group-hover:bg-amber-500/20 transition-all pointer-events-none" />
+          <div className="group rounded-3xl p-8 bg-white/60 border border-ink/10 hover:border-terracotta/40 backdrop-blur-xl transition-all duration-300 relative overflow-hidden flex flex-col justify-between">
+            <div className="absolute top-0 right-0 w-48 h-48 bg-terracotta/10 rounded-full blur-3xl group-hover:bg-terracotta/20 transition-all pointer-events-none" />
             <div className="space-y-4 relative z-10">
-              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shadow-inner">
+              <div className="w-12 h-12 rounded-2xl bg-terracotta/10 border border-terracotta/20 flex items-center justify-center text-terracotta shadow-inner">
                 <Zap className="w-6 h-6" />
               </div>
-              <h3 className="text-2xl font-bold text-white tracking-tight">
+              <h3 className="text-2xl font-bold text-ink tracking-tight">
                 {locale === 'tr'
                   ? 'Anlık Menü & Fiyat Güncelleme'
                   : 'Instant Menu & Price Updates'}
               </h3>
-              <p className="text-sm text-white/60 leading-relaxed">
+              <p className="text-sm text-ink/60 leading-relaxed">
                 {locale === 'tr'
                   ? 'admin.nfcmyplace.com bulut paneli üzerinden saniyeler içinde ürün fiyatlarını, kategorileri, görselleri ve stok durumunu güncelleyin; yeni kampanyaları anında canlıya alın.'
                   : 'Instantly update item prices, categories, and stock availability in seconds via admin.nfcmyplace.com dashboard and launch promotions.'}
               </p>
             </div>
-            <div className="mt-6 pt-4 border-t border-white/5 flex items-center gap-2 text-xs font-bold text-amber-400">
+            <div className="mt-6 pt-4 border-t border-ink/10 flex items-center gap-2 text-xs font-bold text-terracotta">
               <span>https://admin.nfcmyplace.com</span>
               <ChevronRight className="w-3.5 h-3.5" />
             </div>
           </div>
 
           {/* Feature 3: Smart Category & Allergen Filters */}
-          <div className="group rounded-3xl p-8 bg-neutral-900/60 border border-white/10 hover:border-amber-500/30 backdrop-blur-xl transition-all duration-300 relative overflow-hidden flex flex-col justify-between">
+          <div className="group rounded-3xl p-8 bg-white/60 border border-ink/10 hover:border-terracotta/40 backdrop-blur-xl transition-all duration-300 relative overflow-hidden flex flex-col justify-between">
             <div className="absolute top-0 right-0 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl group-hover:bg-emerald-500/20 transition-all pointer-events-none" />
             <div className="space-y-4 relative z-10">
               <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shadow-inner">
                 <Filter className="w-6 h-6" />
               </div>
-              <h3 className="text-2xl font-bold text-white tracking-tight">
+              <h3 className="text-2xl font-bold text-ink tracking-tight">
                 {locale === 'tr'
                   ? 'Akıllı Kategori & Alerjen Filtreleri'
                   : 'Smart Category & Allergen Filters'}
               </h3>
-              <p className="text-sm text-white/60 leading-relaxed">
+              <p className="text-sm text-ink/60 leading-relaxed">
                 {locale === 'tr'
                   ? 'Vejetaryen, vegan, glutensiz, şefin önerisi ve alerjen etiketleri ile misafirlerinizin menüdeki ürün içeriklerini şeffaf, hızlı ve güvenle filtrelemesini sağlayın.'
                   : 'Vegetarian, vegan, gluten-free, chef special, and allergen tags allow guests to filter menu ingredients transparently and with complete safety.'}
               </p>
             </div>
-            <div className="mt-6 pt-4 border-t border-white/5 flex items-center gap-2 text-xs font-bold text-amber-400">
+            <div className="mt-6 pt-4 border-t border-ink/10 flex items-center gap-2 text-xs font-bold text-terracotta">
               <span>{locale === 'tr' ? 'Şeffaf İçerik & Güvenli Sipariş Deneyimi' : 'Transparent Ingredients & Safe Ordering'}</span>
               <ChevronRight className="w-3.5 h-3.5" />
             </div>
           </div>
 
           {/* Feature 4: Fast 3D Mobile Web UI (60 FPS, Zero App Download) */}
-          <div className="group rounded-3xl p-8 bg-neutral-900/60 border border-white/10 hover:border-amber-500/30 backdrop-blur-xl transition-all duration-300 relative overflow-hidden flex flex-col justify-between">
+          <div className="group rounded-3xl p-8 bg-white/60 border border-ink/10 hover:border-terracotta/40 backdrop-blur-xl transition-all duration-300 relative overflow-hidden flex flex-col justify-between">
             <div className="absolute top-0 right-0 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl group-hover:bg-purple-500/20 transition-all pointer-events-none" />
             <div className="space-y-4 relative z-10">
               <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 shadow-inner">
                 <Smartphone className="w-6 h-6" />
               </div>
-              <h3 className="text-2xl font-bold text-white tracking-tight">
+              <h3 className="text-2xl font-bold text-ink tracking-tight">
                 {locale === 'tr'
                   ? 'Hızlı 3D Mobil Web Arayüzü'
                   : 'Fast 3D Mobile Web Interface'}
               </h3>
-              <p className="text-sm text-white/60 leading-relaxed">
+              <p className="text-sm text-ink/60 leading-relaxed">
                 {locale === 'tr'
                   ? 'iPhone ve Android telefonlarda 60 FPS ultra akıcı kaydırma, yapışkan kategori sekmeleri ve yüksek çözünürlüklü 3D kart tasarımı. Sıfır uygulama indirme, anında açılış.'
                   : 'Ultra-smooth 60 FPS scrolling on iOS and Android, sticky category navigation, high-res 3D food cards, and zero app download requirements.'}
               </p>
             </div>
-            <div className="mt-6 pt-4 border-t border-white/5 flex items-center gap-2 text-xs font-bold text-amber-400">
+            <div className="mt-6 pt-4 border-t border-ink/10 flex items-center gap-2 text-xs font-bold text-terracotta">
               <span>{locale === 'tr' ? '60 FPS Akıcı Web Performansı' : '60 FPS Ultra Fast Web Performance'}</span>
               <ChevronRight className="w-3.5 h-3.5" />
             </div>
@@ -428,12 +447,12 @@ export default function LandingPage() {
         {/* Live Interactive Demo Cards: Baltazar Burger & Kahve Erenköy */}
         <div className="space-y-6">
           <div className="text-center space-y-2">
-            <h3 className="text-2xl sm:text-3xl font-black text-white">
+            <h3 className="text-2xl sm:text-3xl font-black text-ink">
               {locale === 'tr'
                 ? 'Canlı Restoran Menü Demoları'
                 : 'Live Interactive Venue Demos'}
             </h3>
-            <p className="text-xs sm:text-sm text-white/50">
+            <p className="text-xs sm:text-sm text-ink/60">
               {locale === 'tr'
                 ? 'Aşağıdaki kartlara tıklayarak NFCMyPlace altyapısıyla çalışan canlı işletme menülerini deneyimleyin.'
                 : 'Click the demo cards below to test live multi-tenant restaurant menus powered by NFCMyPlace.'}
@@ -446,7 +465,7 @@ export default function LandingPage() {
                 key={demo.slug}
                 whileHover={{ y: -6 }}
                 transition={{ duration: 0.3 }}
-                className="bg-neutral-900/80 border border-white/10 hover:border-amber-500/40 rounded-3xl overflow-hidden shadow-2xl flex flex-col justify-between backdrop-blur-xl group"
+                className="bg-white/70 border border-ink/10 hover:border-terracotta/40 rounded-3xl overflow-hidden shadow-xl shadow-ink/5 flex flex-col justify-between backdrop-blur-xl group"
               >
                 <a
                   href={demo.url}
@@ -462,7 +481,7 @@ export default function LandingPage() {
                       alt={demo.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/20 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/10 to-transparent" />
 
                     {/* Tag Badge */}
                     <div className="absolute top-4 left-4 flex items-center gap-2">
@@ -473,16 +492,16 @@ export default function LandingPage() {
                       </span>
                     </div>
 
-                    <div className="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/60 border border-white/20 backdrop-blur-md flex items-center justify-center text-white group-hover:bg-amber-500 group-hover:text-black transition-colors">
+                    <div className="absolute top-4 right-4 w-9 h-9 rounded-full bg-ink/70 border border-cream/30 backdrop-blur-md flex items-center justify-center text-cream group-hover:bg-terracotta transition-colors">
                       <ArrowUpRight className="w-4 h-4" />
                     </div>
                   </div>
 
                   <div className="p-6 space-y-3">
-                    <h4 className="text-2xl font-black text-white group-hover:text-amber-400 transition-colors">
+                    <h4 className="text-2xl font-black text-ink group-hover:text-terracotta transition-colors">
                       {demo.name}
                     </h4>
-                    <p className="text-xs sm:text-sm text-white/60 leading-relaxed">
+                    <p className="text-xs sm:text-sm text-ink/60 leading-relaxed">
                       {demo.description}
                     </p>
 
@@ -491,7 +510,7 @@ export default function LandingPage() {
                       {demo.highlights.map((badge, bIdx) => (
                         <span
                           key={bIdx}
-                          className="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-white/70"
+                          className="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-ink/5 border border-ink/10 text-ink/70"
                         >
                           ✓ {badge}
                         </span>
@@ -505,7 +524,7 @@ export default function LandingPage() {
                     href={demo.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-yellow-400 text-black font-black text-xs transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 cursor-pointer"
+                    className="w-full py-3.5 rounded-xl bg-terracotta hover:bg-terracotta-light text-cream font-black text-xs transition-all flex items-center justify-center gap-2 shadow-lg shadow-terracotta/25 cursor-pointer"
                   >
                     <span>{demo.buttonText}</span>
                     <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
@@ -527,13 +546,13 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="text-center space-y-3 mb-14">
-            <span className="text-xs font-extrabold text-amber-400 uppercase tracking-widest">
+            <span className="text-xs font-extrabold text-terracotta uppercase tracking-widest">
               {t.pricing.badge}
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
+            <h2 className="text-3xl sm:text-5xl font-black text-ink tracking-tight">
               {t.pricing.title}
             </h2>
-            <p className="text-sm sm:text-base text-white/50 max-w-2xl mx-auto">
+            <p className="text-sm sm:text-base text-ink/60 max-w-2xl mx-auto">
               {t.pricing.subtitle}
             </p>
           </div>
@@ -545,36 +564,36 @@ export default function LandingPage() {
                 key={card.id}
                 className={`relative rounded-3xl p-8 flex flex-col justify-between border backdrop-blur-xl transition-all duration-300 ${
                   card.popular
-                    ? 'bg-neutral-900/95 border-amber-500 shadow-2xl shadow-amber-900/40 ring-1 ring-amber-500/50 md:-translate-y-2'
-                    : 'bg-neutral-900/50 border-white/10 hover:border-white/20'
+                    ? 'bg-white border-terracotta shadow-2xl shadow-terracotta/20 ring-2 ring-terracotta/40 md:-translate-y-2'
+                    : 'bg-white/60 border-ink/10 hover:border-terracotta/30'
                 }`}
               >
                 {card.popular && (
-                  <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-black text-[10px] uppercase tracking-widest shadow-md whitespace-nowrap">
+                  <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-terracotta text-cream font-black text-[10px] uppercase tracking-widest shadow-md whitespace-nowrap">
                     ★ {card.badge}
                   </span>
                 )}
 
                 <div>
-                  <div className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-1">
+                  <div className="text-xs font-bold text-terracotta uppercase tracking-wider mb-1">
                     {card.badge}
                   </div>
-                  <h3 className="text-xl font-black text-white">{card.title}</h3>
-                  <p className="text-xs text-white/50 mt-1">{card.subtitle}</p>
+                  <h3 className="text-xl font-black text-ink">{card.title}</h3>
+                  <p className="text-xs text-ink/60 mt-1">{card.subtitle}</p>
 
                   <div className="my-6">
-                    <span className="text-3xl sm:text-4xl font-black text-amber-400 tracking-tight">
+                    <span className="text-3xl sm:text-4xl font-black text-terracotta tracking-tight">
                       {card.price}
                     </span>
-                    <span className="text-xs text-white/50 ml-1.5 font-semibold block sm:inline mt-1 sm:mt-0">
+                    <span className="text-xs text-ink/50 ml-1.5 font-semibold block sm:inline mt-1 sm:mt-0">
                       {card.unit}
                     </span>
                   </div>
 
-                  <ul className="space-y-3 text-xs text-white/70 mb-8">
+                  <ul className="space-y-3 text-xs text-ink/70 mb-8">
                     {card.features.map((feat, fIdx) => (
                       <li key={fIdx} className="flex items-start gap-2.5">
-                        <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-4 h-4 text-terracotta shrink-0 mt-0.5" />
                         <span>{feat}</span>
                       </li>
                     ))}
@@ -586,8 +605,8 @@ export default function LandingPage() {
                   onClick={card.action}
                   className={`w-full py-4 rounded-xl text-center font-black text-xs transition-all cursor-pointer ${
                     card.popular
-                      ? 'bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-400 text-black hover:from-amber-400 hover:to-yellow-300 shadow-xl shadow-amber-500/25'
-                      : 'bg-white/10 hover:bg-white/15 text-white border border-white/10 hover:border-amber-500/40'
+                      ? 'bg-terracotta hover:bg-terracotta-light text-cream shadow-xl shadow-terracotta/25'
+                      : 'bg-ink/5 hover:bg-ink/10 text-ink border border-ink/10 hover:border-terracotta/40'
                   }`}
                 >
                   {card.cta}
@@ -599,45 +618,45 @@ export default function LandingPage() {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer className="py-14 px-4 sm:px-6 border-t border-white/10 bg-neutral-950/90 backdrop-blur-xl relative z-10">
+      <footer className="py-14 px-4 sm:px-6 border-t border-ink/80 bg-ink backdrop-blur-xl relative z-10">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
           {/* Brand & Rights */}
           <div className="space-y-2.5">
             <div className="flex items-center justify-center md:justify-start gap-2.5">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-amber-500 to-yellow-400 flex items-center justify-center text-black shadow-md">
+              <div className="w-7 h-7 rounded-lg bg-terracotta flex items-center justify-center text-cream shadow-md">
                 <Radio className="w-3.5 h-3.5 stroke-[2.5]" />
               </div>
-              <span className="font-extrabold text-base text-white tracking-tight flex items-center">
+              <span className="font-display font-bold text-base text-cream tracking-tight flex items-center">
                 <span>NFC</span>
-                <span className="text-amber-400">MyPlace</span>
-                <span className="text-amber-400 text-xs font-bold ml-0.5 self-start">
+                <span className="text-terracotta">MyPlace</span>
+                <span className="text-terracotta text-xs font-bold ml-0.5 self-start">
                   ®
                 </span>
               </span>
             </div>
-            <p className="text-xs text-white/50 max-w-sm">{t.footer.tagline}</p>
-            <p className="text-[11px] text-white/30">{t.footer.rights}</p>
+            <p className="text-xs text-cream/60 max-w-sm">{t.footer.tagline}</p>
+            <p className="text-[11px] text-cream/40">{t.footer.rights}</p>
           </div>
 
           {/* Quick Nav Links & Admin Portal Link */}
-          <div className="flex flex-wrap justify-center items-center gap-7 text-xs font-semibold text-white/60">
-            <a href="#customizer" className="hover:text-amber-400 transition-colors">
+          <div className="flex flex-wrap justify-center items-center gap-7 text-xs font-semibold text-cream/70">
+            <a href="#customizer" className="hover:text-terracotta transition-colors">
               {t.nav.products}
             </a>
-            <a href="#sticker" className="hover:text-amber-400 transition-colors">
+            <a href="#sticker" className="hover:text-terracotta transition-colors">
               {t.nav.tableSolutions}
             </a>
-            <a href="#saas" className="hover:text-amber-400 transition-colors">
+            <a href="#saas" className="hover:text-terracotta transition-colors">
               {t.nav.saas}
             </a>
-            <a href="#pricing" className="hover:text-amber-400 transition-colors">
+            <a href="#pricing" className="hover:text-terracotta transition-colors">
               {t.nav.pricing}
             </a>
             <a
               href="https://admin.nfcmyplace.com/login"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-amber-400 hover:text-amber-300 font-bold transition-colors"
+              className="inline-flex items-center gap-1 text-terracotta hover:text-terracotta-light font-bold transition-colors"
             >
               <span>{t.nav.adminLogin}</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
