@@ -106,16 +106,21 @@ export class OrdersService {
       );
     }
 
-    let tableId: string | null = null;
-    if (dto.tableId) {
-      const table = await this.prisma.table.findFirst({
-        where: { id: dto.tableId, restaurantId: restaurant.id },
-      });
-      // If the tableId doesn't resolve to a real table (e.g. a stale/manual
-      // link), we still accept the order rather than blocking checkout -
-      // it's just recorded without a table association.
-      tableId = table?.id ?? null;
+    // Orders are only ever placed from a table-scoped link
+    // (/[slug]/t/[tableId]) - the general/no-table menu link is browse-only,
+    // by design, so staff always know which physical table an order came
+    // from. Reject anything without a table that resolves to this
+    // restaurant, rather than silently accepting an unattributed order.
+    if (!dto.tableId) {
+      throw new BadRequestException('Orders can only be placed from a table link');
     }
+    const table = await this.prisma.table.findFirst({
+      where: { id: dto.tableId, restaurantId: restaurant.id, isActive: true },
+    });
+    if (!table) {
+      throw new BadRequestException('Invalid or inactive table');
+    }
+    const tableId = table.id;
 
     let totalAmount = 0;
     const itemsData = dto.items.map((item) => {

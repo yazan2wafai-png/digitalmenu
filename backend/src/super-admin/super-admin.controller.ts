@@ -11,6 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
+import { ForbiddenException, Req } from '@nestjs/common';
 import { SuperAdminService } from './super-admin.service';
 import type {
   SuperAdminLoginResponse,
@@ -19,12 +20,15 @@ import type {
   RestaurantSummaryItem,
   RestaurantViewsResponse,
   UpdateRestaurantPermissionsResponse,
+  ResetAdminPasswordResponse,
 } from './super-admin.service';
 import { SuperAdminLoginDto } from './dto/super-admin-login.dto';
 import { CreateRestaurantDto } from './dto/create-restaurant.dto';
 import { UpdateRestaurantPermissionsDto } from './dto/update-restaurant-permissions.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { SuperAdminGuard } from './guards/super-admin.guard';
+import type { AuthenticatedRequest } from '../auth/strategies/jwt.strategy';
+import { AdminRole } from '../common/roles.enum';
 
 @Controller('super-admin')
 export class SuperAdminController {
@@ -92,5 +96,41 @@ export class SuperAdminController {
     @Body() dto: UpdateRestaurantPermissionsDto,
   ): Promise<UpdateRestaurantPermissionsResponse> {
     return this.superAdminService.updateRestaurantPermissions(slug, dto);
+  }
+
+  /**
+   * GET /super-admin/restaurants/:slug/permissions
+   * Protected (JWT only, no SuperAdminGuard): a SUPER_ADMIN can read any
+   * restaurant's permissions; a RESTAURANT_ADMIN can only read their own -
+   * this is how the tenant admin panel finds out what's been restricted
+   * for it. Previously this GET route didn't exist at all, so every tenant
+   * admin page's permissions fetch silently 404'd and fell back to
+   * "everything allowed" - RBAC toggles saved fine but were never enforced
+   * on the tenant side.
+   */
+  @Get('restaurants/:slug/permissions')
+  @UseGuards(JwtAuthGuard)
+  getRestaurantPermissions(
+    @Param('slug') slug: string,
+    @Req() req: AuthenticatedRequest,
+  ): Promise<UpdateRestaurantPermissionsResponse> {
+    const isSuperAdmin = req.user.role === AdminRole.SUPER_ADMIN || req.user.role === 'SUPER_ADMIN';
+    if (!isSuperAdmin && req.user.restaurantSlug !== slug) {
+      throw new ForbiddenException('You do not have permission to view this restaurant');
+    }
+    return this.superAdminService.getRestaurantPermissions(slug);
+  }
+
+  /**
+   * POST /super-admin/restaurants/:slug/reset-password
+   * Protected: SuperAdmin only. Generates and stores a new random password
+   * for the restaurant's admin account and returns it once in plaintext -
+   * there is no way to recover the existing password since it's only ever
+   * stored as a bcrypt hash.
+   */
+  @Post('restaurants/:slug/reset-password')
+  @UseGuards(JwtAuthGuard, SuperAdminGuard)
+  resetAdminPassword(@Param('slug') slug: string): Promise<ResetAdminPasswordResponse> {
+    return this.superAdminService.resetAdminPassword(slug);
   }
 }

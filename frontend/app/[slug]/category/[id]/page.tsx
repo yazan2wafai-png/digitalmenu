@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect, use } from 'react';
 import { fetchRestaurant } from '@/lib/api';
+import { getActiveTableId } from '@/lib/cart';
 import type { Restaurant, Category, Product } from '@/types/menu';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
@@ -23,6 +24,11 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  // No route/query param carries the table here (this page is only ever
+  // reached via /[slug]/category/[id], never /[slug]/t/[tableId]/category/...),
+  // so this reads whatever the entry page already persisted.
+  const [activeTableId] = useState<string | undefined>(() => getActiveTableId());
+  const canOrder = (restaurant?.featureFlags?.enableOrdering ?? true) && !!activeTableId;
 
   useEffect(() => {
     async function load() {
@@ -124,7 +130,7 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
                 onSelect={(p) => setSelectedProduct(p)}
                 categoryName={category.name}
                 slug={slug}
-                enableOrdering={restaurant?.featureFlags?.enableOrdering ?? true}
+                enableOrdering={canOrder}
               />
             ))}
           </motion.div>
@@ -138,14 +144,15 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
         isRTL={isRTL}
         onClose={() => setSelectedProduct(null)}
         slug={slug}
-        enableOrdering={restaurant?.featureFlags?.enableOrdering ?? true}
+        enableOrdering={canOrder}
       />
 
       <CartFab
         slug={slug}
         themeColor={themeColor}
         isRTL={isRTL}
-        enabled={restaurant?.featureFlags?.enableOrdering ?? true}
+        tableId={activeTableId}
+        enabled={canOrder}
         estimatedPrepMinutes={restaurant?.settings?.estimatedPrepMinutes}
       />
     </div>

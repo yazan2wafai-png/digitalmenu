@@ -77,6 +77,12 @@ export function getActiveTableId(): string | undefined {
   return params.get('tableId') || undefined;
 }
 
+/** Persist the active table for this browsing session (call once a page knows it synchronously). */
+export function setActiveTableId(tableId: string): void {
+  if (typeof window === 'undefined' || !tableId) return;
+  sessionStorage.setItem('tableId', tableId);
+}
+
 export function onCartChange(cb: () => void): () => void {
   if (typeof window === 'undefined') return () => {};
   window.addEventListener(CART_EVENT, cb);

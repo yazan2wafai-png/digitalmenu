@@ -8,6 +8,7 @@ import { ProvisionModal } from '@/components/super-admin/ProvisionModal';
 import { AnalyticsModal } from '@/components/super-admin/AnalyticsModal';
 import { DeleteConfirmModal } from '@/components/super-admin/DeleteConfirmModal';
 import { PermissionsModal } from '@/components/super-admin/PermissionsModal';
+import { PasswordResetModal } from '@/components/super-admin/PasswordResetModal';
 
 import type { TenantRestaurantItem as RestaurantItem, RestaurantPermissions } from '@/types/super-admin';
 
@@ -40,6 +41,7 @@ export default function SuperAdminDashboardPage() {
   const [provisionOpen, setProvisionOpen] = useState(false);
   const [analyticsTarget, setAnalyticsTarget] = useState<{ slug: string; name: string } | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<{ slug: string; name: string } | null>(null);
+  const [passwordResetTarget, setPasswordResetTarget] = useState<{ slug: string; name: string } | null>(null);
   const [permissionsTarget, setPermissionsTarget] = useState<{
     slug: string;
     name: string;
@@ -541,6 +543,16 @@ export default function SuperAdminDashboardPage() {
                               <span>Admin</span>
                             </Link>
 
+                            {/* Reset Admin Password */}
+                            <button
+                              onClick={() => setPasswordResetTarget({ slug: r.slug, name: displayName })}
+                              className="px-2.5 py-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded-lg text-xs font-medium transition cursor-pointer flex items-center gap-1"
+                              title="Generate a new admin password"
+                            >
+                              <span>🔑</span>
+                              <span>Reset</span>
+                            </button>
+
                             {/* Delete Tenant */}
                             <button
                               onClick={() => setDeleteTarget({ slug: r.slug, name: displayName })}
@@ -609,6 +621,14 @@ export default function SuperAdminDashboardPage() {
             fetchRestaurants();
             showToast('Restaurant deleted successfully.');
           }}
+        />
+      )}
+
+      {passwordResetTarget && (
+        <PasswordResetModal
+          slug={passwordResetTarget.slug}
+          restaurantName={passwordResetTarget.name}
+          onClose={() => setPasswordResetTarget(null)}
         />
       )}
     </div>

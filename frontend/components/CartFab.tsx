@@ -21,16 +21,20 @@ interface Props {
   themeColor: string;
   isRTL: boolean;
   enabled: boolean;
+  /** Pass this when the page already knows it synchronously (avoids a mount-order
+   * race on /[slug]/t/[tableId]); otherwise it's read from sessionStorage. */
+  tableId?: string;
   estimatedPrepMinutes?: number;
 }
 
 type SubmitState = 'idle' | 'submitting' | 'success' | 'error';
 
-export function CartFab({ slug, themeColor, isRTL, enabled, estimatedPrepMinutes = 15 }: Props) {
+export function CartFab({ slug, themeColor, isRTL, enabled, tableId, estimatedPrepMinutes = 15 }: Props) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [open, setOpen] = useState(false);
   const [state, setState] = useState<SubmitState>('idle');
   const [errorMsg, setErrorMsg] = useState('');
+  const [resolvedTableId, setResolvedTableId] = useState<string | undefined>(tableId);
 
   const refresh = useCallback(() => setItems(getCart(slug)), [slug]);
 
@@ -39,18 +43,25 @@ export function CartFab({ slug, themeColor, isRTL, enabled, estimatedPrepMinutes
     return onCartChange(refresh);
   }, [refresh]);
 
-  if (!enabled) return null;
+  useEffect(() => {
+    setResolvedTableId(tableId || getActiveTableId());
+  }, [tableId]);
+
+  // Ordering only happens from a table-scoped link - the general/no-table
+  // menu link is browse-only, so staff always know which table an order
+  // came from.
+  if (!enabled || !resolvedTableId) return null;
 
   const count = cartCount(items);
   const total = cartTotal(items);
 
   async function handleSubmit() {
-    if (items.length === 0) return;
+    if (items.length === 0 || !resolvedTableId) return;
     setState('submitting');
     setErrorMsg('');
     try {
       await createOrder(slug, {
-        tableId: getActiveTableId(),
+        tableId: resolvedTableId,
         items: items.map((i) => ({ productId: i.productId, quantity: i.quantity })),
       });
       clearCart(slug);

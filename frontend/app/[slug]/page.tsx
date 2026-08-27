@@ -1,7 +1,8 @@
 'use client';
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { fetchRestaurant } from '@/lib/api';
+import { setActiveTableId } from '@/lib/cart';
 import type { Restaurant } from '@/types/menu';
 import { Header } from '@/components/Header';
 import { Hero } from '@/components/Hero';
@@ -17,8 +18,17 @@ const DEFAULT_LOCALE = process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'tr';
 
 export default function HomePage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const slug = (params?.slug as string) || '';
-  const tableId = params?.tableId as string | undefined;
+  // Resolved synchronously (no sessionStorage race): either the /t/[tableId]
+  // route param, or a ?tableId= query override. This is the only source of
+  // table context ordering may use - the plain /[slug] link has neither and
+  // stays browse-only by design.
+  const tableId = (params?.tableId as string | undefined) || searchParams.get('tableId') || undefined;
+
+  useEffect(() => {
+    if (tableId) setActiveTableId(tableId);
+  }, [tableId]);
 
   const [locale, setLocale] = useState(DEFAULT_LOCALE);
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
@@ -210,7 +220,8 @@ export default function HomePage() {
         slug={slug}
         themeColor={theme}
         isRTL={isRTL}
-        enabled={restaurant.featureFlags?.enableOrdering ?? true}
+        tableId={tableId}
+        enabled={(restaurant.featureFlags?.enableOrdering ?? true) && !!tableId}
         estimatedPrepMinutes={restaurant.settings?.estimatedPrepMinutes}
       />
       </div>

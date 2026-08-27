@@ -37,7 +37,9 @@ async function proxy(request: NextRequest, params: Params, method: string) {
   }
 
   try {
-    const res = await fetch(backendUrl, { method, headers, body });
+    // Never cache: admin/tenant data must always reflect the live DB,
+    // never a stale Next.js fetch cache.
+    const res = await fetch(backendUrl, { method, headers, body, cache: 'no-store' });
     const text = await res.text();
 
     let data: unknown;

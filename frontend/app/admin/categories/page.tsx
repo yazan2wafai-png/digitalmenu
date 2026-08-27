@@ -99,6 +99,14 @@ export default function CategoriesAdminPage() {
     fetchData(s);
   }, [fetchData, router]);
 
+  // If menu management has been disabled for this tenant, don't reveal this
+  // page exists at all - bounce back to the overview silently.
+  useEffect(() => {
+    if (!loading && !permissions.canManageMenu) {
+      router.replace('/admin');
+    }
+  }, [loading, permissions.canManageMenu, router]);
+
   const refresh = () => slug && fetchData(slug);
 
   async function handleDeleteCategory(id: string) {
@@ -122,23 +130,6 @@ export default function CategoriesAdminPage() {
       <AdminHeader slug={slug} email={email} permissions={permissions} />
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6">
-        {/* Permission warning */}
-        {!permissions.canManageMenu && (
-          <div className="bg-amber-50 border border-amber-200 text-amber-800 rounded-2xl p-4 flex items-center justify-between shadow-xs">
-            <div className="flex items-center gap-2.5 text-xs font-semibold">
-              <span>🔒</span>
-              <span>
-                {locale === 'tr'
-                  ? 'Kategori yönetimi salt okunur moddadır. Kategori oluşturma, düzenleme ve silme devre dışıdır.'
-                  : 'Category management is in read-only mode. Creating, editing, and deleting categories is restricted.'}
-              </span>
-            </div>
-            <span className="text-[11px] bg-amber-200/60 text-amber-900 px-2 py-0.5 rounded-full font-bold">
-              Read-Only
-            </span>
-          </div>
-        )}
-
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-gray-800">{t.categories.title}</h1>
@@ -216,7 +207,7 @@ export default function CategoriesAdminPage() {
                       </Link>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      {permissions.canManageMenu ? (
+                      {permissions.canManageMenu && (
                         <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => setCatModal({ open: true, category: cat })}
@@ -231,10 +222,6 @@ export default function CategoriesAdminPage() {
                             {t.categories.delete}
                           </button>
                         </div>
-                      ) : (
-                        <span className="text-xs text-gray-400 font-medium px-2 py-1 bg-gray-100 rounded-lg">
-                          {locale === 'tr' ? 'Salt Okunur' : 'Locked'}
-                        </span>
                       )}
                     </td>
                   </tr>

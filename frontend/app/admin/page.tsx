@@ -155,41 +155,6 @@ export default function AdminDashboardPage() {
           </div>
         )}
 
-        {/* Permission Warning Banners */}
-        {!permissions.canManageMenu && (
-          <div className="bg-amber-50 border border-amber-200 text-amber-800 rounded-2xl p-4 sm:p-5 flex items-start gap-3 shadow-xs">
-            <span className="text-xl flex-shrink-0">🔒</span>
-            <div>
-              <h3 className="text-sm font-bold text-amber-900">
-                {locale === 'tr'
-                  ? 'Menü Düzenleme İzni Kısıtlandı'
-                  : 'Menu Editing Permission Restricted'}
-              </h3>
-              <p className="text-xs text-amber-700 mt-1 leading-relaxed">
-                {locale === 'tr'
-                  ? 'Ürün ve kategori ekleme/düzenleme yetkisi platform süper yöneticisi tarafından devre dışı bırakılmıştır. Menü öğeleri salt okunur modda görüntülenmektedir.'
-                  : 'Product and category modifications have been restricted by the platform SuperAdmin. Your catalog is currently in read-only mode.'}
-              </p>
-            </div>
-          </div>
-        )}
-
-        {!permissions.canTrackTables && (
-          <div className="bg-slate-100 border border-slate-200 text-slate-700 rounded-2xl p-4 flex items-start gap-3 shadow-xs">
-            <span className="text-xl flex-shrink-0">📍</span>
-            <div>
-              <h3 className="text-sm font-bold text-slate-800">
-                {locale === 'tr' ? 'Masa Takibi & QR Kısıtlandı' : 'Table Tracking & QR Restricted'}
-              </h3>
-              <p className="text-xs text-slate-600 mt-1">
-                {locale === 'tr'
-                  ? 'Masa oluşturma ve QR kod yönetim modülü bu restoran için kısıtlanmıştır.'
-                  : 'Table generation and QR tracking module is currently disabled for this tenant instance.'}
-              </p>
-            </div>
-          </div>
-        )}
-
         {/* Top Summary Cards */}
         <section>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
@@ -198,7 +163,7 @@ export default function AdminDashboardPage() {
               <p className="text-xs text-gray-500">{t.overview.subtitle}</p>
             </div>
             {/* Gated Action Buttons */}
-            {permissions.canManageMenu ? (
+            {permissions.canManageMenu && (
               <div className="flex gap-2">
                 <button
                   onClick={() => setCatModal({ open: true })}
@@ -215,116 +180,77 @@ export default function AdminDashboardPage() {
                   </button>
                 )}
               </div>
-            ) : (
-              <span className="text-xs font-semibold text-gray-400 bg-gray-100 px-3 py-1.5 rounded-lg border border-gray-200 flex items-center gap-1.5 self-start sm:self-auto">
-                <span>🔒</span>
-                <span>{locale === 'tr' ? 'Menü Düzenleme Kilitli' : 'Menu Editing Locked'}</span>
-              </span>
             )}
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Link
-              href="/admin/categories"
-              className="bg-white p-5 rounded-xl border border-gray-200 shadow-xs hover:border-blue-300 transition block"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-gray-500">{t.overview.categoriesCard}</span>
-                {!permissions.canManageMenu && (
-                  <span className="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded font-semibold">
-                    Read-Only
-                  </span>
-                )}
-              </div>
-              <div className="flex items-baseline justify-between mt-2">
-                <span className="text-3xl font-bold text-gray-900">{categories.length}</span>
-                <span className="text-xs text-blue-600 font-semibold">{t.overview.manage}</span>
-              </div>
-            </Link>
+            {permissions.canManageMenu && (
+              <Link
+                href="/admin/categories"
+                className="bg-white p-5 rounded-xl border border-gray-200 shadow-xs hover:border-blue-300 transition block"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-gray-500">{t.overview.categoriesCard}</span>
+                </div>
+                <div className="flex items-baseline justify-between mt-2">
+                  <span className="text-3xl font-bold text-gray-900">{categories.length}</span>
+                  <span className="text-xs text-blue-600 font-semibold">{t.overview.manage}</span>
+                </div>
+              </Link>
+            )}
 
-            <Link
-              href="/admin/products"
-              className="bg-white p-5 rounded-xl border border-gray-200 shadow-xs hover:border-emerald-300 transition block"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-gray-500">{t.overview.productsCard}</span>
-                {!permissions.canManageMenu && (
-                  <span className="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded font-semibold">
-                    Read-Only
-                  </span>
-                )}
-              </div>
-              <div className="flex items-baseline justify-between mt-2">
-                <span className="text-3xl font-bold text-gray-900">{totalProducts}</span>
-                <span className="text-xs text-emerald-600 font-semibold">{t.overview.manage}</span>
-              </div>
-            </Link>
+            {permissions.canManageMenu && (
+              <Link
+                href="/admin/products"
+                className="bg-white p-5 rounded-xl border border-gray-200 shadow-xs hover:border-emerald-300 transition block"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-gray-500">{t.overview.productsCard}</span>
+                </div>
+                <div className="flex items-baseline justify-between mt-2">
+                  <span className="text-3xl font-bold text-gray-900">{totalProducts}</span>
+                  <span className="text-xs text-emerald-600 font-semibold">{t.overview.manage}</span>
+                </div>
+              </Link>
+            )}
 
-            <Link
-              href="/admin/locations"
-              className={`bg-white p-5 rounded-xl border shadow-xs transition block ${
-                permissions.canTrackTables
-                  ? 'border-gray-200 hover:border-purple-300'
-                  : 'border-gray-200 opacity-80'
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-gray-500">{t.overview.locationsCard}</span>
-                {!permissions.canTrackTables && (
-                  <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded font-semibold">
-                    🔒 Locked
-                  </span>
-                )}
-              </div>
-              <div className="flex items-baseline justify-between mt-2">
-                <span className="text-3xl font-bold text-gray-900">{locationsCount}</span>
-                <span className="text-xs text-purple-600 font-semibold">{t.overview.manage}</span>
-              </div>
-            </Link>
+            {permissions.canTrackTables && (
+              <Link
+                href="/admin/locations"
+                className="bg-white p-5 rounded-xl border border-gray-200 shadow-xs hover:border-purple-300 transition block"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-gray-500">{t.overview.locationsCard}</span>
+                </div>
+                <div className="flex items-baseline justify-between mt-2">
+                  <span className="text-3xl font-bold text-gray-900">{locationsCount}</span>
+                  <span className="text-xs text-purple-600 font-semibold">{t.overview.manage}</span>
+                </div>
+              </Link>
+            )}
 
-            <Link
-              href="/admin/locations"
-              className={`bg-white p-5 rounded-xl border shadow-xs transition block ${
-                permissions.canTrackTables
-                  ? 'border-gray-200 hover:border-amber-300'
-                  : 'border-gray-200 opacity-80'
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-gray-500">{t.overview.tablesCard}</span>
-                {!permissions.canTrackTables && (
-                  <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded font-semibold">
-                    🔒 Locked
-                  </span>
-                )}
-              </div>
-              <div className="flex items-baseline justify-between mt-2">
-                <span className="text-3xl font-bold text-gray-900">{tablesCount}</span>
-                <span className="text-xs text-amber-600 font-semibold">{t.overview.manage}</span>
-              </div>
-            </Link>
+            {permissions.canTrackTables && (
+              <Link
+                href="/admin/locations"
+                className="bg-white p-5 rounded-xl border border-gray-200 shadow-xs hover:border-amber-300 transition block"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-gray-500">{t.overview.tablesCard}</span>
+                </div>
+                <div className="flex items-baseline justify-between mt-2">
+                  <span className="text-3xl font-bold text-gray-900">{tablesCount}</span>
+                  <span className="text-xs text-amber-600 font-semibold">{t.overview.manage}</span>
+                </div>
+              </Link>
+            )}
           </div>
         </section>
 
         {/* Live Traffic Analytics Section */}
-        {permissions.canViewAnalytics ? (
+        {permissions.canViewAnalytics && (
           <section className="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
             <AnalyticsTab slug={slug} />
           </section>
-        ) : (
-          <div className="bg-slate-100 border border-slate-200 text-slate-700 rounded-2xl p-4 flex items-start gap-3 shadow-xs">
-            <span className="text-xl flex-shrink-0">📊</span>
-            <div>
-              <h3 className="text-sm font-bold text-slate-800">
-                {locale === 'tr' ? 'Analitik / Genel Bakış Kısıtlandı' : 'Analytics / Overview Restricted'}
-              </h3>
-              <p className="text-xs text-slate-600 mt-1">
-                {locale === 'tr'
-                  ? 'Trafik ve görüntülenme istatistikleri platform süper yöneticisi tarafından bu restoran için kısıtlanmıştır.'
-                  : 'Traffic and view analytics have been restricted by the platform SuperAdmin for this tenant.'}
-              </p>
-            </div>
-          </div>
         )}
 
         {/* Recent Categories Preview */}
@@ -356,17 +282,13 @@ export default function AdminDashboardPage() {
                       {cat.products?.length || 0} {t.overview.productsCount}
                     </div>
                   </div>
-                  {permissions.canManageMenu ? (
+                  {permissions.canManageMenu && (
                     <button
                       onClick={() => setProdModal({ open: true, categoryId: cat.id })}
                       className="text-xs text-emerald-600 hover:text-emerald-700 border border-emerald-200 rounded-lg px-2.5 py-1 bg-white cursor-pointer"
                     >
                       {t.overview.addProduct}
                     </button>
-                  ) : (
-                    <span className="text-[11px] text-gray-400 italic">
-                      {locale === 'tr' ? 'Salt Okunur' : 'Read Only'}
-                    </span>
                   )}
                 </div>
               ))}

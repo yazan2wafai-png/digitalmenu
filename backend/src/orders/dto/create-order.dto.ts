@@ -23,9 +23,10 @@ export class CreateOrderItemDto {
 }
 
 export class CreateOrderDto {
+  // Required: orders are only ever placed from a table-scoped link
+  // (/[slug]/t/[tableId]); the general/no-table menu link is browse-only.
   @IsString()
-  @IsOptional()
-  tableId?: string;
+  tableId: string;
 
   @IsString()
   @IsOptional()

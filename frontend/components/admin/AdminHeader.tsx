@@ -21,33 +21,21 @@ export function AdminHeader({ slug, email, permissions }: Props) {
     router.replace('/admin/login');
   }
 
+  // Restricted modules are left out of the nav entirely (not shown locked)
+  // so a tenant admin with a feature disabled by the SuperAdmin has no way
+  // to tell it was ever there - matches how the pages themselves redirect
+  // away rather than showing a "restricted" placeholder.
   const navItems = [
-    { label: t.nav.overview, href: '/admin', isGated: false },
-    {
-      label: permissions?.canViewOrders === false ? `${t.nav.orders} 🔒` : t.nav.orders,
-      href: '/admin/orders',
-      isGated: permissions?.canViewOrders === false,
-      gatedTitle: 'Orders restricted',
-    },
-    {
-      label: permissions?.canManageMenu === false ? `${t.nav.categories} 🔒` : t.nav.categories,
-      href: '/admin/categories',
-      isGated: permissions?.canManageMenu === false,
-      gatedTitle: 'Menu modification restricted',
-    },
-    {
-      label: permissions?.canManageMenu === false ? `${t.nav.products} 🔒` : t.nav.products,
-      href: '/admin/products',
-      isGated: permissions?.canManageMenu === false,
-      gatedTitle: 'Product modification restricted',
-    },
-    {
-      label: permissions?.canTrackTables === false ? `${t.nav.tables} 🔒` : t.nav.tables,
-      href: '/admin/locations',
-      isGated: permissions?.canTrackTables === false,
-      gatedTitle: 'Table tracking restricted',
-    },
-    { label: t.nav.settings, href: '/admin/settings', isGated: false },
+    { label: t.nav.overview, href: '/admin' },
+    ...(permissions?.canViewOrders !== false ? [{ label: t.nav.orders, href: '/admin/orders' }] : []),
+    ...(permissions?.canManageMenu !== false
+      ? [
+          { label: t.nav.categories, href: '/admin/categories' },
+          { label: t.nav.products, href: '/admin/products' },
+        ]
+      : []),
+    ...(permissions?.canTrackTables !== false ? [{ label: t.nav.tables, href: '/admin/locations' }] : []),
+    { label: t.nav.settings, href: '/admin/settings' },
   ];
 
   return (
@@ -76,12 +64,9 @@ export function AdminHeader({ slug, email, permissions }: Props) {
               <Link
                 key={item.href}
                 href={item.href}
-                title={item.isGated ? item.gatedTitle : undefined}
                 className={`whitespace-nowrap px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
                   isActive
                     ? 'bg-white text-blue-700 shadow-xs'
-                    : item.isGated
-                    ? 'text-gray-400 hover:text-gray-600 hover:bg-gray-200/40'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200/50'
                 }`}
               >

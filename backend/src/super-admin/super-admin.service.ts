@@ -10,6 +10,7 @@ import { SuperAdminLoginDto } from './dto/super-admin-login.dto';
 import { CreateRestaurantDto } from './dto/create-restaurant.dto';
 import { UpdateRestaurantPermissionsDto } from './dto/update-restaurant-permissions.dto';
 import * as bcrypt from 'bcryptjs';
+import { randomBytes } from 'crypto';
 import { AdminRole } from '../common/roles.enum';
 import type { Prisma, Restaurant, RestaurantSettings } from '@prisma/client';
 
@@ -64,6 +65,12 @@ export interface RestaurantSummaryItem {
 export interface UpdateRestaurantPermissionsResponse {
   slug: string;
   permissions: RestaurantPermissions;
+}
+
+export interface ResetAdminPasswordResponse {
+  slug: string;
+  email: string;
+  newPassword: string;
 }
 
 export interface DailyViewCount {
@@ -384,5 +391,80 @@ export class SuperAdminService {
       totalViews,
       dailyViews,
     };
+  }
+
+  /**
+   * Read RBAC permissions for a restaurant. Callable by SUPER_ADMIN for any
+   * restaurant, or by a RESTAURANT_ADMIN for their own restaurant only -
+   * the controller enforces that ownership check before calling this.
+   */
+  async getRestaurantPermissions(slug: string): Promise<UpdateRestaurantPermissionsResponse> {
+    const restaurant = await this.prisma.restaurant.findUnique({
+      where: { slug },
+      include: { settings: true },
+    });
+
+    if (!restaurant) {
+      throw new NotFoundException(`Restaurant with slug "${slug}" not found`);
+    }
+
+    return {
+      slug: restaurant.slug,
+      permissions: {
+        canViewOrders: restaurant.settings?.canViewOrders ?? true,
+        canTrackTables: restaurant.settings?.canTrackTables ?? true,
+        canManageMenu: restaurant.settings?.canManageMenu ?? true,
+        canManageStaff: restaurant.settings?.canManageStaff ?? true,
+        canViewAnalytics: restaurant.settings?.canViewAnalytics ?? true,
+      },
+    };
+  }
+
+  /**
+   * Generate a fresh random password for a restaurant's admin account and
+   * store its hash. Passwords are bcrypt-hashed at rest and there is no way
+   * to recover the original - this is the only way to hand a tenant owner
+   * working credentials again short of asking them to reset it themselves.
+   * Returns the new plaintext password once; the caller must show/copy it
+   * immediately, it is never retrievable again after this response.
+   */
+  async resetAdminPassword(slug: string): Promise<ResetAdminPasswordResponse> {
+    const restaurant = await this.prisma.restaurant.findUnique({ where: { slug } });
+    if (!restaurant) {
+      throw new NotFoundException(`Restaurant with slug "${slug}" not found`);
+    }
+
+    const adminUser = await this.prisma.adminUser.findFirst({
+      where: { restaurantId: restaurant.id },
+      orderBy: { createdAt: 'asc' },
+    });
+    if (!adminUser) {
+      throw new NotFoundException(`No admin user found for restaurant "${slug}"`);
+    }
+
+    const newPassword = this.generateReadablePassword();
+    const passwordHash = await bcrypt.hash(newPassword, 10);
+
+    await this.prisma.adminUser.update({
+      where: { id: adminUser.id },
+      data: { passwordHash },
+    });
+
+    return {
+      slug: restaurant.slug,
+      email: adminUser.email,
+      newPassword,
+    };
+  }
+
+  /** Readable random password: avoids visually ambiguous characters (0/O, 1/l/I). */
+  private generateReadablePassword(length = 10): string {
+    const charset = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789';
+    const bytes = randomBytes(length);
+    let result = '';
+    for (let i = 0; i < length; i++) {
+      result += charset[bytes[i] % charset.length];
+    }
+    return result;
   }
 }

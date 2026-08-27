@@ -107,6 +107,14 @@ export default function OrdersAdminPage() {
     };
   }, [router, fetchOrders]);
 
+  // If order viewing has been disabled for this tenant, don't reveal this
+  // page exists at all - bounce back to the overview silently.
+  useEffect(() => {
+    if (!loading && !permissions.canViewOrders) {
+      router.replace('/admin');
+    }
+  }, [loading, permissions.canViewOrders, router]);
+
   async function updateStatus(id: string, status: OrderStatus) {
     setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status } : o)));
     try {
@@ -150,7 +158,7 @@ export default function OrdersAdminPage() {
     'CANCELLED',
   ];
 
-  if (loading) {
+  if (loading || !permissions.canViewOrders) {
     return <div className="p-8 text-center text-gray-500">{t.orders.loading}</div>;
   }
 
