@@ -16,7 +16,12 @@ export class LocalStorageProvider implements IStorageProvider {
   constructor(private readonly config: ConfigService) {}
 
   async store(file: Express.Multer.File): Promise<string> {
-    const baseUrl = this.config.get<string>('BASE_URL') ?? 'http://localhost:3001';
-    return `${baseUrl}/uploads/${file.filename}`;
+    // Return a relative path rather than guessing an absolute host. On
+    // Railway there's no BASE_URL configured, so the old `?? 'http://localhost:3001'`
+    // fallback silently produced unreachable URLs in production (e.g. Act Noir's
+    // logo). Frontend consumers (LogoPlaceholder, ProductCard) already know how
+    // to resolve a relative "/uploads/..." path against NEXT_PUBLIC_API_URL, so
+    // this works everywhere without needing a BASE_URL env var at all.
+    return `/uploads/${file.filename}`;
   }
 }
