@@ -630,7 +630,7 @@ export default function LandingPage() {
               {t.nav.pricing}
             </a>
             <a
-              href="https://admin.nfcmyplace.com"
+              href="https://admin.nfcmyplace.com/login"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 text-amber-400 hover:text-amber-300 font-bold transition-colors"

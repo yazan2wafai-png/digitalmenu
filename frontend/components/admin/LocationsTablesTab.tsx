@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import { useAdminI18n } from "@/lib/admin-i18n";
 
 interface Location {
   id: string;
@@ -15,6 +16,7 @@ interface Table {
 }
 
 export default function LocationsTablesTab({ slug }: { slug: string }) {
+  const { t } = useAdminI18n();
   const [locations, setLocations] = useState<Location[]>([]);
   const [selectedLocationId, setSelectedLocationId] = useState<string | null>(null);
   const [tables, setTables] = useState<Table[]>([]);
@@ -105,7 +107,7 @@ export default function LocationsTablesTab({ slug }: { slug: string }) {
   };
 
   const handleDeleteLocation = async (id: string) => {
-    if (!confirm("Are you sure? This will delete the location and all its tables.")) return;
+    if (!confirm(t.locations.deleteLocationConfirm)) return;
     try {
       const res = await fetch(`/api/proxy/admin/locations/${id}`, { method: "DELETE" });
       if (res.ok) {
@@ -142,7 +144,7 @@ export default function LocationsTablesTab({ slug }: { slug: string }) {
   };
 
   const handleDeleteTable = async (id: string) => {
-    if (!confirm("Are you sure?")) return;
+    if (!confirm(t.locations.deleteTableConfirm)) return;
     try {
       const res = await fetch(`/api/proxy/admin/tables/${id}`, { method: "DELETE" });
       if (res.ok && selectedLocationId) {
@@ -165,15 +167,15 @@ export default function LocationsTablesTab({ slug }: { slug: string }) {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    alert("Copied to clipboard!");
+    alert(t.locations.copiedToast);
   };
 
   return (
-    <div className="p-4 flex flex-col md:flex-row gap-8 text-gray-900">
+    <div className="flex flex-col md:flex-row gap-8 text-gray-900">
       {/* Locations Column */}
       <div className="flex-1 border border-gray-200 rounded-xl p-5 bg-white shadow-xs">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-gray-800">Locations</h2>
+          <h2 className="text-xl font-bold text-gray-800">{t.locations.locationsHeader}</h2>
           <button 
             className="bg-blue-600 text-white px-3.5 py-1.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition cursor-pointer"
             onClick={() => {
@@ -182,14 +184,14 @@ export default function LocationsTablesTab({ slug }: { slug: string }) {
               setShowLocationModal(true);
             }}
           >
-            + Add Location
+            {t.locations.addLocationBtn}
           </button>
         </div>
 
         {isLoadingLocations ? (
-          <p className="text-gray-500 text-sm">Loading locations...</p>
+          <p className="text-gray-500 text-sm">{t.locations.loadingLocations}</p>
         ) : locations.length === 0 ? (
-          <p className="text-gray-500 text-sm py-4">No locations found. Add your first location.</p>
+          <p className="text-gray-500 text-sm py-4">{t.locations.noLocations}</p>
         ) : (
           <ul className="space-y-2">
             {locations.map(loc => (
@@ -207,7 +209,7 @@ export default function LocationsTablesTab({ slug }: { slug: string }) {
                   </div>
                   <div className="flex gap-2">
                     <button 
-                      className="text-xs text-blue-600 hover:underline px-2 py-1"
+                      className="text-xs text-blue-600 hover:underline px-2 py-1 cursor-pointer"
                       onClick={(e) => {
                         e.stopPropagation();
                         setEditingLocation(loc);
@@ -215,16 +217,16 @@ export default function LocationsTablesTab({ slug }: { slug: string }) {
                         setShowLocationModal(true);
                       }}
                     >
-                      Edit
+                      {t.locations.edit}
                     </button>
                     <button 
-                      className="text-xs text-red-600 hover:underline px-2 py-1"
+                      className="text-xs text-red-600 hover:underline px-2 py-1 cursor-pointer"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleDeleteLocation(loc.id);
                       }}
                     >
-                      Delete
+                      {t.locations.delete}
                     </button>
                   </div>
                 </div>
@@ -237,7 +239,7 @@ export default function LocationsTablesTab({ slug }: { slug: string }) {
       {/* Tables Column */}
       <div className="flex-1 border border-gray-200 rounded-xl p-5 bg-white shadow-xs">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-gray-800">Tables</h2>
+          <h2 className="text-xl font-bold text-gray-800">{t.locations.tablesHeader}</h2>
           <button 
             className="bg-blue-600 text-white px-3.5 py-1.5 rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition cursor-pointer"
             disabled={!selectedLocationId}
@@ -247,16 +249,16 @@ export default function LocationsTablesTab({ slug }: { slug: string }) {
               setShowTableModal(true);
             }}
           >
-            + Add Table
+            {t.locations.addTableBtn}
           </button>
         </div>
 
         {!selectedLocationId ? (
-          <p className="text-gray-500 text-sm py-4">Select a location on the left to view tables.</p>
+          <p className="text-gray-500 text-sm py-4">{t.locations.selectLocationPrompt}</p>
         ) : isLoadingTables ? (
-          <p className="text-gray-500 text-sm">Loading tables...</p>
+          <p className="text-gray-500 text-sm">{t.locations.loadingTables}</p>
         ) : tables.length === 0 ? (
-          <p className="text-gray-500 text-sm py-4">No tables found for this location.</p>
+          <p className="text-gray-500 text-sm py-4">{t.locations.noTables}</p>
         ) : (
           <ul className="space-y-3">
             {tables.map(table => {
@@ -267,20 +269,20 @@ export default function LocationsTablesTab({ slug }: { slug: string }) {
                     <div className="font-semibold text-gray-800">{table.name}</div>
                     <div className="flex gap-2">
                       <button 
-                        className="text-xs text-blue-600 hover:underline px-2 py-0.5"
+                        className="text-xs text-blue-600 hover:underline px-2 py-0.5 cursor-pointer"
                         onClick={() => {
                           setEditingTable(table);
                           setTableForm({ name: table.name });
                           setShowTableModal(true);
                         }}
                       >
-                        Edit
+                        {t.locations.edit}
                       </button>
                       <button 
-                        className="text-xs text-red-600 hover:underline px-2 py-0.5"
+                        className="text-xs text-red-600 hover:underline px-2 py-0.5 cursor-pointer"
                         onClick={() => handleDeleteTable(table.id)}
                       >
-                        Delete
+                        {t.locations.delete}
                       </button>
                     </div>
                   </div>
@@ -291,13 +293,13 @@ export default function LocationsTablesTab({ slug }: { slug: string }) {
                       className="text-gray-700 hover:text-black px-2.5 py-1 border border-gray-300 rounded bg-gray-50 shrink-0 cursor-pointer"
                       onClick={() => copyToClipboard(url)}
                     >
-                      Copy
+                      {t.locations.copy}
                     </button>
                     <button 
                       className="text-blue-700 hover:text-blue-900 px-2.5 py-1 border border-blue-200 rounded bg-blue-50 shrink-0 font-medium cursor-pointer"
                       onClick={() => setShowQrModal(table)}
                     >
-                      QR Code
+                      {t.locations.qrCode}
                     </button>
                   </div>
                 </li>
@@ -311,27 +313,27 @@ export default function LocationsTablesTab({ slug }: { slug: string }) {
       {showLocationModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl text-gray-900">
-            <h3 className="text-lg font-bold mb-4">{editingLocation ? "Edit Location" : "Add Location"}</h3>
+            <h3 className="text-lg font-bold mb-4">{editingLocation ? t.locations.modalEditLocation : t.locations.modalAddLocation}</h3>
             <form onSubmit={handleSaveLocation} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1 text-gray-700">Name</label>
+                <label className="block text-sm font-medium mb-1 text-gray-700">{t.locations.locNameLabel}</label>
                 <input 
                   required
                   type="text"
                   className="w-full border border-gray-300 p-2 rounded-lg text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={locationForm.name}
                   onChange={e => setLocationForm({ ...locationForm, name: e.target.value })}
-                  placeholder="e.g. Main Dining Room"
+                  placeholder={t.locations.locNamePlaceholder}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-gray-700">Address / Description</label>
+                <label className="block text-sm font-medium mb-1 text-gray-700">{t.locations.locAddressLabel}</label>
                 <input 
                   type="text"
                   className="w-full border border-gray-300 p-2 rounded-lg text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={locationForm.address}
                   onChange={e => setLocationForm({ ...locationForm, address: e.target.value })}
-                  placeholder="e.g. Ground Floor, Terrace"
+                  placeholder={t.locations.locAddressPlaceholder}
                 />
               </div>
               <div className="flex justify-end gap-2 mt-6">
@@ -340,13 +342,13 @@ export default function LocationsTablesTab({ slug }: { slug: string }) {
                   className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-100 transition cursor-pointer"
                   onClick={() => setShowLocationModal(false)}
                 >
-                  Cancel
+                  {t.locations.cancelBtn}
                 </button>
                 <button 
-                  type="submit"
+                  type="submit" 
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition cursor-pointer"
                 >
-                  Save
+                  {t.locations.saveBtn}
                 </button>
               </div>
             </form>
@@ -358,17 +360,17 @@ export default function LocationsTablesTab({ slug }: { slug: string }) {
       {showTableModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl text-gray-900">
-            <h3 className="text-lg font-bold mb-4">{editingTable ? "Edit Table" : "Add Table"}</h3>
+            <h3 className="text-lg font-bold mb-4">{editingTable ? t.locations.modalEditTable : t.locations.modalAddTable}</h3>
             <form onSubmit={handleSaveTable} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1 text-gray-700">Table Name/Number</label>
+                <label className="block text-sm font-medium mb-1 text-gray-700">{t.locations.tableNameLabel}</label>
                 <input 
                   required
                   type="text"
                   className="w-full border border-gray-300 p-2 rounded-lg text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={tableForm.name}
                   onChange={e => setTableForm({ ...tableForm, name: e.target.value })}
-                  placeholder="e.g. Table 1, T-12, Booth 3"
+                  placeholder={t.locations.tableNamePlaceholder}
                 />
               </div>
               <div className="flex justify-end gap-2 mt-6">
@@ -377,13 +379,13 @@ export default function LocationsTablesTab({ slug }: { slug: string }) {
                   className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-100 transition cursor-pointer"
                   onClick={() => setShowTableModal(false)}
                 >
-                  Cancel
+                  {t.locations.cancelBtn}
                 </button>
                 <button 
-                  type="submit"
+                  type="submit" 
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition cursor-pointer"
                 >
-                  Save
+                  {t.locations.saveBtn}
                 </button>
               </div>
             </form>
@@ -395,7 +397,7 @@ export default function LocationsTablesTab({ slug }: { slug: string }) {
       {showQrModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm flex flex-col items-center text-center shadow-xl text-gray-900">
-            <h3 className="text-lg font-bold mb-1 text-gray-800">QR Code</h3>
+            <h3 className="text-lg font-bold mb-1 text-gray-800">{t.locations.qrModalTitle}</h3>
             <p className="text-sm text-gray-500 mb-6 font-medium">{showQrModal.name}</p>
             
             <div className="bg-white p-4 rounded-xl border border-gray-200 mb-6 shadow-xs">
@@ -416,13 +418,13 @@ export default function LocationsTablesTab({ slug }: { slug: string }) {
                 className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition cursor-pointer text-sm"
                 onClick={() => copyToClipboard(getTableUrl(showQrModal.id))}
               >
-                Copy Link
+                {t.locations.copyLinkBtn}
               </button>
               <button 
                 className="px-4 py-2 bg-gray-100 text-gray-800 rounded-lg font-medium hover:bg-gray-200 transition cursor-pointer text-sm"
                 onClick={() => setShowQrModal(null)}
               >
-                Close
+                {t.locations.closeBtn}
               </button>
             </div>
           </div>

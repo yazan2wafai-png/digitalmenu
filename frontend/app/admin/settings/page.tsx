@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { AdminHeader } from '@/components/admin/AdminHeader';
 import SeoSettingsTab from '@/components/admin/SeoSettingsTab';
+import { useAdminI18n } from '@/lib/admin-i18n';
+import type { RestaurantPermissions } from '@/types/admin';
 
 function getCookie(name: string): string {
   if (typeof document === 'undefined') return '';
@@ -11,10 +13,19 @@ function getCookie(name: string): string {
   return match ? decodeURIComponent(match[1]) : '';
 }
 
+const DEFAULT_PERMISSIONS: RestaurantPermissions = {
+  canViewOrders: true,
+  canTrackTables: true,
+  canManageMenu: true,
+  canManageStaff: true,
+};
+
 export default function SettingsAdminPage() {
   const router = useRouter();
+  const { t } = useAdminI18n();
   const [slug, setSlug] = useState('');
   const [email, setEmail] = useState('');
+  const [permissions, setPermissions] = useState<RestaurantPermissions>(DEFAULT_PERMISSIONS);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -26,23 +37,32 @@ export default function SettingsAdminPage() {
     }
     setSlug(s);
     setEmail(e);
-    setLoading(false);
+
+    fetch(`/api/proxy/super-admin/restaurants/${s}/permissions`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.permissions) {
+          setPermissions(data.permissions);
+        } else if (data?.canManageStaff !== undefined) {
+          setPermissions(data);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, [router]);
 
   if (loading) {
-    return <div className="p-8 text-center text-gray-500">Loading settings…</div>;
+    return <div className="p-8 text-center text-gray-500">{t.settings.loadingSettings}</div>;
   }
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900">
-      <AdminHeader slug={slug} email={email} />
+      <AdminHeader slug={slug} email={email} permissions={permissions} />
 
-      <main className="max-w-7xl mx-auto px-6 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">Branding, SEO & Feature Settings</h1>
-          <p className="text-xs text-gray-500">
-            Control module toggles, currency preferences, meta tags, and search engine optimization
-          </p>
+          <h1 className="text-2xl font-bold text-gray-800">{t.settings.title}</h1>
+          <p className="text-xs text-gray-500">{t.settings.subtitle}</p>
         </div>
 
         <SeoSettingsTab slug={slug} />

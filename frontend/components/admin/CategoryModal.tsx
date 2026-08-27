@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect, FormEvent } from 'react';
 import { LocaleTabInput } from './LocaleTabInput';
+import { useAdminI18n } from '@/lib/admin-i18n';
 
 interface Category {
   id?: string;
@@ -17,6 +18,7 @@ interface Props {
 }
 
 export function CategoryModal({ slug, locales, category, onClose, onSaved }: Props) {
+  const { t } = useAdminI18n();
   const isEdit = Boolean(category?.id);
   const [name, setName] = useState<Record<string, string>>(category?.name ?? {});
   const [sortOrder, setSortOrder] = useState(category?.sortOrder ?? 0);
@@ -56,13 +58,13 @@ export function CategoryModal({ slug, locales, category, onClose, onSaved }: Pro
   }
 
   async function handleDelete() {
-    if (!category?.id || !confirm(`Delete category? This will also delete all its products.`)) return;
+    if (!category?.id || !confirm(t.categoryModal.deleteConfirm)) return;
     setLoading(true);
     try {
       await fetch(`/api/proxy/admin/restaurants/${slug}/categories/${category.id}`, { method: 'DELETE' });
       onSaved();
     } catch {
-      setError('Delete failed');
+      setError(t.categoryModal.deleteFailed);
     } finally {
       setLoading(false);
     }
@@ -71,11 +73,11 @@ export function CategoryModal({ slug, locales, category, onClose, onSaved }: Pro
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center z-50 p-4" onClick={e => e.target === e.currentTarget && onClose()}>
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 text-gray-900">
-        <h2 className="text-lg font-bold mb-4">{isEdit ? 'Edit' : 'New'} Category</h2>
+        <h2 className="text-lg font-bold mb-4">{isEdit ? t.categoryModal.editTitle : t.categoryModal.newTitle}</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <LocaleTabInput label="Name" locales={locales} values={name} onChange={setName} required />
+          <LocaleTabInput label={t.categoryModal.nameLabel} locales={locales} values={name} onChange={setName} required />
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Sort Order</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t.categoryModal.sortOrderLabel}</label>
             <input
               type="number"
               value={sortOrder}
@@ -88,26 +90,26 @@ export function CategoryModal({ slug, locales, category, onClose, onSaved }: Pro
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 bg-blue-600 text-white rounded-lg py-2 text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition"
+              className="flex-1 bg-blue-600 text-white rounded-lg py-2 text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition cursor-pointer"
             >
-              {loading ? 'Saving…' : 'Save'}
+              {loading ? t.categoryModal.savingBtn : t.categoryModal.saveBtn}
             </button>
             {isEdit && (
               <button
                 type="button"
                 onClick={handleDelete}
                 disabled={loading}
-                className="px-4 bg-red-100 text-red-700 rounded-lg py-2 text-sm font-medium hover:bg-red-200 disabled:opacity-50 transition"
+                className="px-4 bg-red-100 text-red-700 rounded-lg py-2 text-sm font-medium hover:bg-red-200 disabled:opacity-50 transition cursor-pointer"
               >
-                Delete
+                {t.categoryModal.deleteBtn}
               </button>
             )}
             <button
               type="button"
               onClick={onClose}
-              className="px-4 bg-gray-100 text-gray-700 rounded-lg py-2 text-sm font-medium hover:bg-gray-200 transition"
+              className="px-4 bg-gray-100 text-gray-700 rounded-lg py-2 text-sm font-medium hover:bg-gray-200 transition cursor-pointer"
             >
-              Cancel
+              {t.categoryModal.cancelBtn}
             </button>
           </div>
         </form>

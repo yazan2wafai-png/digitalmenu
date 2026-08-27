@@ -1,13 +1,15 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { SuperAdminHeader } from '@/components/super-admin/SuperAdminHeader';
 import { ProvisionModal } from '@/components/super-admin/ProvisionModal';
 import { AnalyticsModal } from '@/components/super-admin/AnalyticsModal';
 import { DeleteConfirmModal } from '@/components/super-admin/DeleteConfirmModal';
+import { PermissionsModal } from '@/components/super-admin/PermissionsModal';
 
-import type { TenantRestaurantItem as RestaurantItem } from '@/types/super-admin';
+import type { TenantRestaurantItem as RestaurantItem, RestaurantPermissions } from '@/types/super-admin';
 
 function getCookie(name: string): string {
   if (typeof document === 'undefined') return '';
@@ -15,7 +17,15 @@ function getCookie(name: string): string {
   return match ? decodeURIComponent(match[1]) : '';
 }
 
+const DEFAULT_PERMISSIONS: RestaurantPermissions = {
+  canViewOrders: true,
+  canTrackTables: true,
+  canManageMenu: true,
+  canManageStaff: true,
+};
+
 export default function SuperAdminDashboardPage() {
+  const router = useRouter();
   const [restaurants, setRestaurants] = useState<RestaurantItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -23,17 +33,27 @@ export default function SuperAdminDashboardPage() {
   const [search, setSearch] = useState('');
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [updatingSlug, setUpdatingSlug] = useState<string | null>(null);
 
   // Modal States
   const [provisionOpen, setProvisionOpen] = useState(false);
   const [analyticsTarget, setAnalyticsTarget] = useState<{ slug: string; name: string } | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<{ slug: string; name: string } | null>(null);
+  const [permissionsTarget, setPermissionsTarget] = useState<{
+    slug: string;
+    name: string;
+    permissions: RestaurantPermissions;
+  } | null>(null);
 
   const fetchRestaurants = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
       const res = await fetch('/api/proxy/super-admin/restaurants');
+      if (res.status === 401 || res.status === 403) {
+        router.replace('/super-admin/login');
+        return;
+      }
       if (!res.ok) {
         throw new Error(`Failed to load restaurants (${res.status})`);
       }
@@ -44,14 +64,22 @@ export default function SuperAdminDashboardPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     document.title = 'NFCMyPlace Super Admin';
     const adminEmail = getCookie('super_admin_email');
-    setEmail(adminEmail);
+    const adminRole = getCookie('super_admin_role');
+
+    // Auth gate check: redirect unauthenticated requests to /super-admin/login
+    if (!adminEmail && !adminRole) {
+      router.replace('/super-admin/login');
+      return;
+    }
+
+    setEmail(adminEmail || 'superadmin@nfcmyplace.com');
     fetchRestaurants();
-  }, [fetchRestaurants]);
+  }, [fetchRestaurants, router]);
 
   function showToast(msg: string) {
     setToastMessage(msg);
@@ -66,6 +94,50 @@ export default function SuperAdminDashboardPage() {
     showToast(`Copied ${url} to clipboard!`);
   }
 
+  // Quick inline permission toggle handler
+  async function handleQuickToggle(
+    slug: string,
+    key: keyof RestaurantPermissions,
+    currentValue: boolean
+  ) {
+    const restaurant = restaurants.find((r) => r.slug === slug);
+    if (!restaurant) return;
+
+    const currentPerms: RestaurantPermissions = restaurant.permissions || { ...DEFAULT_PERMISSIONS };
+    const updatedPerms: RestaurantPermissions = {
+      ...currentPerms,
+      [key]: !currentValue,
+    };
+
+    // Optimistic UI update
+    setRestaurants((prev) =>
+      prev.map((r) => (r.slug === slug ? { ...r, permissions: updatedPerms } : r))
+    );
+    setUpdatingSlug(`${slug}-${key}`);
+
+    try {
+      const res = await fetch(`/api/proxy/super-admin/restaurants/${slug}/permissions`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedPerms),
+      });
+
+      if (!res.ok) {
+        throw new Error(`Failed to update (${res.status})`);
+      }
+
+      showToast(`Updated ${key} for ${slug}`);
+    } catch {
+      // Revert on error
+      setRestaurants((prev) =>
+        prev.map((r) => (r.slug === slug ? { ...r, permissions: currentPerms } : r))
+      );
+      showToast(`Failed to update ${key} for ${slug}`);
+    } finally {
+      setUpdatingSlug(null);
+    }
+  }
+
   // Aggregate Metrics
   const totalTenants = restaurants.length;
   const totalCategories = restaurants.reduce((sum, r) => sum + (r.categoryCount || 0), 0);
@@ -76,8 +148,8 @@ export default function SuperAdminDashboardPage() {
   const filteredRestaurants = restaurants.filter((r) => {
     const term = search.toLowerCase().trim();
     if (!term) return true;
-    const nameMatch = Object.values(r.name || {}).some((v) =>
-      typeof v === 'string' && v.toLowerCase().includes(term)
+    const nameMatch = Object.values(r.name || {}).some(
+      (v) => typeof v === 'string' && v.toLowerCase().includes(term)
     );
     const slugMatch = r.slug.toLowerCase().includes(term);
     return nameMatch || slugMatch;
@@ -179,7 +251,7 @@ export default function SuperAdminDashboardPage() {
             <div>
               <h3 className="text-lg font-bold text-white">Restaurant Tenants Directory</h3>
               <p className="text-xs text-slate-400">
-                Inspect, analyze traffic, provision, or manage existing client tenant records
+                Inspect, configure RBAC permissions, analyze traffic, or manage existing tenant records
               </p>
             </div>
 
@@ -222,8 +294,8 @@ export default function SuperAdminDashboardPage() {
               <thead>
                 <tr className="bg-slate-950/60 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-semibold">
                   <th className="px-6 py-3.5">Restaurant</th>
-                  <th className="px-6 py-3.5">Subdomain &amp; Routing</th>
-                  <th className="px-6 py-3.5">Locales</th>
+                  <th className="px-6 py-3.5">Subdomain</th>
+                  <th className="px-6 py-3.5">RBAC Permissions</th>
                   <th className="px-6 py-3.5 text-center">Categories</th>
                   <th className="px-6 py-3.5 text-center">Products</th>
                   <th className="px-6 py-3.5 text-right">PageViews</th>
@@ -264,6 +336,7 @@ export default function SuperAdminDashboardPage() {
                       Object.values(r.name || {})[0] ||
                       r.slug;
                     const subName = r.name?.['en'] && r.name?.['tr'] !== r.name?.['en'] ? r.name['en'] : '';
+                    const perms: RestaurantPermissions = r.permissions || { ...DEFAULT_PERMISSIONS };
 
                     return (
                       <tr key={r.id} className="hover:bg-slate-800/30 transition">
@@ -311,22 +384,76 @@ export default function SuperAdminDashboardPage() {
                           </div>
                         </td>
 
-                        {/* Supported Locales */}
+                        {/* RBAC Permission Toggles */}
                         <td className="px-6 py-4">
-                          <div className="flex items-center gap-1 flex-wrap">
-                            {r.supportedLocales?.map((loc) => (
-                              <span
-                                key={loc}
-                                className={`text-[10px] uppercase font-mono px-1.5 py-0.5 rounded ${
-                                  loc === r.defaultLocale
-                                    ? 'bg-indigo-600/30 text-indigo-300 border border-indigo-500/40 font-bold'
-                                    : 'bg-slate-800 text-slate-400'
-                                }`}
-                                title={loc === r.defaultLocale ? 'Default Language' : undefined}
-                              >
-                                {loc}
-                              </span>
-                            ))}
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            {/* canViewOrders */}
+                            <button
+                              type="button"
+                              onClick={() => handleQuickToggle(r.slug, 'canViewOrders', perms.canViewOrders)}
+                              disabled={updatingSlug === `${r.slug}-canViewOrders`}
+                              title={`Order Overview: ${perms.canViewOrders ? 'Enabled (Click to disable)' : 'Disabled (Click to enable)'}`}
+                              className={`px-2 py-1 rounded-lg text-[10px] font-semibold border transition cursor-pointer flex items-center gap-1 ${
+                                perms.canViewOrders
+                                  ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/25'
+                                  : 'bg-slate-800/80 text-slate-500 border-slate-700 hover:text-slate-300'
+                              }`}
+                            >
+                              <span>🛒</span>
+                              <span>Orders</span>
+                              <span className={`w-1.5 h-1.5 rounded-full ${perms.canViewOrders ? 'bg-emerald-400' : 'bg-slate-600'}`} />
+                            </button>
+
+                            {/* canTrackTables */}
+                            <button
+                              type="button"
+                              onClick={() => handleQuickToggle(r.slug, 'canTrackTables', perms.canTrackTables)}
+                              disabled={updatingSlug === `${r.slug}-canTrackTables`}
+                              title={`Table Tracking / QR: ${perms.canTrackTables ? 'Enabled (Click to disable)' : 'Disabled (Click to enable)'}`}
+                              className={`px-2 py-1 rounded-lg text-[10px] font-semibold border transition cursor-pointer flex items-center gap-1 ${
+                                perms.canTrackTables
+                                  ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30 hover:bg-cyan-500/25'
+                                  : 'bg-slate-800/80 text-slate-500 border-slate-700 hover:text-slate-300'
+                              }`}
+                            >
+                              <span>📍</span>
+                              <span>Tables</span>
+                              <span className={`w-1.5 h-1.5 rounded-full ${perms.canTrackTables ? 'bg-cyan-400' : 'bg-slate-600'}`} />
+                            </button>
+
+                            {/* canManageMenu */}
+                            <button
+                              type="button"
+                              onClick={() => handleQuickToggle(r.slug, 'canManageMenu', perms.canManageMenu)}
+                              disabled={updatingSlug === `${r.slug}-canManageMenu`}
+                              title={`Menu Management: ${perms.canManageMenu ? 'Enabled (Click to disable)' : 'Disabled (Click to enable)'}`}
+                              className={`px-2 py-1 rounded-lg text-[10px] font-semibold border transition cursor-pointer flex items-center gap-1 ${
+                                perms.canManageMenu
+                                  ? 'bg-indigo-500/15 text-indigo-300 border-indigo-500/30 hover:bg-indigo-500/25'
+                                  : 'bg-slate-800/80 text-slate-500 border-slate-700 hover:text-slate-300'
+                              }`}
+                            >
+                              <span>🍕</span>
+                              <span>Menu</span>
+                              <span className={`w-1.5 h-1.5 rounded-full ${perms.canManageMenu ? 'bg-indigo-400' : 'bg-slate-600'}`} />
+                            </button>
+
+                            {/* canManageStaff */}
+                            <button
+                              type="button"
+                              onClick={() => handleQuickToggle(r.slug, 'canManageStaff', perms.canManageStaff)}
+                              disabled={updatingSlug === `${r.slug}-canManageStaff`}
+                              title={`Staff Controls: ${perms.canManageStaff ? 'Enabled (Click to disable)' : 'Disabled (Click to enable)'}`}
+                              className={`px-2 py-1 rounded-lg text-[10px] font-semibold border transition cursor-pointer flex items-center gap-1 ${
+                                perms.canManageStaff
+                                  ? 'bg-violet-500/15 text-violet-300 border-violet-500/30 hover:bg-violet-500/25'
+                                  : 'bg-slate-800/80 text-slate-500 border-slate-700 hover:text-slate-300'
+                              }`}
+                            >
+                              <span>👥</span>
+                              <span>Staff</span>
+                              <span className={`w-1.5 h-1.5 rounded-full ${perms.canManageStaff ? 'bg-violet-400' : 'bg-slate-600'}`} />
+                            </button>
                           </div>
                         </td>
 
@@ -359,6 +486,22 @@ export default function SuperAdminDashboardPage() {
                         {/* Action Buttons */}
                         <td className="px-6 py-4 text-right">
                           <div className="flex items-center justify-end gap-2">
+                            {/* RBAC Modal Button */}
+                            <button
+                              onClick={() =>
+                                setPermissionsTarget({
+                                  slug: r.slug,
+                                  name: displayName,
+                                  permissions: perms,
+                                })
+                              }
+                              className="px-2.5 py-1 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 rounded-lg text-xs font-medium transition cursor-pointer flex items-center gap-1"
+                              title="Configure granular RBAC permissions"
+                            >
+                              <span>🛡️</span>
+                              <span>RBAC</span>
+                            </button>
+
                             {/* Analytics Button */}
                             <button
                               onClick={() => setAnalyticsTarget({ slug: r.slug, name: displayName })}
@@ -408,6 +551,24 @@ export default function SuperAdminDashboardPage() {
             setProvisionOpen(false);
             fetchRestaurants();
             showToast('Restaurant tenant provisioned successfully!');
+          }}
+        />
+      )}
+
+      {permissionsTarget && (
+        <PermissionsModal
+          slug={permissionsTarget.slug}
+          restaurantName={permissionsTarget.name}
+          initialPermissions={permissionsTarget.permissions}
+          onClose={() => setPermissionsTarget(null)}
+          onSaved={(updatedPerms) => {
+            setRestaurants((prev) =>
+              prev.map((r) =>
+                r.slug === permissionsTarget.slug ? { ...r, permissions: updatedPerms } : r
+              )
+            );
+            setPermissionsTarget(null);
+            showToast(`RBAC permissions updated for ${permissionsTarget.name}`);
           }}
         />
       )}

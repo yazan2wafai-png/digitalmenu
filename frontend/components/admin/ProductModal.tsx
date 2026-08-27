@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect, FormEvent, useRef } from 'react';
 import { LocaleTabInput } from './LocaleTabInput';
+import { useAdminI18n } from '@/lib/admin-i18n';
 
 interface Product {
   id?: string;
@@ -20,6 +21,7 @@ interface Props {
 }
 
 export function ProductModal({ categoryId, locales, product, onClose, onSaved }: Props) {
+  const { t } = useAdminI18n();
   const isEdit = Boolean(product?.id);
   const [name, setName] = useState<Record<string, string>>(product?.name ?? {});
   const [description, setDescription] = useState<Record<string, string>>(product?.description ?? {});
@@ -45,10 +47,10 @@ export function ProductModal({ categoryId, locales, product, onClose, onSaved }:
       formData.append('file', file);
       const res = await fetch('/api/proxy/upload/image', { method: 'POST', body: formData });
       const data = await res.json();
-      if (!res.ok) { setError(data.message ?? 'Upload failed'); return; }
+      if (!res.ok) { setError(data.message ?? t.productModal.uploadFailed); return; }
       setPhotoUrl(data.url);
     } catch {
-      setError('Upload failed');
+      setError(t.productModal.uploadFailed);
     } finally {
       setUploading(false);
     }
@@ -88,13 +90,13 @@ export function ProductModal({ categoryId, locales, product, onClose, onSaved }:
   }
 
   async function handleDelete() {
-    if (!product?.id || !confirm('Delete this product?')) return;
+    if (!product?.id || !confirm(t.productModal.deleteConfirm)) return;
     setLoading(true);
     try {
       await fetch(`/api/proxy/admin/categories/${categoryId}/products/${product.id}`, { method: 'DELETE' });
       onSaved();
     } catch {
-      setError('Delete failed');
+      setError(t.productModal.deleteFailed);
     } finally {
       setLoading(false);
     }
@@ -103,13 +105,13 @@ export function ProductModal({ categoryId, locales, product, onClose, onSaved }:
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center z-50 p-4" onClick={e => e.target === e.currentTarget && onClose()}>
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto text-gray-900">
-        <h2 className="text-lg font-bold mb-4">{isEdit ? 'Edit' : 'New'} Product</h2>
+        <h2 className="text-lg font-bold mb-4">{isEdit ? t.productModal.editTitle : t.productModal.newTitle}</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <LocaleTabInput label="Name" locales={locales} values={name} onChange={setName} required />
-          <LocaleTabInput label="Description" locales={locales} values={description} onChange={setDescription} multiline />
+          <LocaleTabInput label={t.productModal.nameLabel} locales={locales} values={name} onChange={setName} required />
+          <LocaleTabInput label={t.productModal.descriptionLabel} locales={locales} values={description} onChange={setDescription} multiline />
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Price (₺) *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t.productModal.priceLabel}</label>
               <input
                 type="number"
                 step="0.01"
@@ -121,7 +123,7 @@ export function ProductModal({ categoryId, locales, product, onClose, onSaved }:
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Sort Order</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t.productModal.sortOrderLabel}</label>
               <input
                 type="number"
                 value={sortOrder}
@@ -133,7 +135,7 @@ export function ProductModal({ categoryId, locales, product, onClose, onSaved }:
 
           {/* Photo upload */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Photo</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t.productModal.photoLabel}</label>
             {photoUrl && (
               <div className="mb-2 relative w-24 h-24">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -160,7 +162,7 @@ export function ProductModal({ categoryId, locales, product, onClose, onSaved }:
               disabled={uploading}
               className="text-sm text-blue-600 hover:text-blue-700 disabled:opacity-50 cursor-pointer"
             >
-              {uploading ? 'Uploading…' : photoUrl ? '↻ Replace photo' : '+ Upload photo (jpg/png/webp, max 5MB)'}
+              {uploading ? t.productModal.uploading : photoUrl ? t.productModal.replaceBtn : t.productModal.uploadBtn}
             </button>
             {photoUrl && <p className="text-xs text-gray-400 mt-1 truncate">{photoUrl}</p>}
           </div>
@@ -170,26 +172,26 @@ export function ProductModal({ categoryId, locales, product, onClose, onSaved }:
             <button
               type="submit"
               disabled={loading || uploading}
-              className="flex-1 bg-blue-600 text-white rounded-lg py-2 text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition"
+              className="flex-1 bg-blue-600 text-white rounded-lg py-2 text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition cursor-pointer"
             >
-              {loading ? 'Saving…' : 'Save'}
+              {loading ? t.productModal.savingBtn : t.productModal.saveBtn}
             </button>
             {isEdit && (
               <button
                 type="button"
                 onClick={handleDelete}
                 disabled={loading}
-                className="px-4 bg-red-100 text-red-700 rounded-lg py-2 text-sm font-medium hover:bg-red-200 transition"
+                className="px-4 bg-red-100 text-red-700 rounded-lg py-2 text-sm font-medium hover:bg-red-200 transition cursor-pointer"
               >
-                Delete
+                {t.productModal.deleteBtn}
               </button>
             )}
             <button
               type="button"
               onClick={onClose}
-              className="px-4 bg-gray-100 text-gray-700 rounded-lg py-2 text-sm font-medium hover:bg-gray-200 transition"
+              className="px-4 bg-gray-100 text-gray-700 rounded-lg py-2 text-sm font-medium hover:bg-gray-200 transition cursor-pointer"
             >
-              Cancel
+              {t.productModal.cancelBtn}
             </button>
           </div>
         </form>

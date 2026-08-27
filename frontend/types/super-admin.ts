@@ -1,5 +1,12 @@
 import type { MultilingualText } from './admin';
 
+export interface RestaurantPermissions {
+  canViewOrders: boolean;
+  canTrackTables: boolean;
+  canManageMenu: boolean;
+  canManageStaff: boolean;
+}
+
 export interface TenantRestaurantItem {
   id: string;
   slug: string;
@@ -12,6 +19,7 @@ export interface TenantRestaurantItem {
   categoryCount: number;
   productCount: number;
   viewCount: number;
+  permissions?: RestaurantPermissions;
 }
 
 export interface SuperAdminDailyView {
@@ -24,3 +32,4 @@ export interface SuperAdminAnalyticsResponse {
   totalViews: number;
   dailyViews: SuperAdminDailyView[];
 }
+

@@ -84,9 +84,9 @@ export function Navbar({ locale, onToggleLocale, onOpenDiscount }: NavbarProps) 
             </button>
           </div>
 
-          {/* CTA Button: "Yönetici Girişi" pointing to admin.nfcmyplace.com */}
+          {/* CTA Button: "Yönetici Girişi" pointing to admin.nfcmyplace.com/login */}
           <a
-            href="https://admin.nfcmyplace.com"
+            href="https://admin.nfcmyplace.com/login"
             target="_blank"
             rel="noopener noreferrer"
             className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-yellow-400 text-black font-black text-xs shadow-lg shadow-amber-500/20 transition-all transform active:scale-95 cursor-pointer"
@@ -139,7 +139,7 @@ export function Navbar({ locale, onToggleLocale, onOpenDiscount }: NavbarProps) 
           </a>
           <div className="pt-2 border-t border-white/10">
             <a
-              href="https://admin.nfcmyplace.com"
+              href="https://admin.nfcmyplace.com/login"
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => setMobileMenuOpen(false)}

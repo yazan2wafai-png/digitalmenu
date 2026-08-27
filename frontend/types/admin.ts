@@ -49,6 +49,13 @@ export interface DailyBreakdown {
   views: number;
 }
 
+export interface RestaurantPermissions {
+  canViewOrders: boolean;
+  canTrackTables: boolean;
+  canManageMenu: boolean;
+  canManageStaff: boolean;
+}
+
 export interface AnalyticsData {
   totalViews: number;
   todayViews: number;
@@ -56,3 +63,4 @@ export interface AnalyticsData {
   last30DaysViews: number;
   dailyBreakdown: DailyBreakdown[];
 }
+

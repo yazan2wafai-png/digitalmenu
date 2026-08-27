@@ -4,9 +4,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { AdminHeader } from '@/components/admin/AdminHeader';
 import { CategoryModal } from '@/components/admin/CategoryModal';
+import { useAdminI18n } from '@/lib/admin-i18n';
 import Link from 'next/link';
 
-import type { AdminProduct as Product, AdminCategory as Category } from '@/types/admin';
+import type { AdminCategory as Category, RestaurantPermissions } from '@/types/admin';
 
 function getCookie(name: string): string {
   if (typeof document === 'undefined') return '';
@@ -14,42 +15,75 @@ function getCookie(name: string): string {
   return match ? decodeURIComponent(match[1]) : '';
 }
 
+const DEFAULT_PERMISSIONS: RestaurantPermissions = {
+  canViewOrders: true,
+  canTrackTables: true,
+  canManageMenu: true,
+  canManageStaff: true,
+};
+
 export default function CategoriesAdminPage() {
   const router = useRouter();
+  const { locale, t } = useAdminI18n();
+
   const [slug, setSlug] = useState('');
   const [email, setEmail] = useState('');
   const [locales, setLocales] = useState<string[]>(['tr', 'en', 'ar']);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [permissions, setPermissions] = useState<RestaurantPermissions>(DEFAULT_PERMISSIONS);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   // Modal
   const [catModal, setCatModal] = useState<{ open: boolean; category?: Category }>({ open: false });
 
-  const fetchData = useCallback(async (restaurantSlug: string) => {
-    setLoading(true);
-    setError('');
-    try {
-      const [catRes, restRes] = await Promise.all([
-        fetch(`/api/proxy/admin/restaurants/${restaurantSlug}/categories`),
-        fetch(`/api/proxy/restaurants/${restaurantSlug}`),
-      ]);
-      if (!catRes.ok) {
-        setError('Failed to load categories');
-        return;
+  const fetchData = useCallback(
+    async (restaurantSlug: string) => {
+      setLoading(true);
+      setError('');
+      try {
+        const [catRes, restRes, permRes] = await Promise.all([
+          fetch(`/api/proxy/admin/restaurants/${restaurantSlug}/categories`),
+          fetch(`/api/proxy/restaurants/${restaurantSlug}`),
+          fetch(`/api/proxy/super-admin/restaurants/${restaurantSlug}/permissions`).catch(() => null),
+        ]);
+
+        if (!catRes.ok) {
+          setError(t.categories.loading);
+          return;
+        }
+        const catData: Category[] = await catRes.json();
+        setCategories(catData);
+
+        if (restRes.ok) {
+          const restData = await restRes.json();
+          if (restData.supportedLocales) setLocales(restData.supportedLocales);
+          if (restData.featureFlags && !permRes?.ok) {
+            setPermissions({
+              canViewOrders: restData.featureFlags.enableOrdering ?? true,
+              canTrackTables: restData.featureFlags.enableTables ?? true,
+              canManageMenu: restData.featureFlags.enableMultiLanguage ?? true,
+              canManageStaff: restData.featureFlags.enableReviews ?? true,
+            });
+          }
+        }
+
+        if (permRes && permRes.ok) {
+          const permData = await permRes.json();
+          if (permData.permissions) {
+            setPermissions(permData.permissions);
+          } else if (permData.canViewOrders !== undefined) {
+            setPermissions(permData);
+          }
+        }
+      } catch {
+        setError(t.categories.deleteError);
+      } finally {
+        setLoading(false);
       }
-      const catData: Category[] = await catRes.json();
-      setCategories(catData);
-      if (restRes.ok) {
-        const restData = await restRes.json();
-        if (restData.supportedLocales) setLocales(restData.supportedLocales);
-      }
-    } catch {
-      setError('Network error');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    },
+    [t.categories.deleteError, t.categories.loading]
+  );
 
   useEffect(() => {
     const s = getCookie('restaurant_slug');
@@ -66,7 +100,7 @@ export default function CategoriesAdminPage() {
   const refresh = () => slug && fetchData(slug);
 
   async function handleDeleteCategory(id: string) {
-    if (!confirm('Are you sure you want to delete this category? All its products will also be deleted.')) return;
+    if (!confirm(t.categories.deleteConfirm)) return;
     try {
       const res = await fetch(`/api/proxy/admin/restaurants/${slug}/categories/${id}`, {
         method: 'DELETE',
@@ -74,46 +108,71 @@ export default function CategoriesAdminPage() {
       if (res.ok) {
         refresh();
       } else {
-        alert('Failed to delete category');
+        alert(t.categories.deleteFailed);
       }
     } catch {
-      alert('Error deleting category');
+      alert(t.categories.deleteError);
     }
   }
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900">
-      <AdminHeader slug={slug} email={email} />
+      <AdminHeader slug={slug} email={email} permissions={permissions} />
 
-      <main className="max-w-6xl mx-auto px-6 py-8">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-800">Categories Management</h1>
-            <p className="text-xs text-gray-500">Organize your digital menu sections and language translations</p>
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+        {/* Permission warning */}
+        {!permissions.canManageMenu && (
+          <div className="bg-amber-50 border border-amber-200 text-amber-800 rounded-2xl p-4 flex items-center justify-between shadow-xs">
+            <div className="flex items-center gap-2.5 text-xs font-semibold">
+              <span>🔒</span>
+              <span>
+                {locale === 'tr'
+                  ? 'Kategori yönetimi salt okunur moddadır. Kategori oluşturma, düzenleme ve silme devre dışıdır.'
+                  : 'Category management is in read-only mode. Creating, editing, and deleting categories is restricted.'}
+              </span>
+            </div>
+            <span className="text-[11px] bg-amber-200/60 text-amber-900 px-2 py-0.5 rounded-full font-bold">
+              Read-Only
+            </span>
           </div>
-          <button
-            onClick={() => setCatModal({ open: true })}
-            className="bg-blue-600 text-white text-sm font-semibold rounded-lg px-4 py-2 hover:bg-blue-700 transition cursor-pointer shadow-xs"
-          >
-            + Add Category
-          </button>
+        )}
+
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800">{t.categories.title}</h1>
+            <p className="text-xs text-gray-500">{t.categories.subtitle}</p>
+          </div>
+          {permissions.canManageMenu && (
+            <button
+              onClick={() => setCatModal({ open: true })}
+              className="bg-blue-600 text-white text-sm font-semibold rounded-lg px-4 py-2 hover:bg-blue-700 transition cursor-pointer shadow-xs"
+            >
+              {t.categories.addCategoryBtn}
+            </button>
+          )}
         </div>
 
-        {error && <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-3 mb-6 text-sm">{error}</div>}
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-3 text-sm">
+            {error}
+          </div>
+        )}
 
-        {loading && <div className="text-center py-12 text-gray-500">Loading categories...</div>}
+        {loading && <div className="text-center py-12 text-gray-500">{t.categories.loading}</div>}
 
         {!loading && categories.length === 0 && (
           <div className="text-center py-16 bg-white border border-gray-200 rounded-2xl p-8">
             <p className="text-4xl mb-3">🍽️</p>
-            <h3 className="text-lg font-bold text-gray-800 mb-1">No categories created yet</h3>
-            <p className="text-gray-500 text-sm mb-4">Add your first category to start organizing your digital menu.</p>
-            <button
-              onClick={() => setCatModal({ open: true })}
-              className="bg-blue-600 text-white text-sm font-medium rounded-lg px-4 py-2 hover:bg-blue-700"
-            >
-              + Add Category
-            </button>
+            <h3 className="text-lg font-bold text-gray-800 mb-1">{t.categories.noCategoriesTitle}</h3>
+            <p className="text-gray-500 text-sm mb-4">{t.categories.noCategoriesDesc}</p>
+            {permissions.canManageMenu && (
+              <button
+                onClick={() => setCatModal({ open: true })}
+                className="bg-blue-600 text-white text-sm font-medium rounded-lg px-4 py-2 hover:bg-blue-700 cursor-pointer"
+              >
+                {t.categories.addCategoryBtn}
+              </button>
+            )}
           </div>
         )}
 
@@ -122,20 +181,22 @@ export default function CategoriesAdminPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50 text-xs text-gray-500 font-semibold uppercase tracking-wider">
-                  <th className="px-6 py-3.5 text-left">Order</th>
-                  <th className="px-6 py-3.5 text-left">Category Name</th>
-                  <th className="px-6 py-3.5 text-left">English</th>
-                  <th className="px-6 py-3.5 text-left">Arabic</th>
-                  <th className="px-6 py-3.5 text-left">Products</th>
-                  <th className="px-6 py-3.5 text-right">Actions</th>
+                  <th className="px-6 py-3.5 text-left">{t.categories.thOrder}</th>
+                  <th className="px-6 py-3.5 text-left">{t.categories.thName}</th>
+                  <th className="px-6 py-3.5 text-left">{t.categories.thEn}</th>
+                  <th className="px-6 py-3.5 text-left">{t.categories.thAr}</th>
+                  <th className="px-6 py-3.5 text-left">{t.categories.thProducts}</th>
+                  <th className="px-6 py-3.5 text-right">{t.categories.thActions}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {categories.map((cat) => (
                   <tr key={cat.id} className="hover:bg-gray-50/70 transition">
-                    <td className="px-6 py-4 font-mono text-xs text-gray-400 font-bold">#{cat.sortOrder}</td>
+                    <td className="px-6 py-4 font-mono text-xs text-gray-400 font-bold">
+                      #{cat.sortOrder}
+                    </td>
                     <td className="px-6 py-4 font-semibold text-gray-900">
-                      {cat.name['tr'] || cat.name[locales[0]] || '—'}
+                      {cat.name[locale] || cat.name['tr'] || cat.name[locales[0]] || '—'}
                     </td>
                     <td className="px-6 py-4 text-gray-600">{cat.name['en'] || '—'}</td>
                     <td className="px-6 py-4 text-gray-600 font-arabic" dir="rtl">
@@ -146,25 +207,33 @@ export default function CategoriesAdminPage() {
                         href={`/admin/products?categoryId=${cat.id}`}
                         className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-800 bg-blue-50 px-2.5 py-1 rounded-full border border-blue-100"
                       >
-                        <span>{cat.products?.length || 0} items</span>
+                        <span>
+                          {cat.products?.length || 0} {t.categories.itemsCount}
+                        </span>
                         <span>→</span>
                       </Link>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => setCatModal({ open: true, category: cat })}
-                          className="text-xs text-blue-600 hover:text-blue-800 font-medium px-2.5 py-1 border border-blue-200 rounded-lg bg-blue-50/50 hover:bg-blue-50"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDeleteCategory(cat.id)}
-                          className="text-xs text-red-600 hover:text-red-800 font-medium px-2.5 py-1 border border-red-200 rounded-lg bg-red-50/50 hover:bg-red-50"
-                        >
-                          Delete
-                        </button>
-                      </div>
+                      {permissions.canManageMenu ? (
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => setCatModal({ open: true, category: cat })}
+                            className="text-xs text-blue-600 hover:text-blue-800 font-medium px-2.5 py-1 border border-blue-200 rounded-lg bg-blue-50/50 hover:bg-blue-50 cursor-pointer"
+                          >
+                            {t.categories.edit}
+                          </button>
+                          <button
+                            onClick={() => handleDeleteCategory(cat.id)}
+                            className="text-xs text-red-600 hover:text-red-800 font-medium px-2.5 py-1 border border-red-200 rounded-lg bg-red-50/50 hover:bg-red-50 cursor-pointer"
+                          >
+                            {t.categories.delete}
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-gray-400 font-medium px-2 py-1 bg-gray-100 rounded-lg">
+                          {locale === 'tr' ? 'Salt Okunur' : 'Locked'}
+                        </span>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -175,7 +244,7 @@ export default function CategoriesAdminPage() {
       </main>
 
       {/* Category Modal */}
-      {catModal.open && (
+      {catModal.open && permissions.canManageMenu && (
         <CategoryModal
           slug={slug}
           locales={locales}
