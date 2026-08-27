@@ -27,9 +27,19 @@ export class CategoriesService {
     }
   }
 
+  private async checkMenuPermission(restaurantId: string): Promise<void> {
+    const settings = await this.prisma.restaurantSettings.findUnique({
+      where: { restaurantId },
+    });
+    if (settings && settings.canManageMenu === false) {
+      throw new ForbiddenException('Feature disabled for this tenant');
+    }
+  }
+
   async findAll(slug: string, adminRestaurantId: string): Promise<CategoryWithProducts[]> {
     const restaurant = await this.getRestaurantOrFail(slug);
     this.assertOwnership(restaurant.id, adminRestaurantId);
+    await this.checkMenuPermission(restaurant.id);
     return this.prisma.category.findMany({
       where: { restaurantId: restaurant.id },
       orderBy: { sortOrder: 'asc' },
@@ -40,6 +50,7 @@ export class CategoriesService {
   async findOne(slug: string, id: string, adminRestaurantId: string): Promise<CategoryWithProducts> {
     const restaurant = await this.getRestaurantOrFail(slug);
     this.assertOwnership(restaurant.id, adminRestaurantId);
+    await this.checkMenuPermission(restaurant.id);
     const category = await this.prisma.category.findFirst({
       where: { id, restaurantId: restaurant.id },
       include: { products: { orderBy: { sortOrder: 'asc' } } },
@@ -51,6 +62,7 @@ export class CategoriesService {
   async create(slug: string, adminRestaurantId: string, dto: CreateCategoryDto): Promise<Category> {
     const restaurant = await this.getRestaurantOrFail(slug);
     this.assertOwnership(restaurant.id, adminRestaurantId);
+    await this.checkMenuPermission(restaurant.id);
     return this.prisma.category.create({
       data: {
         restaurantId: restaurant.id,
@@ -64,6 +76,7 @@ export class CategoriesService {
   async update(slug: string, id: string, adminRestaurantId: string, dto: UpdateCategoryDto): Promise<Category> {
     const restaurant = await this.getRestaurantOrFail(slug);
     this.assertOwnership(restaurant.id, adminRestaurantId);
+    await this.checkMenuPermission(restaurant.id);
     const existing = await this.prisma.category.findFirst({
       where: { id, restaurantId: restaurant.id },
     });
@@ -81,6 +94,7 @@ export class CategoriesService {
   async remove(slug: string, id: string, adminRestaurantId: string): Promise<DeleteCategoryResponse> {
     const restaurant = await this.getRestaurantOrFail(slug);
     this.assertOwnership(restaurant.id, adminRestaurantId);
+    await this.checkMenuPermission(restaurant.id);
     const existing = await this.prisma.category.findFirst({
       where: { id, restaurantId: restaurant.id },
     });

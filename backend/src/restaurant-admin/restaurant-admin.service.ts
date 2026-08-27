@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateRestaurantSettingsDto } from './dto/update-restaurant-settings.dto';
 import type { Restaurant, RestaurantSettings } from '@prisma/client';
@@ -25,6 +25,14 @@ export class RestaurantAdminService {
   }
 
   async updateSettings(restaurantId: string, data: UpdateRestaurantSettingsDto): Promise<RestaurantSettings> {
+    const currentSettings = await this.prisma.restaurantSettings.findUnique({
+      where: { restaurantId },
+    });
+
+    if (currentSettings && currentSettings.canManageStaff === false) {
+      throw new ForbiddenException('Feature disabled for this tenant');
+    }
+
     const updateData = {
       ...(data.orderingEnabled !== undefined && { orderingEnabled: data.orderingEnabled }),
       ...(data.dineInEnabled !== undefined && { dineInEnabled: data.dineInEnabled }),

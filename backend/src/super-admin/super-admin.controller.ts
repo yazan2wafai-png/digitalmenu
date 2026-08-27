@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -17,9 +18,11 @@ import type {
   DeleteRestaurantResponse,
   RestaurantSummaryItem,
   RestaurantViewsResponse,
+  UpdateRestaurantPermissionsResponse,
 } from './super-admin.service';
 import { SuperAdminLoginDto } from './dto/super-admin-login.dto';
 import { CreateRestaurantDto } from './dto/create-restaurant.dto';
+import { UpdateRestaurantPermissionsDto } from './dto/update-restaurant-permissions.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { SuperAdminGuard } from './guards/super-admin.guard';
 
@@ -76,5 +79,18 @@ export class SuperAdminController {
   @UseGuards(JwtAuthGuard, SuperAdminGuard)
   getRestaurantViews(@Param('slug') slug: string): Promise<RestaurantViewsResponse> {
     return this.superAdminService.getRestaurantViews(slug);
+  }
+
+  /**
+   * PATCH /super-admin/restaurants/:slug/permissions
+   * Protected: Update restaurant feature toggles/permissions
+   */
+  @Patch('restaurants/:slug/permissions')
+  @UseGuards(JwtAuthGuard, SuperAdminGuard)
+  updateRestaurantPermissions(
+    @Param('slug') slug: string,
+    @Body() dto: UpdateRestaurantPermissionsDto,
+  ): Promise<UpdateRestaurantPermissionsResponse> {
+    return this.superAdminService.updateRestaurantPermissions(slug, dto);
   }
 }

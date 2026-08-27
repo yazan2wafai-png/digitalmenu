@@ -12,8 +12,8 @@ export class TablesService {
     const settings = await this.prisma.restaurantSettings.findUnique({
       where: { restaurantId },
     });
-    if (settings && settings.enableTables === false) {
-      throw new ForbiddenException('Table management feature is disabled for this restaurant');
+    if (settings && (settings.canTrackTables === false || settings.enableTables === false)) {
+      throw new ForbiddenException('Feature disabled for this tenant');
     }
 
     const location = await this.prisma.location.findFirst({

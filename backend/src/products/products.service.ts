@@ -25,9 +25,19 @@ export class ProductsService {
     }
   }
 
+  private async checkMenuPermission(restaurantId: string): Promise<void> {
+    const settings = await this.prisma.restaurantSettings.findUnique({
+      where: { restaurantId },
+    });
+    if (settings && settings.canManageMenu === false) {
+      throw new ForbiddenException('Feature disabled for this tenant');
+    }
+  }
+
   async findAll(categoryId: string, adminRestaurantId: string): Promise<Product[]> {
     const category = await this.getCategoryOrFail(categoryId);
     this.assertOwnership(category.restaurantId, adminRestaurantId);
+    await this.checkMenuPermission(category.restaurantId);
     return this.prisma.product.findMany({
       where: { categoryId },
       orderBy: { sortOrder: 'asc' },
@@ -37,6 +47,7 @@ export class ProductsService {
   async findOne(categoryId: string, id: string, adminRestaurantId: string): Promise<Product> {
     const category = await this.getCategoryOrFail(categoryId);
     this.assertOwnership(category.restaurantId, adminRestaurantId);
+    await this.checkMenuPermission(category.restaurantId);
     const product = await this.prisma.product.findFirst({ where: { id, categoryId } });
     if (!product) throw new NotFoundException(`Product "${id}" not found`);
     return product;
@@ -45,6 +56,7 @@ export class ProductsService {
   async create(categoryId: string, adminRestaurantId: string, dto: CreateProductDto): Promise<Product> {
     const category = await this.getCategoryOrFail(categoryId);
     this.assertOwnership(category.restaurantId, adminRestaurantId);
+    await this.checkMenuPermission(category.restaurantId);
     return this.prisma.product.create({
       data: {
         categoryId,
@@ -60,6 +72,7 @@ export class ProductsService {
   async update(categoryId: string, id: string, adminRestaurantId: string, dto: UpdateProductDto): Promise<Product> {
     const category = await this.getCategoryOrFail(categoryId);
     this.assertOwnership(category.restaurantId, adminRestaurantId);
+    await this.checkMenuPermission(category.restaurantId);
     const existing = await this.prisma.product.findFirst({ where: { id, categoryId } });
     if (!existing) throw new NotFoundException(`Product "${id}" not found`);
     return this.prisma.product.update({
@@ -77,6 +90,7 @@ export class ProductsService {
   async remove(categoryId: string, id: string, adminRestaurantId: string): Promise<DeleteProductResponse> {
     const category = await this.getCategoryOrFail(categoryId);
     this.assertOwnership(category.restaurantId, adminRestaurantId);
+    await this.checkMenuPermission(category.restaurantId);
     const existing = await this.prisma.product.findFirst({ where: { id, categoryId } });
     if (!existing) throw new NotFoundException(`Product "${id}" not found`);
     await this.prisma.product.delete({ where: { id } });

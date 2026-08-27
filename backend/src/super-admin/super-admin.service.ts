@@ -8,9 +8,17 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import { SuperAdminLoginDto } from './dto/super-admin-login.dto';
 import { CreateRestaurantDto } from './dto/create-restaurant.dto';
+import { UpdateRestaurantPermissionsDto } from './dto/update-restaurant-permissions.dto';
 import * as bcrypt from 'bcryptjs';
 import { AdminRole } from '../common/roles.enum';
 import type { Prisma, Restaurant, RestaurantSettings } from '@prisma/client';
+
+export interface RestaurantPermissions {
+  canViewOrders: boolean;
+  canTrackTables: boolean;
+  canManageMenu: boolean;
+  canManageStaff: boolean;
+}
 
 export interface SuperAdminLoginResponse {
   accessToken: string;
@@ -49,6 +57,12 @@ export interface RestaurantSummaryItem {
   categoryCount: number;
   productCount: number;
   viewCount: number;
+  permissions: RestaurantPermissions;
+}
+
+export interface UpdateRestaurantPermissionsResponse {
+  slug: string;
+  permissions: RestaurantPermissions;
 }
 
 export interface DailyViewCount {
@@ -159,6 +173,10 @@ export class SuperAdminService {
           enableMultiLanguage: true,
           enableReviews: false,
           enableServiceCall: false,
+          canViewOrders: true,
+          canTrackTables: true,
+          canManageMenu: true,
+          canManageStaff: true,
         },
       });
 
@@ -210,12 +228,13 @@ export class SuperAdminService {
   }
 
   /**
-   * List All Restaurants with Counts
+   * List All Restaurants with Counts and RBAC Permissions
    */
   async findAllRestaurants(): Promise<RestaurantSummaryItem[]> {
     const restaurants = await this.prisma.restaurant.findMany({
       orderBy: { createdAt: 'desc' },
       include: {
+        settings: true,
         _count: {
           select: {
             categories: true,
@@ -252,8 +271,57 @@ export class SuperAdminService {
         categoryCount: r._count.categories,
         productCount,
         viewCount: r._count.pageViews,
+        permissions: {
+          canViewOrders: r.settings?.canViewOrders ?? true,
+          canTrackTables: r.settings?.canTrackTables ?? true,
+          canManageMenu: r.settings?.canManageMenu ?? true,
+          canManageStaff: r.settings?.canManageStaff ?? true,
+        },
       };
     });
+  }
+
+  /**
+   * Update Restaurant RBAC Feature Permissions by Slug
+   */
+  async updateRestaurantPermissions(
+    slug: string,
+    dto: UpdateRestaurantPermissionsDto,
+  ): Promise<UpdateRestaurantPermissionsResponse> {
+    const restaurant = await this.prisma.restaurant.findUnique({
+      where: { slug },
+      include: { settings: true },
+    });
+
+    if (!restaurant) {
+      throw new NotFoundException(`Restaurant with slug "${slug}" not found`);
+    }
+
+    const updateData = {
+      ...(dto.canViewOrders !== undefined && { canViewOrders: dto.canViewOrders }),
+      ...(dto.canTrackTables !== undefined && { canTrackTables: dto.canTrackTables }),
+      ...(dto.canManageMenu !== undefined && { canManageMenu: dto.canManageMenu }),
+      ...(dto.canManageStaff !== undefined && { canManageStaff: dto.canManageStaff }),
+    };
+
+    const settings = await this.prisma.restaurantSettings.upsert({
+      where: { restaurantId: restaurant.id },
+      update: updateData,
+      create: {
+        restaurantId: restaurant.id,
+        ...updateData,
+      },
+    });
+
+    return {
+      slug: restaurant.slug,
+      permissions: {
+        canViewOrders: settings.canViewOrders,
+        canTrackTables: settings.canTrackTables,
+        canManageMenu: settings.canManageMenu,
+        canManageStaff: settings.canManageStaff,
+      },
+    };
   }
 
   /**

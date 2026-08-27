@@ -100,6 +100,12 @@ model RestaurantSettings {
   enableReviews         Boolean  @default(false)
   enableServiceCall     Boolean  @default(false)
 
+  // RBAC Feature Permissions
+  canViewOrders         Boolean  @default(true)
+  canTrackTables        Boolean  @default(true)
+  canManageMenu         Boolean  @default(true)
+  canManageStaff        Boolean  @default(true)
+
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 

@@ -64,6 +64,10 @@ async function main() {
       enableMultiLanguage: true,
       enableReviews: false,
       enableServiceCall: false,
+      canViewOrders: true,
+      canTrackTables: true,
+      canManageMenu: true,
+      canManageStaff: true,
     },
     create: {
       restaurantId: restaurant.id,
@@ -79,6 +83,10 @@ async function main() {
       enableMultiLanguage: true,
       enableReviews: false,
       enableServiceCall: false,
+      canViewOrders: true,
+      canTrackTables: true,
+      canManageMenu: true,
+      canManageStaff: true,
     },
   });
   console.log(`⚙️ Settings configured`);
