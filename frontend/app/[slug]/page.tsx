@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import { fetchRestaurant } from '@/lib/api';
 import type { Restaurant } from '@/types/menu';
@@ -40,15 +40,21 @@ export default function HomePage() {
       if (loc === DEFAULT_LOCALE && data.defaultLocale && data.defaultLocale !== loc) {
         setLocale(data.defaultLocale);
       }
-      if (data.categories?.length > 0 && !activeCategoryId) {
-        setActiveCategoryId(data.categories[0].id);
+      // Functional form on purpose: reading activeCategoryId directly here
+      // would put it in this callback's deps, and since the scroll-spy
+      // effect below updates activeCategoryId on every scroll tick, that
+      // recreated `load` on every scroll too - which re-ran the effect
+      // that calls load() and flashed the full-page loading spinner while
+      // just scrolling. Keeping `load` stable (only depends on slug) fixes it.
+      if (data.categories?.length > 0) {
+        setActiveCategoryId((prev) => prev || data.categories[0].id);
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to load menu');
     } finally {
       setLoading(false);
     }
-  }, [slug, activeCategoryId]);
+  }, [slug]);
 
   useEffect(() => { load(locale); }, [locale, load]);
 
@@ -66,7 +72,17 @@ export default function HomePage() {
     }
   };
 
-  // Setup scroll spy
+  // Setup scroll spy. Reads/writes activeCategoryId through a ref instead
+  // of the effect's own deps - keeping activeCategoryId out of this effect's
+  // dependency array means the scroll listener is attached once per
+  // restaurant load instead of being torn down and re-attached on every
+  // single scroll tick that crosses a category boundary (which was also
+  // jank-prone and part of the "scrolling looks bad" complaint).
+  const activeCategoryIdRef = useRef(activeCategoryId);
+  useEffect(() => {
+    activeCategoryIdRef.current = activeCategoryId;
+  }, [activeCategoryId]);
+
   useEffect(() => {
     if (!restaurant) return;
     const handleScroll = () => {
@@ -84,14 +100,14 @@ export default function HomePage() {
         }
       });
 
-      if (currentActiveId && currentActiveId !== activeCategoryId) {
+      if (currentActiveId && currentActiveId !== activeCategoryIdRef.current) {
         setActiveCategoryId(currentActiveId);
       }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [restaurant, activeCategoryId]);
+  }, [restaurant]);
 
   const isRTL = locale === 'ar';
 
