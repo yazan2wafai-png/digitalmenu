@@ -51,7 +51,7 @@ export const translations = {
       erenkoyBtn: 'Kahve Erenköy Menüsünü Aç →',
       noirTag: 'Butik Kahve Deneyimi',
       noirDesc: "Kadıköy'ün yeni nesil kahve butiği; özenle seçilmiş çekirdekler ve sade, sıcak bir masa deneyimiyle misafirlerini ağırlıyor.",
-      noirBtn: 'Kadıköy Noir Menüsünü Aç →',
+      noirBtn: 'Act Noir Menüsünü Aç →',
     },
     livePreview: {
       loading: 'Menü yükleniyor…',
@@ -133,7 +133,7 @@ export const translations = {
       erenkoyBtn: 'Launch Kahve Erenköy Menu →',
       noirTag: 'Boutique Coffee Experience',
       noirDesc: "Kadıköy's newest specialty coffee boutique, pairing carefully sourced beans with a warm, minimal table experience.",
-      noirBtn: 'Launch Kadıköy Noir Menu →',
+      noirBtn: 'Launch Act Noir Menu →',
     },
     livePreview: {
       loading: 'Loading menu…',

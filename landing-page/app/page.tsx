@@ -85,7 +85,7 @@ export default function LandingPage() {
           : ['V60 Specialty Coffee', 'Table Badges', 'Allergen & Category Filters'],
     },
     {
-      name: 'Kadıköy Noir',
+      name: 'Act Noir',
       tag: t.saas.noirTag,
       slug: 'act-noir-cafe',
       badgeColor: 'bg-ink/10 text-ink border-ink/20',
