@@ -95,7 +95,7 @@ async function main() {
     }),
     'Super admin login',
   );
-  const superToken = superLogin.access_token;
+  const superToken = superLogin.accessToken;
   const superHeaders = {
     'Content-Type': 'application/json',
     Authorization: `Bearer ${superToken}`,
