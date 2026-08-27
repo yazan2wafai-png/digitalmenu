@@ -30,3 +30,11 @@ body {
 h1, h2, h3, h4, h5, h6, .font-display {
   font-family: var(--font-display), var(--font-body), sans-serif;
 }
+
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}

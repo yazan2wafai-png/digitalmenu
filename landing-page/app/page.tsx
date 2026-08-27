@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Navbar } from '@/components/Navbar';
+import { RestaurantShowcase } from '@/components/RestaurantShowcase';
 import { NFCShowcase } from '@/components/nfc-showcase';
 import { StickerSection } from '@/components/StickerSection';
 import { DiscountModal } from '@/components/DiscountModal';
@@ -82,6 +83,21 @@ export default function LandingPage() {
         locale === 'tr'
           ? ['V60 Özel Menü', 'Masa Rozetleri', 'Alerjen & Kategori Filtreleri']
           : ['V60 Specialty Coffee', 'Table Badges', 'Allergen & Category Filters'],
+    },
+    {
+      name: 'Kadıköy Noir',
+      tag: t.saas.noirTag,
+      slug: 'kadikoy-noir',
+      badgeColor: 'bg-ink/10 text-ink border-ink/20',
+      url: 'https://kadikoy-noir.nfcmyplace.com',
+      image:
+        'https://images.unsplash.com/photo-1498804103079-a6351b050096?w=800&auto=format&fit=crop&q=80',
+      description: t.saas.noirDesc,
+      buttonText: t.saas.noirBtn,
+      highlights:
+        locale === 'tr'
+          ? ['Butik Kahve Menüsü', 'Sade Masa Deneyimi', 'Hazır API Altyapısı']
+          : ['Boutique Coffee Menu', 'Minimal Table Experience', 'API-Ready Infrastructure'],
     },
   ];
 
@@ -320,6 +336,69 @@ export default function LandingPage() {
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
+          REAL PRODUCTS - PHYSICAL HARDWARE IN THE WILD
+          ───────────────────────────────────────────────────────────── */}
+      <section className="py-20 px-4 sm:px-6 max-w-6xl mx-auto relative z-10">
+        <div className="text-center space-y-3 mb-12">
+          <span className="text-xs font-extrabold text-terracotta uppercase tracking-widest">
+            {locale === 'tr' ? 'Elle Tutulur Kalite' : 'Tangible Quality'}
+          </span>
+          <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-ink">
+            {locale === 'tr' ? 'Ekrandan çıkıp masanıza oturuyor.' : 'It steps off the screen and onto your table.'}
+          </h2>
+          <p className="text-sm sm:text-base text-ink/60 max-w-2xl mx-auto leading-relaxed">
+            {locale === 'tr'
+              ? 'Render değil, gerçek üretim. Bugün restoranlarda kullanılan L-Stand ve masa stickerlarımız.'
+              : 'Not a render — real production. The L-Stand and table stickers already in use at real venues.'}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.6 }}
+            className="group relative rounded-3xl overflow-hidden border border-ink/10 bg-white/60 shadow-xl shadow-ink/5"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/products/lstand-mockup.png"
+              alt={locale === 'tr' ? 'Google Değerlendirme Standı - gerçek ürün' : 'Google Review Stand - real product'}
+              className="w-full h-80 sm:h-96 object-cover group-hover:scale-105 transition-transform duration-700"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/0 to-transparent" />
+            <div className="absolute bottom-5 left-5 right-5">
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cream/90 text-ink text-xs font-bold backdrop-blur-md">
+                {locale === 'tr' ? 'L-Stand · 1.750 TL' : 'L-Stand · 1,750 TL'}
+              </span>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="group relative rounded-3xl overflow-hidden border border-ink/10 bg-white/60 shadow-xl shadow-ink/5"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/products/masa-stickeri-mockup.png"
+              alt={locale === 'tr' ? 'Akrilik Masa Stickerı - gerçek ürün' : 'Acrylic Table Sticker - real product'}
+              className="w-full h-80 sm:h-96 object-cover group-hover:scale-105 transition-transform duration-700"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/0 to-transparent" />
+            <div className="absolute bottom-5 left-5 right-5">
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cream/90 text-ink text-xs font-bold backdrop-blur-md">
+                {locale === 'tr' ? 'Masa Stickerı · 175 TL' : 'Table Sticker · 175 TL'}
+              </span>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
           SERVICE 3: RESTORAN DİJİTAL MENÜ SAAS ALTYAPISI (3.000 TL)
           ───────────────────────────────────────────────────────────── */}
       <section
@@ -444,96 +523,17 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Live Interactive Demo Cards: Baltazar Burger & Kahve Erenköy */}
-        <div className="space-y-6">
-          <div className="text-center space-y-2">
-            <h3 className="text-2xl sm:text-3xl font-black text-ink">
-              {locale === 'tr'
-                ? 'Canlı Restoran Menü Demoları'
-                : 'Live Interactive Venue Demos'}
-            </h3>
-            <p className="text-xs sm:text-sm text-ink/60">
-              {locale === 'tr'
-                ? 'Aşağıdaki kartlara tıklayarak NFCMyPlace altyapısıyla çalışan canlı işletme menülerini deneyimleyin.'
-                : 'Click the demo cards below to test live multi-tenant restaurant menus powered by NFCMyPlace.'}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {LIVE_DEMOS.map((demo) => (
-              <motion.article
-                key={demo.slug}
-                whileHover={{ y: -6 }}
-                transition={{ duration: 0.3 }}
-                className="bg-white/70 border border-ink/10 hover:border-terracotta/40 rounded-3xl overflow-hidden shadow-xl shadow-ink/5 flex flex-col justify-between backdrop-blur-xl group"
-              >
-                <a
-                  href={demo.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block"
-                >
-                  {/* Image Container */}
-                  <div className="relative w-full h-56 overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={demo.image}
-                      alt={demo.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/10 to-transparent" />
-
-                    {/* Tag Badge */}
-                    <div className="absolute top-4 left-4 flex items-center gap-2">
-                      <span
-                        className={`text-xs font-bold px-3 py-1 rounded-full border backdrop-blur-md ${demo.badgeColor}`}
-                      >
-                        {demo.tag}
-                      </span>
-                    </div>
-
-                    <div className="absolute top-4 right-4 w-9 h-9 rounded-full bg-ink/70 border border-cream/30 backdrop-blur-md flex items-center justify-center text-cream group-hover:bg-terracotta transition-colors">
-                      <ArrowUpRight className="w-4 h-4" />
-                    </div>
-                  </div>
-
-                  <div className="p-6 space-y-3">
-                    <h4 className="text-2xl font-black text-ink group-hover:text-terracotta transition-colors">
-                      {demo.name}
-                    </h4>
-                    <p className="text-xs sm:text-sm text-ink/60 leading-relaxed">
-                      {demo.description}
-                    </p>
-
-                    {/* Highlights */}
-                    <div className="flex flex-wrap gap-2 pt-2">
-                      {demo.highlights.map((badge, bIdx) => (
-                        <span
-                          key={bIdx}
-                          className="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-ink/5 border border-ink/10 text-ink/70"
-                        >
-                          ✓ {badge}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </a>
-
-                <div className="p-6 pt-0">
-                  <a
-                    href={demo.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full py-3.5 rounded-xl bg-terracotta hover:bg-terracotta-light text-cream font-black text-xs transition-all flex items-center justify-center gap-2 shadow-lg shadow-terracotta/25 cursor-pointer"
-                  >
-                    <span>{demo.buttonText}</span>
-                    <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
-                  </a>
-                </div>
-              </motion.article>
-            ))}
-          </div>
-        </div>
+        <RestaurantShowcase
+          demos={LIVE_DEMOS}
+          locale={locale}
+          t={t.livePreview}
+          heading={locale === 'tr' ? 'Şu Anki Müşterilerimiz' : 'Our Current Customers'}
+          subheading={
+            locale === 'tr'
+              ? 'Bir kartı açın, menüyü sayfadan hiç ayrılmadan kaydırarak keşfedin.'
+              : 'Tap a card and browse their live menu without ever leaving this page.'
+          }
+        />
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
