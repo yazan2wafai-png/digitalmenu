@@ -21,7 +21,7 @@ interface Props {
 
 export function CategoryCard({ category, themeColor, locale }: Props) {
   const params = useParams();
-  const slug = (params?.slug as string) || 'baltazar';
+  const slug = (params?.slug as string) || '';
   const hasPhoto = Boolean(category.photoUrl);
 
   return (

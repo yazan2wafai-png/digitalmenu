@@ -7,43 +7,26 @@ export function middleware(request: NextRequest) {
   const hostname = request.headers.get('x-forwarded-host') || request.headers.get('host') || '';
   const hostWithoutPort = hostname.split(':')[0].toLowerCase();
 
-  const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'nfcmyplace.com';
+  const rootDomain = (process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'nfcmyplace.com').toLowerCase();
   const landingUrl = process.env.NEXT_PUBLIC_LANDING_URL || `https://${rootDomain}`;
 
-  // Extract query params or custom headers
+  // 1. Explicit query parameter or custom header overrides (for dev testing & explicit routing)
   const querySlug = url.searchParams.get('slug') || url.searchParams.get('tenant');
   const headerSlug = request.headers.get('x-tenant-slug');
 
-  // If naked domain nfcmyplace.com or www.nfcmyplace.com and root path, redirect to landing page if on a distinct host
-  if (
-    (hostWithoutPort === rootDomain || hostWithoutPort === `www.${rootDomain}`) &&
-    pathname === '/' &&
-    !querySlug
-  ) {
-    try {
-      const parsedLanding = new URL(landingUrl);
-      if (parsedLanding.hostname !== hostWithoutPort) {
-        return NextResponse.redirect(landingUrl);
-      }
-    } catch {
-      // Passthrough if invalid URL
-    }
-  }
-
-  // Check if request is targeting the Super Admin hostname
+  // 2. Check if request is targeting the Super Admin hostname
   const isAdminHost =
     hostWithoutPort === `admin.${rootDomain}` ||
     hostWithoutPort === 'admin.localhost' ||
     hostWithoutPort === 'admin.nfcmyplace.local' ||
-    hostname.toLowerCase().startsWith('admin.localhost') ||
-    hostname.toLowerCase().startsWith(`admin.${rootDomain}`);
+    hostWithoutPort.startsWith('admin.');
 
   if (isAdminHost) {
     const superAdminToken = request.cookies.get('super_admin_token')?.value;
     const requestHeaders = new Headers(request.headers);
     requestHeaders.set('x-tenant-slug', 'super-admin');
 
-    // 1. Root / -> /super-admin
+    // Root / -> /super-admin
     if (pathname === '/') {
       if (!superAdminToken) {
         return NextResponse.redirect(new URL('/login', request.url));
@@ -57,7 +40,7 @@ export function middleware(request: NextRequest) {
       return response;
     }
 
-    // 2. /login -> /super-admin/login
+    // /login -> /super-admin/login
     if (pathname === '/login') {
       if (superAdminToken) {
         return NextResponse.redirect(new URL('/', request.url));
@@ -71,7 +54,7 @@ export function middleware(request: NextRequest) {
       return response;
     }
 
-    // 3. /super-admin and /super-admin/* routes
+    // /super-admin and /super-admin/* routes
     if (pathname.startsWith('/super-admin')) {
       if (!superAdminToken && pathname !== '/super-admin/login') {
         return NextResponse.redirect(new URL('/login', request.url));
@@ -88,7 +71,7 @@ export function middleware(request: NextRequest) {
       return response;
     }
 
-    // 4. Any other routes on admin host -> redirect to /login if unauthenticated
+    // Any other routes on admin host -> redirect to /login if unauthenticated
     if (!superAdminToken) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
@@ -102,21 +85,37 @@ export function middleware(request: NextRequest) {
     return response;
   }
 
-  // Extract subdomain slug
-  let slug = 'baltazar'; // default fallback for localhost
+  // 3. Extract tenant subdomain slug (strictly from subdomain or explicit query/header)
+  let tenantSlug: string | null = null;
 
   if (querySlug) {
-    slug = querySlug.toLowerCase();
+    tenantSlug = querySlug.toLowerCase();
   } else if (headerSlug) {
-    slug = headerSlug.toLowerCase();
+    tenantSlug = headerSlug.toLowerCase();
   } else if (
-    hostWithoutPort.endsWith(`.${rootDomain}`) ||
-    hostWithoutPort.endsWith('.localhost') ||
-    hostWithoutPort.endsWith('.nfcmyplace.local')
+    hostWithoutPort.endsWith(`.${rootDomain}`) &&
+    hostWithoutPort !== rootDomain &&
+    hostWithoutPort !== `www.${rootDomain}`
   ) {
-    const parts = hostWithoutPort.split('.');
-    if (parts.length >= 2 && parts[0] !== 'www') {
-      slug = parts[0];
+    const sub = hostWithoutPort.slice(0, -(rootDomain.length + 1));
+    if (sub && sub !== 'www' && sub !== 'admin') {
+      tenantSlug = sub;
+    }
+  } else if (
+    hostWithoutPort.endsWith('.localhost') &&
+    hostWithoutPort !== 'localhost'
+  ) {
+    const sub = hostWithoutPort.slice(0, -('.localhost'.length));
+    if (sub && sub !== 'www' && sub !== 'admin') {
+      tenantSlug = sub;
+    }
+  } else if (
+    hostWithoutPort.endsWith('.nfcmyplace.local') &&
+    hostWithoutPort !== 'nfcmyplace.local'
+  ) {
+    const sub = hostWithoutPort.slice(0, -('.nfcmyplace.local'.length));
+    if (sub && sub !== 'www' && sub !== 'admin') {
+      tenantSlug = sub;
     }
   } else if (
     hostWithoutPort !== 'localhost' &&
@@ -126,31 +125,70 @@ export function middleware(request: NextRequest) {
     hostWithoutPort.includes('.')
   ) {
     const parts = hostWithoutPort.split('.');
-    if (parts[0] !== 'www') {
-      slug = parts[0];
+    if (parts.length > 2 && parts[0] !== 'www' && parts[0] !== 'admin') {
+      tenantSlug = parts[0];
     }
   }
 
-  // Set request headers for downstream Server Components / Routes
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set('x-tenant-slug', slug);
+  // 4. If request is on Root Domain (no tenant slug determined)
+  if (!tenantSlug) {
+    // If naked domain nfcmyplace.com or www.nfcmyplace.com and root path, redirect to distinct landing page if configured
+    if (
+      (hostWithoutPort === rootDomain || hostWithoutPort === `www.${rootDomain}`) &&
+      pathname === '/'
+    ) {
+      try {
+        const parsedLanding = new URL(landingUrl);
+        if (parsedLanding.hostname !== hostWithoutPort) {
+          return NextResponse.redirect(landingUrl);
+        }
+      } catch {
+        // Passthrough if invalid URL
+      }
+    }
 
-  // 1. SuperAdmin routes handling
+    // Handle SuperAdmin routes directly accessed on root domain
+    if (pathname.startsWith('/super-admin')) {
+      const superAdminToken = request.cookies.get('super_admin_token')?.value;
+      if (!superAdminToken && pathname !== '/super-admin/login') {
+        return NextResponse.redirect(new URL('/super-admin/login', request.url));
+      }
+      if (superAdminToken && pathname === '/super-admin/login') {
+        return NextResponse.redirect(new URL('/super-admin', request.url));
+      }
+      return NextResponse.next();
+    }
+
+    // Handle Tenant Admin routes directly accessed on root domain
+    if (pathname.startsWith('/admin')) {
+      const token = request.cookies.get('admin_token')?.value;
+      if (!token && pathname !== '/admin/login') {
+        const loginUrl = new URL('/admin/login', request.url);
+        return NextResponse.redirect(loginUrl);
+      }
+      if (token && pathname === '/admin/login') {
+        return NextResponse.redirect(new URL('/admin', request.url));
+      }
+      return NextResponse.next();
+    }
+
+    // Pass through to root route / or direct /[slug] routes without hardcoded rewrites
+    return NextResponse.next();
+  }
+
+  // 5. Tenant Subdomain Request (or ?slug= override)
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set('x-tenant-slug', tenantSlug);
+
+  // 5.1 SuperAdmin routes handling on tenant domain
   if (pathname.startsWith('/super-admin')) {
     const superAdminToken = request.cookies.get('super_admin_token')?.value;
-
-    // If not authenticated and trying to access protected super-admin page (not /super-admin/login)
     if (!superAdminToken && pathname !== '/super-admin/login') {
-      const loginUrl = new URL('/super-admin/login', request.url);
-      return NextResponse.redirect(loginUrl);
+      return NextResponse.redirect(new URL('/super-admin/login', request.url));
     }
-
-    // If already authenticated and trying to access /super-admin/login, redirect to /super-admin
     if (superAdminToken && pathname === '/super-admin/login') {
-      const superAdminUrl = new URL('/super-admin', request.url);
-      return NextResponse.redirect(superAdminUrl);
+      return NextResponse.redirect(new URL('/super-admin', request.url));
     }
-
     return NextResponse.next({
       request: {
         headers: requestHeaders,
@@ -158,65 +196,60 @@ export function middleware(request: NextRequest) {
     });
   }
 
-  // 2. Admin routes handling
+  // 5.2 Tenant Admin routes handling
   if (pathname.startsWith('/admin')) {
     const token = request.cookies.get('admin_token')?.value;
-
-    // If not authenticated and trying to access protected admin page (not /admin/login)
     if (!token && pathname !== '/admin/login') {
       const loginUrl = new URL('/admin/login', request.url);
       if (querySlug) {
-        loginUrl.searchParams.set('slug', slug);
+        loginUrl.searchParams.set('slug', tenantSlug);
       }
       return NextResponse.redirect(loginUrl);
     }
-
-    // If already authenticated and trying to access /admin/login, redirect to /admin
     if (token && pathname === '/admin/login') {
       const adminUrl = new URL('/admin', request.url);
       return NextResponse.redirect(adminUrl);
     }
-
     const response = NextResponse.next({
       request: {
         headers: requestHeaders,
       },
     });
-    response.headers.set('x-tenant-slug', slug);
+    response.headers.set('x-tenant-slug', tenantSlug);
     return response;
   }
 
-  // 2. Root path rewriting -> /[slug]
+  // 5.3 Root path rewriting -> /[slug]
   if (pathname === '/') {
-    const targetUrl = new URL(`/${slug}${url.search}`, request.url);
+    const targetUrl = new URL(`/${tenantSlug}${url.search}`, request.url);
     const response = NextResponse.rewrite(targetUrl, {
       request: {
         headers: requestHeaders,
       },
     });
-    response.headers.set('x-tenant-slug', slug);
+    response.headers.set('x-tenant-slug', tenantSlug);
     return response;
   }
 
-  // 3. Subdomain category & table route rewrites (e.g. /category/123 -> /[slug]/category/123)
+  // 5.4 Subdomain category & table route rewrites (e.g. /category/123 -> /[slug]/category/123)
   if (pathname.startsWith('/category/') || pathname.startsWith('/t/')) {
-    const targetUrl = new URL(`/${slug}${pathname}${url.search}`, request.url);
+    const targetUrl = new URL(`/${tenantSlug}${pathname}${url.search}`, request.url);
     const response = NextResponse.rewrite(targetUrl, {
       request: {
         headers: requestHeaders,
       },
     });
-    response.headers.set('x-tenant-slug', slug);
+    response.headers.set('x-tenant-slug', tenantSlug);
     return response;
   }
 
-  // 4. Passthrough for /[slug] routes
+  // 5.5 Passthrough for other routes with tenant headers
   const response = NextResponse.next({
     request: {
       headers: requestHeaders,
     },
   });
-  response.headers.set('x-tenant-slug', slug);
+  response.headers.set('x-tenant-slug', tenantSlug);
   return response;
 }
 

@@ -116,7 +116,7 @@ export function AdminHeader({ slug, email, permissions }: Props) {
           </div>
 
           <Link
-            href={`/${slug || 'baltazar'}`}
+            href={slug ? `/${slug}` : '/'}
             target="_blank"
             rel="noopener noreferrer"
             className="text-xs text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 font-medium rounded-lg px-3 py-1.5 transition flex items-center gap-1 border border-blue-200"

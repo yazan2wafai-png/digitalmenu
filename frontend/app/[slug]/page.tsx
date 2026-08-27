@@ -16,7 +16,7 @@ const DEFAULT_LOCALE = process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'tr';
 
 export default function HomePage() {
   const params = useParams();
-  const slug = (params?.slug as string) || 'baltazar';
+  const slug = (params?.slug as string) || '';
   const tableId = params?.tableId as string | undefined;
 
   const [locale, setLocale] = useState(DEFAULT_LOCALE);
@@ -27,6 +27,10 @@ export default function HomePage() {
   const [activeCategoryId, setActiveCategoryId] = useState<string>('');
 
   const load = useCallback(async (loc: string) => {
+    if (!slug) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError('');
     try {
