@@ -42,6 +42,11 @@ export interface PublicRestaurantResponse {
   categories: FormattedCategory[];
 }
 
+export interface PublicTableResponse {
+  id: string;
+  name: string;
+}
+
 type RestaurantWithMenu = Prisma.RestaurantGetPayload<{
   include: {
     settings: true;
@@ -166,5 +171,22 @@ export class RestaurantsService {
           })),
       })),
     };
+  }
+
+  /**
+   * Public: resolve a table's display name for the customer-facing table
+   * banner. Only ever returns { id, name } - never location/QR/NFC details.
+   */
+  async findTableForDisplay(slug: string, tableId: string): Promise<PublicTableResponse> {
+    const table = await this.prisma.table.findFirst({
+      where: { id: tableId, isActive: true, restaurant: { slug, isActive: true } },
+      select: { id: true, name: true },
+    });
+
+    if (!table) {
+      throw new NotFoundException('Table not found');
+    }
+
+    return table;
   }
 }

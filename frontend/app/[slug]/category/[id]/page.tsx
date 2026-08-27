@@ -95,7 +95,7 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
         </div>
       </header>
 
-      <TableBanner themeColor={themeColor} />
+      <TableBanner slug={slug} themeColor={themeColor} />
 
       {/* Main product grid */}
       <main className="max-w-5xl mx-auto px-6 py-8">
