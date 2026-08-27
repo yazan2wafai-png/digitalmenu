@@ -87,9 +87,9 @@ export default function LandingPage() {
     {
       name: 'Kadıköy Noir',
       tag: t.saas.noirTag,
-      slug: 'kadikoy-noir',
+      slug: 'act-noir-cafe',
       badgeColor: 'bg-ink/10 text-ink border-ink/20',
-      url: 'https://kadikoy-noir.nfcmyplace.com',
+      url: 'https://act-noir-cafe.nfcmyplace.com',
       image:
         'https://images.unsplash.com/photo-1498804103079-a6351b050096?w=800&auto=format&fit=crop&q=80',
       description: t.saas.noirDesc,
