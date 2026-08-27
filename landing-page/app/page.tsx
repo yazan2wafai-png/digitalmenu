@@ -638,7 +638,7 @@ export default function LandingPage() {
             <p className="text-[11px] text-cream/40">{t.footer.rights}</p>
           </div>
 
-          {/* Quick Nav Links & Admin Portal Link */}
+          {/* Quick Nav Links */}
           <div className="flex flex-wrap justify-center items-center gap-7 text-xs font-semibold text-cream/70">
             <a href="#customizer" className="hover:text-terracotta transition-colors">
               {t.nav.products}
@@ -651,15 +651,6 @@ export default function LandingPage() {
             </a>
             <a href="#pricing" className="hover:text-terracotta transition-colors">
               {t.nav.pricing}
-            </a>
-            <a
-              href="https://admin.nfcmyplace.com/login"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-terracotta hover:text-terracotta-light font-bold transition-colors"
-            >
-              <span>{t.nav.adminLogin}</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
             </a>
           </div>
         </div>

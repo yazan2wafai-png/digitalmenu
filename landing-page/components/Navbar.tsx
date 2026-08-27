@@ -84,17 +84,6 @@ export function Navbar({ locale, onToggleLocale, onOpenDiscount }: NavbarProps) 
             </button>
           </div>
 
-          {/* CTA Button: "Yönetici Girişi" pointing to admin.nfcmyplace.com/login */}
-          <a
-            href="https://admin.nfcmyplace.com/login"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-ink hover:bg-ink/90 text-cream font-black text-xs shadow-md shadow-ink/15 transition-all transform active:scale-95 cursor-pointer"
-          >
-            <span>{t.adminLogin}</span>
-            <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
-          </a>
-
           {/* Mobile Menu Toggle Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -137,18 +126,6 @@ export function Navbar({ locale, onToggleLocale, onOpenDiscount }: NavbarProps) 
           >
             {t.pricing}
           </a>
-          <div className="pt-2 border-t border-ink/10">
-            <a
-              href="https://admin.nfcmyplace.com/login"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => setMobileMenuOpen(false)}
-              className="px-3 py-2.5 rounded-xl bg-ink text-cream font-black text-xs flex items-center justify-between shadow-md"
-            >
-              <span>{t.adminLogin}</span>
-              <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
-            </a>
-          </div>
         </div>
       )}
     </header>
