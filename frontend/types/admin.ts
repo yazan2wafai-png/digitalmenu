@@ -54,6 +54,7 @@ export interface RestaurantPermissions {
   canTrackTables: boolean;
   canManageMenu: boolean;
   canManageStaff: boolean;
+  canViewAnalytics: boolean;
 }
 
 export interface AnalyticsData {

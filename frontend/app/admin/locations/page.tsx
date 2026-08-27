@@ -18,6 +18,7 @@ const DEFAULT_PERMISSIONS: RestaurantPermissions = {
   canTrackTables: true,
   canManageMenu: true,
   canManageStaff: true,
+  canViewAnalytics: true,
 };
 
 export default function LocationsAdminPage() {

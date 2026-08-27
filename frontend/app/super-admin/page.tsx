@@ -22,6 +22,7 @@ const DEFAULT_PERMISSIONS: RestaurantPermissions = {
   canTrackTables: true,
   canManageMenu: true,
   canManageStaff: true,
+  canViewAnalytics: true,
 };
 
 export default function SuperAdminDashboardPage() {
@@ -453,6 +454,23 @@ export default function SuperAdminDashboardPage() {
                               <span>👥</span>
                               <span>Staff</span>
                               <span className={`w-1.5 h-1.5 rounded-full ${perms.canManageStaff ? 'bg-violet-400' : 'bg-slate-600'}`} />
+                            </button>
+
+                            {/* canViewAnalytics */}
+                            <button
+                              type="button"
+                              onClick={() => handleQuickToggle(r.slug, 'canViewAnalytics', perms.canViewAnalytics)}
+                              disabled={updatingSlug === `${r.slug}-canViewAnalytics`}
+                              title={`Analytics / Overview: ${perms.canViewAnalytics ? 'Enabled (Click to disable)' : 'Disabled (Click to enable)'}`}
+                              className={`px-2 py-1 rounded-lg text-[10px] font-semibold border transition cursor-pointer flex items-center gap-1 ${
+                                perms.canViewAnalytics
+                                  ? 'bg-amber-500/15 text-amber-300 border-amber-500/30 hover:bg-amber-500/25'
+                                  : 'bg-slate-800/80 text-slate-500 border-slate-700 hover:text-slate-300'
+                              }`}
+                            >
+                              <span>📊</span>
+                              <span>Analytics</span>
+                              <span className={`w-1.5 h-1.5 rounded-full ${perms.canViewAnalytics ? 'bg-amber-400' : 'bg-slate-600'}`} />
                             </button>
                           </div>
                         </td>

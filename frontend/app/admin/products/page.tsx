@@ -23,6 +23,7 @@ const DEFAULT_PERMISSIONS: RestaurantPermissions = {
   canTrackTables: true,
   canManageMenu: true,
   canManageStaff: true,
+  canViewAnalytics: true,
 };
 
 function ProductsContent() {
@@ -75,6 +76,7 @@ function ProductsContent() {
               canTrackTables: restData.featureFlags.enableTables ?? true,
               canManageMenu: restData.featureFlags.enableMultiLanguage ?? true,
               canManageStaff: restData.featureFlags.enableReviews ?? true,
+              canViewAnalytics: restData.featureFlags.enableAnalytics ?? true,
             });
           }
         }

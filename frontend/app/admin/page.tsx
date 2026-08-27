@@ -28,6 +28,7 @@ const DEFAULT_PERMISSIONS: RestaurantPermissions = {
   canTrackTables: true,
   canManageMenu: true,
   canManageStaff: true,
+  canViewAnalytics: true,
 };
 
 export default function AdminDashboardPage() {
@@ -79,6 +80,7 @@ export default function AdminDashboardPage() {
               canTrackTables: restData.featureFlags.enableTables ?? true,
               canManageMenu: restData.featureFlags.enableMultiLanguage ?? true,
               canManageStaff: restData.featureFlags.enableReviews ?? true,
+              canViewAnalytics: restData.featureFlags.enableAnalytics ?? true,
             });
           }
         }
@@ -305,9 +307,25 @@ export default function AdminDashboardPage() {
         </section>
 
         {/* Live Traffic Analytics Section */}
-        <section className="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
-          <AnalyticsTab slug={slug} />
-        </section>
+        {permissions.canViewAnalytics ? (
+          <section className="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
+            <AnalyticsTab slug={slug} />
+          </section>
+        ) : (
+          <div className="bg-slate-100 border border-slate-200 text-slate-700 rounded-2xl p-4 flex items-start gap-3 shadow-xs">
+            <span className="text-xl flex-shrink-0">📊</span>
+            <div>
+              <h3 className="text-sm font-bold text-slate-800">
+                {locale === 'tr' ? 'Analitik / Genel Bakış Kısıtlandı' : 'Analytics / Overview Restricted'}
+              </h3>
+              <p className="text-xs text-slate-600 mt-1">
+                {locale === 'tr'
+                  ? 'Trafik ve görüntülenme istatistikleri platform süper yöneticisi tarafından bu restoran için kısıtlanmıştır.'
+                  : 'Traffic and view analytics have been restricted by the platform SuperAdmin for this tenant.'}
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Recent Categories Preview */}
         <section className="bg-white rounded-2xl border border-gray-200 shadow-xs p-6">

@@ -20,6 +20,7 @@ const DEFAULT_PERMISSIONS: RestaurantPermissions = {
   canTrackTables: true,
   canManageMenu: true,
   canManageStaff: true,
+  canViewAnalytics: true,
 };
 
 export default function CategoriesAdminPage() {
@@ -64,6 +65,7 @@ export default function CategoriesAdminPage() {
               canTrackTables: restData.featureFlags.enableTables ?? true,
               canManageMenu: restData.featureFlags.enableMultiLanguage ?? true,
               canManageStaff: restData.featureFlags.enableReviews ?? true,
+              canViewAnalytics: restData.featureFlags.enableAnalytics ?? true,
             });
           }
         }

@@ -16,6 +16,7 @@ const DEFAULT_PERMISSIONS: RestaurantPermissions = {
   canTrackTables: true,
   canManageMenu: true,
   canManageStaff: true,
+  canViewAnalytics: true,
 };
 
 interface PermissionConfig {
@@ -55,6 +56,13 @@ const PERMISSION_CONFIGS: PermissionConfig[] = [
     icon: '👥',
     tag: 'Security & Staff',
   },
+  {
+    key: 'canViewAnalytics',
+    title: 'Analytics & Overview Dashboard',
+    description: 'Enables the tenant\'s Overview tab: page view stats and traffic breakdowns.',
+    icon: '📊',
+    tag: 'Analytics',
+  },
 ];
 
 export function PermissionsModal({
@@ -83,6 +91,7 @@ export function PermissionsModal({
       canTrackTables: value,
       canManageMenu: value,
       canManageStaff: value,
+      canViewAnalytics: value,
     });
   }
 
