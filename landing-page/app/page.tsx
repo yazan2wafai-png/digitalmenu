@@ -419,7 +419,7 @@ export default function LandingPage() {
           </p>
           <div className="pt-2">
             <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-terracotta/15 border border-terracotta/40 text-terracotta text-sm font-black">
-              ★ {t.saas.price} {t.saas.priceSub}
+              {t.saas.price} {t.saas.priceSub}
             </span>
           </div>
         </div>
@@ -570,7 +570,7 @@ export default function LandingPage() {
               >
                 {card.popular && (
                   <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-terracotta text-cream font-black text-[10px] uppercase tracking-widest shadow-md whitespace-nowrap">
-                    ★ {card.badge}
+                    {card.badge}
                   </span>
                 )}
 

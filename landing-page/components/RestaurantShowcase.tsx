@@ -120,10 +120,14 @@ export function RestaurantShowcase({
                   : 'border-ink/10 hover:border-terracotta/40'
               }`}
             >
-              {/* Collapsed header - always visible, click toggles inline preview */}
-              <button
-                type="button"
+              {/* Collapsed header - click toggles inline preview; corner icon links straight to the live menu */}
+              <div
+                role="button"
+                tabIndex={0}
                 onClick={() => toggle(demo.slug)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') toggle(demo.slug);
+                }}
                 className="w-full text-left cursor-pointer group"
               >
                 <div className={`relative w-full overflow-hidden ${isActive ? 'h-40' : 'h-56'}`}>
@@ -143,13 +147,16 @@ export function RestaurantShowcase({
                     </span>
                   </div>
 
-                  <div
-                    className={`absolute top-4 right-4 w-9 h-9 rounded-full bg-ink/70 border border-cream/30 backdrop-blur-md flex items-center justify-center text-cream transition-all ${
-                      isActive ? 'bg-terracotta rotate-45' : 'group-hover:bg-terracotta'
-                    }`}
+                  <a
+                    href={demo.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    title={demo.buttonText}
+                    className="absolute top-4 right-4 w-9 h-9 rounded-full bg-ink/70 border border-cream/30 backdrop-blur-md flex items-center justify-center text-cream transition-all hover:bg-terracotta cursor-pointer"
                   >
                     <ArrowUpRight className="w-4 h-4" />
-                  </div>
+                  </a>
 
                   <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between">
                     <h4 className="text-xl font-black text-cream">{demo.name}</h4>
@@ -165,13 +172,13 @@ export function RestaurantShowcase({
                           key={bIdx}
                           className="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-ink/5 border border-ink/10 text-ink/70"
                         >
-                          ✓ {badge}
+                          {badge}
                         </span>
                       ))}
                     </div>
                   </div>
                 )}
-              </button>
+              </div>
 
               {/* Expanded inline live menu preview */}
               <AnimatePresence>

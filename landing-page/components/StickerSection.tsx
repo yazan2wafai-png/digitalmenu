@@ -70,7 +70,7 @@ export function StickerSection({ locale = 'tr', onOrderClick }: StickerSectionPr
           <div className="relative z-20 flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2">
               <span className="text-[11px] font-extrabold tracking-wider uppercase px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                {locale === 'tr' ? '🏷️ Akrilik Hibrit Donanım' : '🏷️ Acrylic Hybrid Hardware'}
+                {locale === 'tr' ? 'Akrilik Hibrit Donanım' : 'Acrylic Hybrid Hardware'}
               </span>
               <span className="text-[11px] font-black px-3 py-1 rounded-full bg-gradient-to-r from-amber-500/20 to-yellow-500/20 text-amber-300 border border-amber-500/40">
                 175 TL / Adet

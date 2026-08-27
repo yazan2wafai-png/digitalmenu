@@ -11,7 +11,7 @@ export const translations = {
       adminLogin: 'Yönetici Girişi',
     },
     hero: {
-      badge: '⚡ Fiziksel NFC Donanımları & Akıllı Menü SaaS',
+      badge: 'Fiziksel NFC Donanımları & Akıllı Menü SaaS',
       title: 'Fiziksel dünyayı dijitalle buluştur.',
       tagline: 'Restoranlar ve kafeler için yeni nesil NFC & QR akıllı masa donanımları ve bulut tabanlı dijital menü SaaS altyapısı.',
       primaryCta: '3D Standı İncele ↓',
@@ -28,7 +28,7 @@ export const translations = {
       title: 'NFC & QR Google Değerlendirme Standı',
       subtitle: '75° ergonomik açılı monolitik akrilik gövde, NTAG213 temassız çip ve restoranınıza özel kurumsal tasarım baskı ile Google puanınızı katlayın.',
       unitPrice: '1.750 TL / Adet',
-      dragHint: '🖱️ 360° Döndürmek İçin Sürükleyin',
+      dragHint: '360° Döndürmek İçin Sürükleyin',
     },
     sticker: {
       badge: 'Hizmet 2: Masa Çözümleri',
@@ -93,7 +93,7 @@ export const translations = {
       adminLogin: 'Admin Login',
     },
     hero: {
-      badge: '⚡ Physical NFC Hardware & Smart Menu SaaS',
+      badge: 'Physical NFC Hardware & Smart Menu SaaS',
       title: 'Bridge the physical world with digital.',
       tagline: 'Next-generation NFC & QR smart table hardware and cloud digital menu SaaS infrastructure for restaurants and cafes.',
       primaryCta: 'Explore 3D Stand ↓',
@@ -110,7 +110,7 @@ export const translations = {
       title: 'NFC & QR Google Review Stand',
       subtitle: '75° ergonomic inclined acrylic monolithic body, NTAG213 contactless chip, and custom corporate design print to multiply your Google Maps rating.',
       unitPrice: '1,750 TL / Unit',
-      dragHint: '🖱️ Drag to Rotate 360°',
+      dragHint: 'Drag to Rotate 360°',
     },
     sticker: {
       badge: 'Service 2: Table Solutions',
