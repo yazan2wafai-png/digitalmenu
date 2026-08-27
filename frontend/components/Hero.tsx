@@ -59,17 +59,35 @@ interface Props {
 export function Hero({ restaurant, isRTL }: Props) {
   const theme = restaurant.themeColor || '#C0392B';
 
+  // Reuse whichever category photo the splash screen picked, so the hero
+  // reads as the same restaurant instead of a flat generic gradient block.
+  const bgPhotoUrl = restaurant.categories?.find((c) => !!c.photoUrl)?.photoUrl;
+
   return (
     <section
       className="relative flex flex-col items-center justify-center pt-32 pb-16 overflow-hidden bg-neutral-950"
     >
+      {bgPhotoUrl && (
+        <motion.div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${bgPhotoUrl})` }}
+          initial={{ scale: 1.15, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 1.6, ease: [0.16, 1, 0.3, 1] }}
+        />
+      )}
+
+      {/* Dark scrim so text stays legible over the photo, plus the brand tint */}
       <motion.div
         className="absolute inset-0 pointer-events-none"
         initial={{ scale: 1.2, opacity: 0, filter: 'blur(30px)' }}
         animate={{ scale: 1, opacity: 1, filter: 'blur(0px)' }}
         transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
         style={{
-          background: `linear-gradient(160deg, ${theme}28 0%, transparent 65%), 
+          background: bgPhotoUrl
+            ? `linear-gradient(180deg, rgba(10,10,10,0.55) 0%, rgba(10,10,10,0.35) 45%, rgba(10,10,10,0.92) 100%),
+               radial-gradient(ellipse 70% 55% at 50% 40%, ${theme}55 0%, transparent 75%)`
+            : `linear-gradient(160deg, ${theme}28 0%, transparent 65%), 
                        radial-gradient(ellipse 70% 55% at 50% 40%, ${theme}45 0%, transparent 75%)`,
         }}
       />
