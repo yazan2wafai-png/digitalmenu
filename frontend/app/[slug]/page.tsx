@@ -120,8 +120,19 @@ export default function HomePage() {
 
   if (!restaurant) return null;
 
+  const theme = restaurant.themeColor || '#C0392B';
+
   return (
-    <div dir={isRTL ? 'rtl' : 'ltr'} className="bg-neutral-950 min-h-screen">
+    <div dir={isRTL ? 'rtl' : 'ltr'} className="bg-neutral-950 min-h-screen relative">
+      {/* Subtle persistent brand-color wash so each tenant's menu feels distinct
+          while scrolling, not just in the hero */}
+      <div
+        className="fixed inset-0 pointer-events-none z-0"
+        style={{
+          background: `radial-gradient(ellipse 80% 50% at 50% 0%, ${theme}14 0%, transparent 60%)`,
+        }}
+      />
+      <div className="relative z-10">
       <MenuTracker slug={slug} tableId={tableId} />
       
       {/* Sticky Header */}
@@ -177,6 +188,7 @@ export default function HomePage() {
           locale={locale}
         />
       </motion.div>
+      </div>
     </div>
   );
 }
