@@ -18,9 +18,8 @@ turborepo) — `cd` into a subproject before running its scripts.
 | Folder              | What it is                                    | Stack                                              |
 |----------------------|------------------------------------------------|-----------------------------------------------------|
 | `backend/`           | Shared multi-tenant API                        | NestJS 11, Prisma 5 + PostgreSQL, JWT auth, pnpm    |
-| `frontend/`          | Main tenant-facing menu site (Baltazar + super-admin) | Next.js 16 (App Router), React 19, Tailwind        |
+| `frontend/`          | Main tenant-facing menu site (Baltazar + super-admin + restaurant admin panel, incl. RBAC + TR/EN i18n) | Next.js 16 (App Router), React 19, Tailwind        |
 | `frontend-erenkoy/`  | Second tenant frontend (Erenköy)                | Next.js (App Router)                                |
-| `admin-panel/`       | Restaurant owner control panel (photos, prices, categories) | Next.js (App Router)                        |
 | `landing-page/`      | NFC My Place marketing/sales site, incl. a 3D product customizer | Next.js, Tailwind, Framer Motion, react-three-fiber/drei |
 
 ## Dev commands
@@ -33,7 +32,7 @@ cp .env.example .env   # fill in DATABASE_URL / JWT_SECRET
 pnpm start:dev          # nest start --watch
 ```
 
-Any of the Next.js apps (`frontend`, `frontend-erenkoy`, `admin-panel`, `landing-page`):
+Any of the Next.js apps (`frontend`, `frontend-erenkoy`, `landing-page`):
 ```
 cd <folder>
 npm install   # or pnpm, check for a lockfile
