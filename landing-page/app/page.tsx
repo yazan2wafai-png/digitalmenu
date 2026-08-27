@@ -229,9 +229,13 @@ export default function LandingPage() {
           </div>
 
           {/* Main Headline */}
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.08] text-zinc-100 drop-shadow-[0_12px_24px_rgba(0,0,0,0.9)]">
-            <span className="text-zinc-100 font-extrabold tracking-tight bg-gradient-to-r from-white via-zinc-200 to-amber-400 bg-clip-text text-transparent drop-shadow-sm inline-block">
-              {t.hero.title}
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-center leading-[1.12] max-w-4xl mx-auto">
+            <span className="bg-gradient-to-b from-white via-zinc-100 to-zinc-400 bg-clip-text text-transparent">
+              Fiziksel dünyayı
+            </span>
+            <br />
+            <span className="bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-500 bg-clip-text text-transparent drop-shadow-[0_0_35px_rgba(245,158,11,0.3)]">
+              dijitalle buluştur.
             </span>
           </h1>
 
