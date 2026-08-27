@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateRestaurantSettingsDto } from './dto/update-restaurant-settings.dto';
+import { UpdateRestaurantProfileDto } from './dto/update-restaurant-profile.dto';
 import type { Restaurant, RestaurantSettings } from '@prisma/client';
 
 export type RestaurantWithSettings = Restaurant & { settings: RestaurantSettings | null };
@@ -59,6 +60,19 @@ export class RestaurantAdminService {
         ...updateData,
         restaurantId,
       },
+    });
+  }
+
+  async updateProfile(restaurantId: string, data: UpdateRestaurantProfileDto): Promise<Restaurant> {
+    const updateData = {
+      ...(data.name !== undefined && { name: data.name }),
+      ...(data.logoUrl !== undefined && { logoUrl: data.logoUrl }),
+      ...(data.themeColor !== undefined && { themeColor: data.themeColor }),
+    };
+
+    return this.prisma.restaurant.update({
+      where: { id: restaurantId },
+      data: updateData,
     });
   }
 }
