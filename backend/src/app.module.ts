@@ -13,6 +13,7 @@ import { LocationsModule } from './locations/locations.module';
 import { TablesModule } from './tables/tables.module';
 import { RestaurantAdminModule } from './restaurant-admin/restaurant-admin.module';
 import { SuperAdminModule } from './super-admin/super-admin.module';
+import { OrdersModule } from './orders/orders.module';
 import { AppController } from './app.controller';
 
 import { APP_GUARD } from '@nestjs/core';
@@ -37,6 +38,7 @@ import { RolesGuard } from './common/roles.guard';
     TablesModule,
     RestaurantAdminModule,
     SuperAdminModule,
+    OrdersModule,
   ],
   controllers: [AppController],
   providers: [

@@ -1,7 +1,8 @@
 'use client';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Product } from '@/types/menu';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { addToCart } from '@/lib/cart';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://digitalmenu-backend-production.up.railway.app';
 
@@ -10,9 +11,17 @@ interface Props {
   themeColor: string;
   isRTL: boolean;
   onClose: () => void;
+  slug?: string;
+  enableOrdering?: boolean;
 }
 
-export function ProductModal({ product, themeColor, isRTL, onClose }: Props) {
+export function ProductModal({ product, themeColor, isRTL, onClose, slug, enableOrdering }: Props) {
+  const [qty, setQty] = useState(1);
+
+  useEffect(() => {
+    setQty(1);
+  }, [product]);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -26,6 +35,21 @@ export function ProductModal({ product, themeColor, isRTL, onClose }: Props) {
       document.body.style.overflow = 'auto';
     };
   }, [product, onClose]);
+
+  function handleAddToCart() {
+    if (!product || !slug) return;
+    addToCart(
+      slug,
+      {
+        productId: product.id,
+        name: product.name,
+        price: Number(product.price) || 0,
+        photoUrl: product.photoUrl,
+      },
+      qty,
+    );
+    onClose();
+  }
 
   return (
     <AnimatePresence>
@@ -126,24 +150,55 @@ export function ProductModal({ product, themeColor, isRTL, onClose }: Props) {
                 </span>
               </div>
 
-              {/* Action bar / back */}
+              {/* Action bar */}
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.18, duration: 0.25 }}
                 className="pt-4"
               >
-                <button
-                  onClick={onClose}
-                  className="w-full py-3.5 rounded-xl font-semibold text-sm transition-all"
-                  style={{
-                    backgroundColor: themeColor,
-                    color: '#fff',
-                    boxShadow: `0 4px 20px ${themeColor}40`,
-                  }}
-                >
-                  Back to products
-                </button>
+                {enableOrdering && slug ? (
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 shrink-0">
+                      <button
+                        onClick={() => setQty((q) => Math.max(1, q - 1))}
+                        className="w-6 h-6 rounded-full bg-white/10 text-white flex items-center justify-center text-sm font-bold hover:bg-white/20"
+                      >
+                        −
+                      </button>
+                      <span className="text-white text-sm font-bold w-4 text-center">{qty}</span>
+                      <button
+                        onClick={() => setQty((q) => q + 1)}
+                        className="w-6 h-6 rounded-full bg-white/10 text-white flex items-center justify-center text-sm font-bold hover:bg-white/20"
+                      >
+                        +
+                      </button>
+                    </div>
+                    <button
+                      onClick={handleAddToCart}
+                      className="flex-1 py-3.5 rounded-xl font-semibold text-sm transition-all"
+                      style={{
+                        backgroundColor: themeColor,
+                        color: '#fff',
+                        boxShadow: `0 4px 20px ${themeColor}40`,
+                      }}
+                    >
+                      Sepete Ekle — ₺{(Number(product.price) * qty).toFixed(2).replace(/\.00$/, '')}
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={onClose}
+                    className="w-full py-3.5 rounded-xl font-semibold text-sm transition-all"
+                    style={{
+                      backgroundColor: themeColor,
+                      color: '#fff',
+                      boxShadow: `0 4px 20px ${themeColor}40`,
+                    }}
+                  >
+                    Back to products
+                  </button>
+                )}
               </motion.div>
             </div>
           </motion.div>

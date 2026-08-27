@@ -65,3 +65,25 @@ export interface AnalyticsData {
   dailyBreakdown: DailyBreakdown[];
 }
 
+export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'PREPARING' | 'READY' | 'COMPLETED' | 'CANCELLED';
+
+export interface AdminOrderItem {
+  id: string;
+  productId: string;
+  productName: string;
+  productPrice: number;
+  quantity: number;
+  notes: string | null;
+}
+
+export interface AdminOrder {
+  id: string;
+  status: OrderStatus;
+  totalAmount: number;
+  notes: string | null;
+  tableId: string | null;
+  tableName: string | null;
+  createdAt: string;
+  updatedAt: string;
+  items: AdminOrderItem[];
+}

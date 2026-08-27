@@ -24,6 +24,12 @@ export function AdminHeader({ slug, email, permissions }: Props) {
   const navItems = [
     { label: t.nav.overview, href: '/admin', isGated: false },
     {
+      label: permissions?.canViewOrders === false ? `${t.nav.orders} 🔒` : t.nav.orders,
+      href: '/admin/orders',
+      isGated: permissions?.canViewOrders === false,
+      gatedTitle: 'Orders restricted',
+    },
+    {
       label: permissions?.canManageMenu === false ? `${t.nav.categories} 🔒` : t.nav.categories,
       href: '/admin/categories',
       isGated: permissions?.canManageMenu === false,

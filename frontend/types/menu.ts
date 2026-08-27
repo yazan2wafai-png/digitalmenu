@@ -17,6 +17,21 @@ export interface Category {
   products: Product[];
 }
 
+export interface RestaurantFeatureFlags {
+  enableOrdering: boolean;
+  enableTables: boolean;
+  enableAnalytics: boolean;
+  enableMultiLanguage: boolean;
+  enableReviews: boolean;
+  enableServiceCall: boolean;
+}
+
+export interface RestaurantSettingsInfo {
+  estimatedPrepMinutes?: number;
+  currency?: string;
+  [key: string]: unknown;
+}
+
 export interface Restaurant {
   id: string;
   slug: string;
@@ -30,4 +45,6 @@ export interface Restaurant {
   currency?: string;
   description?: string | null;
   logo?: string | null;
+  featureFlags?: RestaurantFeatureFlags;
+  settings?: RestaurantSettingsInfo | null;
 }

@@ -155,7 +155,7 @@ export function LogoPlaceholder({ restaurant, size = 'md', className = '' }: Pro
   const logoSrc = restaurant.logoUrl
     ? restaurant.logoUrl.startsWith('http')
       ? restaurant.logoUrl
-      : `${process.env.NEXT_PUBLIC_API_URL || ''}${restaurant.logoUrl}`
+      : `${process.env.NEXT_PUBLIC_API_URL || 'https://digitalmenu-backend-production.up.railway.app'}${restaurant.logoUrl}`
     : null;
 
   // Size styling maps

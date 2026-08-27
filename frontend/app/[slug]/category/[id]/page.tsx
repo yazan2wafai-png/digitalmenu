@@ -9,6 +9,7 @@ import { ProductModal } from '@/components/ProductModal';
 import { TableBanner } from '@/components/TableBanner';
 import { LogoPlaceholder } from '@/components/LogoPlaceholder';
 import { ProductCard } from '@/components/ProductCard';
+import { CartFab } from '@/components/CartFab';
 
 const DEFAULT_LOCALE = process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'tr';
 
@@ -122,6 +123,8 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
                 themeColor={themeColor}
                 onSelect={(p) => setSelectedProduct(p)}
                 categoryName={category.name}
+                slug={slug}
+                enableOrdering={restaurant?.featureFlags?.enableOrdering ?? true}
               />
             ))}
           </motion.div>
@@ -134,6 +137,16 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
         themeColor={themeColor}
         isRTL={isRTL}
         onClose={() => setSelectedProduct(null)}
+        slug={slug}
+        enableOrdering={restaurant?.featureFlags?.enableOrdering ?? true}
+      />
+
+      <CartFab
+        slug={slug}
+        themeColor={themeColor}
+        isRTL={isRTL}
+        enabled={restaurant?.featureFlags?.enableOrdering ?? true}
+        estimatedPrepMinutes={restaurant?.settings?.estimatedPrepMinutes}
       />
     </div>
   );

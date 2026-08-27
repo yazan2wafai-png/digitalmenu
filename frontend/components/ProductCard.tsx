@@ -1,7 +1,8 @@
 'use client';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import type { Product } from '@/types/menu';
+import { addToCart } from '@/lib/cart';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://digitalmenu-backend-production.up.railway.app';
 
@@ -10,9 +11,25 @@ interface ProductCardProps {
   themeColor: string;
   onSelect: (product: Product) => void;
   categoryName?: string;
+  slug?: string;
+  enableOrdering?: boolean;
 }
 
-export function ProductCard({ product, themeColor, onSelect, categoryName }: ProductCardProps) {
+export function ProductCard({ product, themeColor, onSelect, categoryName, slug, enableOrdering }: ProductCardProps) {
+  const [justAdded, setJustAdded] = useState(false);
+
+  function handleQuickAdd(e: React.MouseEvent) {
+    e.stopPropagation();
+    if (!slug) return;
+    addToCart(slug, {
+      productId: product.id,
+      name: product.name,
+      price: Number(product.price) || 0,
+      photoUrl: product.photoUrl,
+    });
+    setJustAdded(true);
+    setTimeout(() => setJustAdded(false), 900);
+  }
   // Determine badges deterministically
   const badges = useMemo(() => {
     const list: string[] = [];
@@ -126,9 +143,23 @@ export function ProductCard({ product, themeColor, onSelect, categoryName }: Pro
         >
           ₺{Number(product.price).toFixed(2).replace(/\.00$/, '')}
         </motion.div>
-        <span className="text-xs text-white/40 group-hover:text-white/70 transition-colors font-medium">
-          View Details
-        </span>
+        {enableOrdering && slug ? (
+          <button
+            onClick={handleQuickAdd}
+            className="w-8 h-8 rounded-full flex items-center justify-center text-lg font-bold transition-all shrink-0"
+            style={{
+              backgroundColor: justAdded ? themeColor : `${themeColor}22`,
+              color: justAdded ? '#fff' : themeColor,
+            }}
+            aria-label="Add to order"
+          >
+            {justAdded ? '✓' : '+'}
+          </button>
+        ) : (
+          <span className="text-xs text-white/40 group-hover:text-white/70 transition-colors font-medium">
+            View Details
+          </span>
+        )}
       </div>
     </motion.article>
   );

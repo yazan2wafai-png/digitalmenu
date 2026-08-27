@@ -11,6 +11,7 @@ import { SplashScreen } from '@/components/SplashScreen';
 import { motion, AnimatePresence } from 'framer-motion';
 import MenuTracker from '@/components/MenuTracker';
 import { TableBanner } from '@/components/TableBanner';
+import { CartFab } from '@/components/CartFab';
 
 const DEFAULT_LOCALE = process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'tr';
 
@@ -188,6 +189,14 @@ export default function HomePage() {
           locale={locale}
         />
       </motion.div>
+
+      <CartFab
+        slug={slug}
+        themeColor={theme}
+        isRTL={isRTL}
+        enabled={restaurant.featureFlags?.enableOrdering ?? true}
+        estimatedPrepMinutes={restaurant.settings?.estimatedPrepMinutes}
+      />
       </div>
     </div>
   );
