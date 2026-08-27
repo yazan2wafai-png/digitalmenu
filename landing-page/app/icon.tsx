@@ -8,19 +8,21 @@ export default function Icon() {
     (
       <div
         style={{
-          fontSize: 20,
-          background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+          fontSize: 18,
+          background: '#B5651D',
           width: '100%',
           height: '100%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: '#09090b',
-          borderRadius: '6px',
+          color: '#F5F0E6',
+          borderRadius: '7px',
           fontWeight: 900,
+          fontFamily: 'sans-serif',
+          letterSpacing: '-0.5px',
         }}
       >
-        ⚡
+        N
       </div>
     ),
     { ...size }
