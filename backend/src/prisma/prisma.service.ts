@@ -3,17 +3,18 @@ import { PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
-  async onModuleInit() {
+  async onModuleInit(): Promise<void> {
     try {
       await this.$connect();
       console.log('✅ Successfully connected to PostgreSQL database');
       await this.ensureSeeded();
-    } catch (err) {
-      console.error('⚠️ Database connection warning during boot:', (err as Error).message);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error('⚠️ Database connection warning during boot:', msg);
     }
   }
 
-  async ensureSeeded() {
+  async ensureSeeded(): Promise<void> {
     try {
       const baltazarExists = await this.restaurant.findUnique({ where: { slug: 'baltazar' } });
       if (!baltazarExists) {
@@ -130,12 +131,13 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
         });
         console.log('✅ Kahve Erenköy seeded successfully.');
       }
-    } catch (seedErr) {
-      console.warn('⚠️ Auto-seed info:', (seedErr as Error).message);
+    } catch (seedErr: unknown) {
+      const msg = seedErr instanceof Error ? seedErr.message : String(seedErr);
+      console.warn('⚠️ Auto-seed info:', msg);
     }
   }
 
-  async onModuleDestroy() {
+  async onModuleDestroy(): Promise<void> {
     await this.$disconnect();
   }
 }

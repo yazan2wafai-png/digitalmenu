@@ -5,13 +5,13 @@ import { Radio, Menu, X, ArrowUpRight } from 'lucide-react';
 import type { Locale } from '@/lib/translations';
 import { translations } from '@/lib/translations';
 
-interface Props {
+export interface NavbarProps {
   locale: Locale;
   onToggleLocale: (locale: Locale) => void;
   onOpenDiscount?: () => void;
 }
 
-export function Navbar({ locale, onToggleLocale, onOpenDiscount }: Props) {
+export function Navbar({ locale, onToggleLocale, onOpenDiscount }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const t = translations[locale].nav;
 

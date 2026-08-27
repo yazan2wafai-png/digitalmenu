@@ -4,8 +4,11 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ProductsService } from './products.service';
+import type { DeleteProductResponse } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import type { AuthenticatedRequest } from '../auth/strategies/jwt.strategy';
+import type { Product } from '@prisma/client';
 
 /**
  * Admin CRUD for products, scoped to a category.
@@ -19,27 +22,27 @@ export class ProductsController {
   @Get()
   findAll(
     @Param('categoryId') categoryId: string,
-    @Request() req: any,
-  ) {
-    return this.productsService.findAll(categoryId, req.user.restaurantId);
+    @Request() req: AuthenticatedRequest,
+  ): Promise<Product[]> {
+    return this.productsService.findAll(categoryId, req.user.restaurantId ?? '');
   }
 
   @Get(':id')
   findOne(
     @Param('categoryId') categoryId: string,
     @Param('id') id: string,
-    @Request() req: any,
-  ) {
-    return this.productsService.findOne(categoryId, id, req.user.restaurantId);
+    @Request() req: AuthenticatedRequest,
+  ): Promise<Product> {
+    return this.productsService.findOne(categoryId, id, req.user.restaurantId ?? '');
   }
 
   @Post()
   create(
     @Param('categoryId') categoryId: string,
     @Body() dto: CreateProductDto,
-    @Request() req: any,
-  ) {
-    return this.productsService.create(categoryId, req.user.restaurantId, dto);
+    @Request() req: AuthenticatedRequest,
+  ): Promise<Product> {
+    return this.productsService.create(categoryId, req.user.restaurantId ?? '', dto);
   }
 
   @Patch(':id')
@@ -47,9 +50,9 @@ export class ProductsController {
     @Param('categoryId') categoryId: string,
     @Param('id') id: string,
     @Body() dto: UpdateProductDto,
-    @Request() req: any,
-  ) {
-    return this.productsService.update(categoryId, id, req.user.restaurantId, dto);
+    @Request() req: AuthenticatedRequest,
+  ): Promise<Product> {
+    return this.productsService.update(categoryId, id, req.user.restaurantId ?? '', dto);
   }
 
   @Delete(':id')
@@ -57,8 +60,8 @@ export class ProductsController {
   remove(
     @Param('categoryId') categoryId: string,
     @Param('id') id: string,
-    @Request() req: any,
-  ) {
-    return this.productsService.remove(categoryId, id, req.user.restaurantId);
+    @Request() req: AuthenticatedRequest,
+  ): Promise<DeleteProductResponse> {
+    return this.productsService.remove(categoryId, id, req.user.restaurantId ?? '');
   }
 }

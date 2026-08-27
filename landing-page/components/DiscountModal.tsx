@@ -8,13 +8,13 @@ import { translations } from '@/lib/translations';
 
 const STORAGE_KEY = 'nfc_discount_modal_dismissed';
 
-interface Props {
+export interface DiscountModalProps {
   locale?: Locale;
   isOpen?: boolean;
   onClose?: () => void;
 }
 
-export function DiscountModal({ locale = 'tr', isOpen, onClose }: Props) {
+export function DiscountModal({ locale = 'tr', isOpen, onClose }: DiscountModalProps) {
   const [internalOpen, setInternalOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [venue, setVenue] = useState('');

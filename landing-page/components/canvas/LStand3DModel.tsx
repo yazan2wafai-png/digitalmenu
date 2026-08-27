@@ -659,6 +659,9 @@ export function LStand3DModel({
     if (decalTexture) {
       decalTexture.needsUpdate = true;
     }
+    return () => {
+      decalTexture?.dispose();
+    };
   }, [decalTexture]);
 
   useFrame((state) => {

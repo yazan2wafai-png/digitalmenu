@@ -8,23 +8,7 @@ import AnalyticsTab from '@/components/admin/AnalyticsTab';
 import { CategoryModal } from '@/components/admin/CategoryModal';
 import { ProductModal } from '@/components/admin/ProductModal';
 
-interface Product {
-  id: string;
-  name: Record<string, string>;
-  description: Record<string, string> | null;
-  price: string;
-  photoUrl: string | null;
-  sortOrder: number;
-  categoryId: string;
-}
-
-interface Category {
-  id: string;
-  name: Record<string, string>;
-  sortOrder: number;
-  restaurantId: string;
-  products: Product[];
-}
+import type { AdminProduct as Product, AdminCategory as Category, LocationItem, TableItem } from '@/types/admin';
 
 function getCookie(name: string): string {
   if (typeof document === 'undefined') return '';
@@ -73,14 +57,14 @@ export default function AdminDashboardPage() {
       }
 
       if (locRes.ok) {
-        const locData = await locRes.json();
+        const locData: LocationItem[] = await locRes.json();
         setLocationsCount(locData.length);
         let totalTables = 0;
         for (const loc of locData) {
           try {
             const tableRes = await fetch(`/api/proxy/admin/locations/${loc.id}/tables`);
             if (tableRes.ok) {
-              const tableData = await tableRes.json();
+              const tableData: TableItem[] = await tableRes.json();
               totalTables += tableData.length;
             }
           } catch {

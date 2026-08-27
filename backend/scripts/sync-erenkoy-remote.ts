@@ -251,6 +251,20 @@ const categoriesData = [
   },
 ];
 
+interface RemoteProduct {
+  id: string;
+}
+
+interface RemoteCategory {
+  id: string;
+  sortOrder: number;
+  products?: RemoteProduct[];
+}
+
+interface LoginResponse {
+  access_token: string;
+}
+
 async function sync() {
   console.log(`Connecting to ${BACKEND_URL}...`);
 
@@ -262,7 +276,7 @@ async function sync() {
   if (!loginRes.ok) {
     throw new Error(`Login failed with status ${loginRes.status}: ${await loginRes.text()}`);
   }
-  const { access_token } = await loginRes.json();
+  const { access_token } = (await loginRes.json()) as LoginResponse;
   const headers = {
     'Content-Type': 'application/json',
     Authorization: `Bearer ${access_token}`,
@@ -271,11 +285,11 @@ async function sync() {
   const getCatsRes = await fetch(`${BACKEND_URL}/admin/restaurants/kahve-erenkoy/categories`, {
     headers,
   });
-  const existingCats = await getCatsRes.json();
+  const existingCats = (await getCatsRes.json()) as RemoteCategory[];
   console.log(`Found ${existingCats.length} existing categories.`);
 
   for (const catData of categoriesData) {
-    const existingCat = existingCats.find((c: any) => c.sortOrder === catData.sortOrder);
+    const existingCat = existingCats.find((c: RemoteCategory) => c.sortOrder === catData.sortOrder);
     let categoryId = '';
 
     if (existingCat) {

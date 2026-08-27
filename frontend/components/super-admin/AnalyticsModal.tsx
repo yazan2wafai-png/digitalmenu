@@ -1,22 +1,12 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import type { SuperAdminAnalyticsResponse as AnalyticsResponse, SuperAdminDailyView as DailyView } from '@/types/super-admin';
 
 interface Props {
   slug: string;
   restaurantName?: string;
   onClose: () => void;
-}
-
-interface DailyView {
-  date: string;
-  count: number;
-}
-
-interface AnalyticsResponse {
-  slug: string;
-  totalViews: number;
-  dailyViews: DailyView[];
 }
 
 export function AnalyticsModal({ slug, restaurantName, onClose }: Props) {
@@ -38,8 +28,8 @@ export function AnalyticsModal({ slug, restaurantName, onClose }: Props) {
         json.dailyViews.sort((a, b) => a.date.localeCompare(b.date));
       }
       setData(json);
-    } catch (err: any) {
-      setError(err?.message || 'Error fetching analytics');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Error fetching analytics');
     } finally {
       setLoading(false);
     }

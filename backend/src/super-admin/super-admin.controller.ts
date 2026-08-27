@@ -11,6 +11,13 @@ import {
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { SuperAdminService } from './super-admin.service';
+import type {
+  SuperAdminLoginResponse,
+  CreateRestaurantResponse,
+  DeleteRestaurantResponse,
+  RestaurantSummaryItem,
+  RestaurantViewsResponse,
+} from './super-admin.service';
 import { SuperAdminLoginDto } from './dto/super-admin-login.dto';
 import { CreateRestaurantDto } from './dto/create-restaurant.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -27,7 +34,7 @@ export class SuperAdminController {
   @Post('auth/login')
   @HttpCode(HttpStatus.OK)
   @Throttle({ default: { limit: 5, ttl: 60000 } })
-  login(@Body() dto: SuperAdminLoginDto) {
+  login(@Body() dto: SuperAdminLoginDto): Promise<SuperAdminLoginResponse> {
     return this.superAdminService.login(dto);
   }
 
@@ -37,7 +44,7 @@ export class SuperAdminController {
    */
   @Post('restaurants')
   @UseGuards(JwtAuthGuard, SuperAdminGuard)
-  createRestaurant(@Body() dto: CreateRestaurantDto) {
+  createRestaurant(@Body() dto: CreateRestaurantDto): Promise<CreateRestaurantResponse> {
     return this.superAdminService.createRestaurant(dto);
   }
 
@@ -47,7 +54,7 @@ export class SuperAdminController {
    */
   @Delete('restaurants/:slug')
   @UseGuards(JwtAuthGuard, SuperAdminGuard)
-  deleteRestaurant(@Param('slug') slug: string) {
+  deleteRestaurant(@Param('slug') slug: string): Promise<DeleteRestaurantResponse> {
     return this.superAdminService.deleteRestaurant(slug);
   }
 
@@ -57,7 +64,7 @@ export class SuperAdminController {
    */
   @Get('restaurants')
   @UseGuards(JwtAuthGuard, SuperAdminGuard)
-  findAllRestaurants() {
+  findAllRestaurants(): Promise<RestaurantSummaryItem[]> {
     return this.superAdminService.findAllRestaurants();
   }
 
@@ -67,7 +74,7 @@ export class SuperAdminController {
    */
   @Get('restaurants/:slug/views')
   @UseGuards(JwtAuthGuard, SuperAdminGuard)
-  getRestaurantViews(@Param('slug') slug: string) {
+  getRestaurantViews(@Param('slug') slug: string): Promise<RestaurantViewsResponse> {
     return this.superAdminService.getRestaurantViews(slug);
   }
 }

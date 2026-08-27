@@ -6,20 +6,7 @@ import { AdminHeader } from '@/components/admin/AdminHeader';
 import { CategoryModal } from '@/components/admin/CategoryModal';
 import Link from 'next/link';
 
-interface Product {
-  id: string;
-  name: Record<string, string>;
-  price: string;
-  photoUrl: string | null;
-}
-
-interface Category {
-  id: string;
-  name: Record<string, string>;
-  sortOrder: number;
-  restaurantId: string;
-  products: Product[];
-}
+import type { AdminProduct as Product, AdminCategory as Category } from '@/types/admin';
 
 function getCookie(name: string): string {
   if (typeof document === 'undefined') return '';

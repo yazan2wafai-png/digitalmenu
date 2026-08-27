@@ -4,6 +4,12 @@ import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
 import * as bcrypt from 'bcryptjs';
 
+export interface AuthLoginResponse {
+  access_token: string;
+  restaurantSlug: string | null;
+  email: string;
+}
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -11,7 +17,7 @@ export class AuthService {
     private readonly jwt: JwtService,
   ) {}
 
-  async login(dto: LoginDto) {
+  async login(dto: LoginDto): Promise<AuthLoginResponse> {
     const admin = await this.prisma.adminUser.findUnique({
       where: { email: dto.email },
       include: { restaurant: true },
@@ -30,7 +36,7 @@ export class AuthService {
       sub: admin.id,
       email: admin.email,
       restaurantId: admin.restaurantId,
-      restaurantSlug: admin.restaurant?.slug || null,
+      restaurantSlug: admin.restaurant?.slug ?? null,
       role: admin.role,
     };
 
@@ -38,7 +44,7 @@ export class AuthService {
 
     return {
       access_token: token,
-      restaurantSlug: admin.restaurant?.slug || null,
+      restaurantSlug: admin.restaurant?.slug ?? null,
       email: admin.email,
     };
   }

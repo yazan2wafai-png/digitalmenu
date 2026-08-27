@@ -4,8 +4,11 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CategoriesService } from './categories.service';
+import type { CategoryWithProducts, DeleteCategoryResponse } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import type { AuthenticatedRequest } from '../auth/strategies/jwt.strategy';
+import type { Category } from '@prisma/client';
 
 /**
  * Admin CRUD for categories, scoped to a restaurant by slug.
@@ -17,26 +20,29 @@ export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Get()
-  findAll(@Param('slug') slug: string, @Request() req: any) {
-    return this.categoriesService.findAll(slug, req.user.restaurantId);
+  findAll(
+    @Param('slug') slug: string,
+    @Request() req: AuthenticatedRequest,
+  ): Promise<CategoryWithProducts[]> {
+    return this.categoriesService.findAll(slug, req.user.restaurantId ?? '');
   }
 
   @Get(':id')
   findOne(
     @Param('slug') slug: string,
     @Param('id') id: string,
-    @Request() req: any,
-  ) {
-    return this.categoriesService.findOne(slug, id, req.user.restaurantId);
+    @Request() req: AuthenticatedRequest,
+  ): Promise<CategoryWithProducts> {
+    return this.categoriesService.findOne(slug, id, req.user.restaurantId ?? '');
   }
 
   @Post()
   create(
     @Param('slug') slug: string,
     @Body() dto: CreateCategoryDto,
-    @Request() req: any,
-  ) {
-    return this.categoriesService.create(slug, req.user.restaurantId, dto);
+    @Request() req: AuthenticatedRequest,
+  ): Promise<Category> {
+    return this.categoriesService.create(slug, req.user.restaurantId ?? '', dto);
   }
 
   @Patch(':id')
@@ -44,9 +50,9 @@ export class CategoriesController {
     @Param('slug') slug: string,
     @Param('id') id: string,
     @Body() dto: UpdateCategoryDto,
-    @Request() req: any,
-  ) {
-    return this.categoriesService.update(slug, id, req.user.restaurantId, dto);
+    @Request() req: AuthenticatedRequest,
+  ): Promise<Category> {
+    return this.categoriesService.update(slug, id, req.user.restaurantId ?? '', dto);
   }
 
   @Delete(':id')
@@ -54,8 +60,8 @@ export class CategoriesController {
   remove(
     @Param('slug') slug: string,
     @Param('id') id: string,
-    @Request() req: any,
-  ) {
-    return this.categoriesService.remove(slug, id, req.user.restaurantId);
+    @Request() req: AuthenticatedRequest,
+  ): Promise<DeleteCategoryResponse> {
+    return this.categoriesService.remove(slug, id, req.user.restaurantId ?? '');
   }
 }

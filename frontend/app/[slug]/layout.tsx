@@ -34,6 +34,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
+interface SchemaProduct {
+  id?: string;
+  name?: string | Record<string, string>;
+  description?: string | Record<string, string> | null;
+  price?: string;
+}
+
+interface SchemaCategory {
+  id?: string;
+  name?: string | Record<string, string>;
+  products?: SchemaProduct[];
+}
+
+function getLocalizedText(val?: string | Record<string, string> | null): string {
+  if (!val) return '';
+  if (typeof val === 'string') return val;
+  return val.en ?? val.tr ?? Object.values(val)[0] ?? '';
+}
+
 export default async function Layout({ params, children }: Props) {
   const { slug } = await params;
   
@@ -58,26 +77,26 @@ export default async function Layout({ params, children }: Props) {
       {
         "@type": "Restaurant",
         "name": restaurant.name,
-        "image": restaurant.logo,
+        "image": restaurant.logo ?? restaurant.logoUrl ?? undefined,
         "url": `https://digitalmenu-backend-production.up.railway.app/restaurants/${slug}`,
         "menu": `https://digitalmenu-backend-production.up.railway.app/restaurants/${slug}`
       },
       {
         "@type": "Menu",
-        "hasMenuSection": restaurant.categories?.map((c: any) => ({
+        "hasMenuSection": restaurant.categories?.map((c: SchemaCategory) => ({
           "@type": "MenuSection",
-          "name": c.name?.en || c.name?.tr || c.name,
-          "hasMenuItem": c.products?.map((p: any) => ({
+          "name": getLocalizedText(c.name),
+          "hasMenuItem": c.products?.map((p: SchemaProduct) => ({
             "@type": "MenuItem",
-            "name": p.name?.en || p.name?.tr || p.name,
-            "description": p.description?.en || p.description?.tr || p.description,
+            "name": getLocalizedText(p.name),
+            "description": getLocalizedText(p.description),
             "offers": {
               "@type": "Offer",
-              "price": p.price,
-              "priceCurrency": restaurant.currency || "TRY"
+              "price": p.price ?? '0',
+              "priceCurrency": restaurant.currency ?? "TRY"
             }
-          }))
-        }))
+          })) ?? []
+        })) ?? []
       }
     ]
   };

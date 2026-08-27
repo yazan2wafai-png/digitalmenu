@@ -5,6 +5,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Float, ContactShadows, Environment, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 
+export type StandMaterialType = 'walnut' | 'oak' | 'black' | 'crystal' | 'white';
 export type StandTemplate = 'templateA' | 'templateB';
 
 export interface Stand3DProps {
@@ -14,7 +15,7 @@ export interface Stand3DProps {
   logoText?: string;
   businessName?: string;
   showStars?: boolean;
-  material?: string;
+  material?: StandMaterialType | string;
   template?: StandTemplate;
   autoRotate?: boolean;
   className?: string;
@@ -694,6 +695,9 @@ function StandMesh({
     if (decalTexture) {
       decalTexture.needsUpdate = true;
     }
+    return () => {
+      decalTexture?.dispose();
+    };
   }, [decalTexture]);
 
   useFrame((state, delta) => {

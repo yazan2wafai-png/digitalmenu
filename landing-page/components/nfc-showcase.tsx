@@ -35,19 +35,25 @@ const DynamicStand3D = dynamic(() => import('./Stand3D'), {
   ),
 });
 
-interface Props {
+export interface NFCShowcaseProps {
   locale?: Locale;
   onOrderClick?: () => void;
 }
 
-export function NFCShowcase({ locale = 'tr', onOrderClick }: Props) {
+export interface SpecItem {
+  label: string;
+  value: string;
+  icon: typeof Layers;
+}
+
+export function NFCShowcase({ locale = 'tr', onOrderClick }: NFCShowcaseProps) {
   // L-Stand Customizer State - Streamlined to color selection & auto-rotate
   const [whiteMode, setWhiteMode] = useState<boolean>(false); // Default: Matte Obsidian Black
   const [autoRotate, setAutoRotate] = useState<boolean>(true);
 
   const t = translations[locale];
 
-  const SPECS = [
+  const SPECS: SpecItem[] = [
     {
       label: locale === 'tr' ? 'Gövde & Eğim Açısı' : 'Body & Tilt Angle',
       value: locale === 'tr' ? '75° Monolitik Pleksi Akrilik' : '75° Monolithic Plexi Acrylic Face',

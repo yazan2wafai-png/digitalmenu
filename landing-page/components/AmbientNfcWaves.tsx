@@ -1,7 +1,28 @@
 'use client';
 
 import React from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion';
+
+export interface EmitterConfig {
+  id: string;
+  top: string;
+  left: string;
+  size: number;
+  duration: number;
+  delay: number;
+  yMotion: MotionValue<number>;
+  color: 'amber' | 'cyan' | 'gold';
+}
+
+export interface ParticleConfig {
+  x: string;
+  y: string;
+  size: number;
+  duration: number;
+  delay: number;
+  color: string;
+  factor: number;
+}
 
 export function AmbientNfcWaves() {
   const { scrollYProgress } = useScroll();
@@ -21,7 +42,7 @@ export function AmbientNfcWaves() {
   const rotEmitter1 = useTransform(scrollYProgress, [0, 1], [0, 90]);
   const rotEmitter2 = useTransform(scrollYProgress, [0, 1], [0, -75]);
 
-  const emitters = [
+  const emitters: EmitterConfig[] = [
     {
       id: 'emitter-hero',
       top: '14%',
@@ -54,7 +75,7 @@ export function AmbientNfcWaves() {
     },
   ];
 
-  const particles = [
+  const particles: ParticleConfig[] = [
     { x: '12%', y: '22%', size: 3.5, duration: 6, delay: 0, color: '#fbbf24', factor: -90 },
     { x: '84%', y: '16%', size: 4, duration: 7.5, delay: 1.2, color: '#38bdf8', factor: -140 },
     { x: '42%', y: '50%', size: 3, duration: 5.5, delay: 0.5, color: '#f59e0b', factor: -180 },

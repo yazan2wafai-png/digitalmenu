@@ -5,6 +5,18 @@ import { Text } from '@react-three/drei';
 import * as THREE from 'three';
 import { LStand3DModel, type StandMaterialType } from './LStand3DModel';
 
+export interface TableStandProps {
+  isHovered?: boolean;
+  material?: StandMaterialType | string;
+  white?: boolean;
+  branding?: boolean;
+  logoText?: string;
+  businessName?: string;
+  qrText?: string;
+  showStars?: boolean;
+  template?: 'templateA' | 'templateB';
+}
+
 // ── 1. AUTHENTIC 3D L-STAND TABLE MODEL ──
 export function TableStand({
   isHovered = false,
@@ -16,17 +28,7 @@ export function TableStand({
   qrText = 'nfcmyplace.com',
   showStars = true,
   template = 'templateA',
-}: {
-  isHovered?: boolean;
-  material?: StandMaterialType | string;
-  white?: boolean;
-  branding?: boolean;
-  logoText?: string;
-  businessName?: string;
-  qrText?: string;
-  showStars?: boolean;
-  template?: 'templateA' | 'templateB';
-}) {
+}: TableStandProps) {
   return (
     <LStand3DModel
       white={white}
@@ -42,9 +44,19 @@ export function TableStand({
   );
 }
 
+export interface GoogleReviewCardProps {
+  isHovered?: boolean;
+}
+
 // ── 2. MATTE BLACK & GOLD FOIL GOOGLE REVIEW CARD ──
-export function GoogleReviewCard({ isHovered }: { isHovered?: boolean }) {
+export function GoogleReviewCard({ isHovered = false }: GoogleReviewCardProps) {
   const cardRef = useRef<THREE.Group>(null);
+
+  useFrame((_, delta) => {
+    if (!cardRef.current) return;
+    const targetScale = isHovered ? 1.04 : 1.0;
+    cardRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), delta * 4);
+  });
 
   return (
     <group ref={cardRef} position={[0, 0, 0]}>
@@ -168,18 +180,20 @@ export function GoogleReviewCard({ isHovered }: { isHovered?: boolean }) {
   );
 }
 
+export interface TablePuckProps {
+  isHovered?: boolean;
+  patternVariant?: 1 | 2 | 3;
+  venueName?: string;
+  tableNumber?: string;
+}
+
 // ── 3. CUSTOMIZABLE ACRYLIC TABLE STICKER / PUCK (3 PATTERNS) ──
 export function TablePuck({
   isHovered = false,
   patternVariant = 1,
   venueName = 'Baltazar Bistro',
   tableNumber = 'MASA #12',
-}: {
-  isHovered?: boolean;
-  patternVariant?: 1 | 2 | 3;
-  venueName?: string;
-  tableNumber?: string;
-}) {
+}: TablePuckProps) {
   const puckRef = useRef<THREE.Group>(null);
   const glowRingRef = useRef<THREE.Mesh>(null);
 

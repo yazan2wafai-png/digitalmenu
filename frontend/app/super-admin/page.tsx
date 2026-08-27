@@ -7,19 +7,7 @@ import { ProvisionModal } from '@/components/super-admin/ProvisionModal';
 import { AnalyticsModal } from '@/components/super-admin/AnalyticsModal';
 import { DeleteConfirmModal } from '@/components/super-admin/DeleteConfirmModal';
 
-interface RestaurantItem {
-  id: string;
-  slug: string;
-  name: Record<string, string>;
-  themeColor: string;
-  supportedLocales: string[];
-  defaultLocale: string;
-  isActive: boolean;
-  createdAt: string;
-  categoryCount: number;
-  productCount: number;
-  viewCount: number;
-}
+import type { TenantRestaurantItem as RestaurantItem } from '@/types/super-admin';
 
 function getCookie(name: string): string {
   if (typeof document === 'undefined') return '';
@@ -51,8 +39,8 @@ export default function SuperAdminDashboardPage() {
       }
       const data: RestaurantItem[] = await res.json();
       setRestaurants(data);
-    } catch (err: any) {
-      setError(err?.message || 'Error connecting to SuperAdmin API');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Error connecting to SuperAdmin API');
     } finally {
       setLoading(false);
     }

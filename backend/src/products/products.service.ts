@@ -2,24 +2,30 @@ import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/commo
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import type { Category, Product } from '@prisma/client';
+
+export interface DeleteProductResponse {
+  deleted: boolean;
+  id: string;
+}
 
 @Injectable()
 export class ProductsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  private async getCategoryOrFail(categoryId: string) {
+  private async getCategoryOrFail(categoryId: string): Promise<Category> {
     const category = await this.prisma.category.findUnique({ where: { id: categoryId } });
     if (!category) throw new NotFoundException(`Category "${categoryId}" not found`);
     return category;
   }
 
-  private assertOwnership(categoryRestaurantId: string, adminRestaurantId: string) {
+  private assertOwnership(categoryRestaurantId: string, adminRestaurantId: string): void {
     if (categoryRestaurantId !== adminRestaurantId) {
       throw new ForbiddenException('You do not have permission to access this category');
     }
   }
 
-  async findAll(categoryId: string, adminRestaurantId: string) {
+  async findAll(categoryId: string, adminRestaurantId: string): Promise<Product[]> {
     const category = await this.getCategoryOrFail(categoryId);
     this.assertOwnership(category.restaurantId, adminRestaurantId);
     return this.prisma.product.findMany({
@@ -28,7 +34,7 @@ export class ProductsService {
     });
   }
 
-  async findOne(categoryId: string, id: string, adminRestaurantId: string) {
+  async findOne(categoryId: string, id: string, adminRestaurantId: string): Promise<Product> {
     const category = await this.getCategoryOrFail(categoryId);
     this.assertOwnership(category.restaurantId, adminRestaurantId);
     const product = await this.prisma.product.findFirst({ where: { id, categoryId } });
@@ -36,7 +42,7 @@ export class ProductsService {
     return product;
   }
 
-  async create(categoryId: string, adminRestaurantId: string, dto: CreateProductDto) {
+  async create(categoryId: string, adminRestaurantId: string, dto: CreateProductDto): Promise<Product> {
     const category = await this.getCategoryOrFail(categoryId);
     this.assertOwnership(category.restaurantId, adminRestaurantId);
     return this.prisma.product.create({
@@ -51,7 +57,7 @@ export class ProductsService {
     });
   }
 
-  async update(categoryId: string, id: string, adminRestaurantId: string, dto: UpdateProductDto) {
+  async update(categoryId: string, id: string, adminRestaurantId: string, dto: UpdateProductDto): Promise<Product> {
     const category = await this.getCategoryOrFail(categoryId);
     this.assertOwnership(category.restaurantId, adminRestaurantId);
     const existing = await this.prisma.product.findFirst({ where: { id, categoryId } });
@@ -68,7 +74,7 @@ export class ProductsService {
     });
   }
 
-  async remove(categoryId: string, id: string, adminRestaurantId: string) {
+  async remove(categoryId: string, id: string, adminRestaurantId: string): Promise<DeleteProductResponse> {
     const category = await this.getCategoryOrFail(categoryId);
     this.assertOwnership(category.restaurantId, adminRestaurantId);
     const existing = await this.prisma.product.findFirst({ where: { id, categoryId } });

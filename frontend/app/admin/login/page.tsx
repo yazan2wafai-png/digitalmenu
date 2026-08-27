@@ -1,5 +1,5 @@
 'use client';
-import { useState, FormEvent, useEffect, Suspense } from 'react';
+import { useState, FormEvent, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 function LoginForm() {

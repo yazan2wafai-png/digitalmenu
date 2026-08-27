@@ -5,6 +5,7 @@ export interface Product {
   price: string;
   photoUrl: string | null;
   sortOrder: number;
+  categoryId?: string;
 }
 
 export interface Category {
@@ -12,6 +13,7 @@ export interface Category {
   name: string;
   photoUrl: string | null;
   sortOrder: number;
+  restaurantId?: string;
   products: Product[];
 }
 
@@ -25,4 +27,7 @@ export interface Restaurant {
   supportedLocales: string[];
   locale: string;
   categories: Category[];
+  currency?: string;
+  description?: string | null;
+  logo?: string | null;
 }

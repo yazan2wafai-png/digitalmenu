@@ -53,10 +53,27 @@ const SEARCH_KEYWORD_MAP: Record<string, string> = {
   'Cheesecake Dilimi': 'cheesecake',
 };
 
-function getSearchKeyword(productNameJson: any): string {
+import type { Prisma } from '@prisma/client';
+
+interface PexelsPhotoSrc {
+  landscape?: string;
+  medium?: string;
+  original?: string;
+}
+
+interface PexelsPhoto {
+  src: PexelsPhotoSrc;
+}
+
+interface PexelsApiResponse {
+  photos?: PexelsPhoto[];
+}
+
+function getSearchKeyword(productNameJson: Prisma.JsonValue): string {
   if (!productNameJson) return 'food';
-  const nameEn = typeof productNameJson === 'object' ? productNameJson.en : String(productNameJson);
-  const nameTr = typeof productNameJson === 'object' ? productNameJson.tr : String(productNameJson);
+  const nameMap = (typeof productNameJson === 'object' && !Array.isArray(productNameJson)) ? (productNameJson as Record<string, string>) : null;
+  const nameEn = nameMap?.en ?? (typeof productNameJson === 'string' ? productNameJson : '');
+  const nameTr = nameMap?.tr ?? (typeof productNameJson === 'string' ? productNameJson : '');
 
   if (nameEn && SEARCH_KEYWORD_MAP[nameEn]) return SEARCH_KEYWORD_MAP[nameEn];
   if (nameTr && SEARCH_KEYWORD_MAP[nameTr]) return SEARCH_KEYWORD_MAP[nameTr];
@@ -75,10 +92,11 @@ async function fetchPexelsPhotoUrl(query: string, apiKey: string): Promise<strin
       console.warn(`  ⚠️ Pexels API returned status ${res.status} for query "${query}"`);
       return null;
     }
-    const data = (await res.json()) as any;
+    const data = (await res.json()) as PexelsApiResponse;
     if (data.photos && data.photos.length > 0) {
       // Return medium or landscape size photo
-      return data.photos[0].src.medium || data.photos[0].src.landscape || data.photos[0].src.original;
+      const src = data.photos[0].src;
+      return src.medium ?? src.landscape ?? src.original ?? null;
     }
   } catch (err) {
     console.error(`  ❌ Failed to fetch photo from Pexels for "${query}":`, err);
@@ -125,9 +143,10 @@ async function main() {
 
   for (const product of products) {
     const searchKeyword = getSearchKeyword(product.name);
-    const prodNameStr = typeof product.name === 'object' && product.name !== null
-      ? (product.name as any).en || (product.name as any).tr
-      : String(product.name);
+    const prodMap = typeof product.name === 'object' && product.name !== null && !Array.isArray(product.name)
+      ? (product.name as Record<string, string>)
+      : null;
+    const prodNameStr = prodMap?.en ?? prodMap?.tr ?? String(product.name);
 
     console.log(`\n🔍 Product: "${prodNameStr}" (Query: "${searchKeyword}")`);
 

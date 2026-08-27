@@ -4,6 +4,9 @@ import { AnalyticsController } from '../src/analytics/analytics.controller';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import * as crypto from 'crypto';
+import type { Request } from 'express';
+import type { AuthenticatedRequest } from '../src/auth/strategies/jwt.strategy';
+import { AdminRole } from '../src/common/roles.enum';
 
 describe('Analytics Tests', () => {
   let analyticsService: AnalyticsService;
@@ -167,7 +170,7 @@ describe('Analytics Tests', () => {
         .spyOn(analyticsService, 'recordView')
         .mockResolvedValue({ recorded: true });
 
-      const mockReq = { ip: '127.0.0.1' } as any;
+      const mockReq = { ip: '127.0.0.1' } as unknown as Request;
       const res = await analyticsController.recordView(
         'baltazar',
         'table-1',
@@ -195,14 +198,17 @@ describe('Analytics Tests', () => {
       };
       jest
         .spyOn(analyticsService, 'getStatsBySlug')
-        .mockResolvedValue(expectedStats as any);
+        .mockResolvedValue(expectedStats);
 
       const mockReq = {
         user: {
+          id: 'admin-1',
+          email: 'admin@baltazar.com',
           restaurantSlug: 'baltazar',
           restaurantId: 'rest-uuid-baltazar',
+          role: AdminRole.RESTAURANT_ADMIN,
         },
-      };
+      } as unknown as AuthenticatedRequest;
 
       const result = await analyticsController.getStats('baltazar', mockReq);
       expect(result).toEqual(expectedStats);
@@ -211,11 +217,13 @@ describe('Analytics Tests', () => {
     it('should throw ForbiddenException when admin tries to get stats for a different restaurant slug', async () => {
       const mockReq = {
         user: {
+          id: 'admin-1',
+          email: 'admin@baltazar.com',
           restaurantSlug: 'baltazar',
           restaurantId: 'rest-uuid-baltazar',
-          role: 'ADMIN',
+          role: AdminRole.RESTAURANT_ADMIN,
         },
-      };
+      } as unknown as AuthenticatedRequest;
 
       await expect(
         analyticsController.getStats('other-restaurant', mockReq),
@@ -232,15 +240,17 @@ describe('Analytics Tests', () => {
       };
       jest
         .spyOn(analyticsService, 'getStatsBySlug')
-        .mockResolvedValue(expectedStats as any);
+        .mockResolvedValue(expectedStats);
 
       const mockReq = {
         user: {
+          id: 'super-1',
+          email: 'super@nfcmyplace.com',
           restaurantSlug: 'baltazar',
           restaurantId: 'rest-uuid-baltazar',
-          role: 'SUPER_ADMIN',
+          role: AdminRole.SUPER_ADMIN,
         },
-      };
+      } as unknown as AuthenticatedRequest;
 
       const result = await analyticsController.getStats(
         'other-restaurant',

@@ -21,6 +21,7 @@ export interface SceneProps {
   venueName?: string;
   tableNumber?: string;
   autoRotate?: boolean;
+  template?: 'templateA' | 'templateB';
 }
 
 function InteractiveModelGroup({
@@ -36,6 +37,7 @@ function InteractiveModelGroup({
   venueName = 'Baltazar Bistro',
   tableNumber = 'MASA #12',
   autoRotate = true,
+  template = 'templateA',
 }: SceneProps) {
   const groupRef = useRef<THREE.Group>(null);
   const [hovered, setHovered] = useState(false);
@@ -90,6 +92,7 @@ function InteractiveModelGroup({
             businessName={businessName}
             qrText={qrText}
             showStars={showStars}
+            template={template}
           />
         )}
         {product === 'card' && <GoogleReviewCard isHovered={hovered} />}
@@ -119,6 +122,7 @@ export default function NfcHardwareScene({
   venueName = 'Baltazar Bistro',
   tableNumber = 'MASA #12',
   autoRotate = true,
+  template = 'templateA',
 }: SceneProps) {
   return (
     <Canvas
@@ -187,6 +191,7 @@ export default function NfcHardwareScene({
         venueName={venueName}
         tableNumber={tableNumber}
         autoRotate={autoRotate}
+        template={template}
       />
 
       {/* ── CONTACT SHADOWS FLOOR ── */}

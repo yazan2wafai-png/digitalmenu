@@ -18,14 +18,15 @@ export function Header({ restaurant, locale, onLocaleChange, isRTL }: HeaderProp
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
-    const unsub = scrollY.onChange((v) => {
+    const unsub = scrollY.on('change', (v) => {
       setIsScrolled(v > 50);
     });
-    return unsub;
+    return () => unsub();
   }, [scrollY]);
 
   return (
     <header
+      dir={isRTL ? 'rtl' : 'ltr'}
       className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
         isScrolled
           ? 'bg-neutral-950/85 backdrop-blur-md border-b border-white/10 py-3 shadow-lg'

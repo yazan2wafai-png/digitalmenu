@@ -1,11 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { UpdateRestaurantSettingsDto } from './dto/update-restaurant-settings.dto';
+import type { Restaurant, RestaurantSettings } from '@prisma/client';
+
+export type RestaurantWithSettings = Restaurant & { settings: RestaurantSettings | null };
 
 @Injectable()
 export class RestaurantAdminService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async getRestaurantDetails(restaurantId: string) {
+  async getRestaurantDetails(restaurantId: string): Promise<RestaurantWithSettings> {
     const restaurant = await this.prisma.restaurant.findUnique({
       where: { id: restaurantId },
       include: {
@@ -20,7 +24,7 @@ export class RestaurantAdminService {
     return restaurant;
   }
 
-  async updateSettings(restaurantId: string, data: any) {
+  async updateSettings(restaurantId: string, data: UpdateRestaurantSettingsDto): Promise<RestaurantSettings> {
     const updateData = {
       ...(data.orderingEnabled !== undefined && { orderingEnabled: data.orderingEnabled }),
       ...(data.dineInEnabled !== undefined && { dineInEnabled: data.dineInEnabled }),

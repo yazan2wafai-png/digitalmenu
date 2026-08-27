@@ -3,6 +3,7 @@ import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
 import { existsSync, mkdirSync } from 'fs';
+import { randomUUID } from 'crypto';
 
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
@@ -17,7 +18,7 @@ export const imageUploadOptions: MulterOptions = {
   storage: diskStorage({
     destination: UPLOADS_DIR,
     filename: (_req, file, cb) => {
-      const uniqueName = crypto.randomUUID();
+      const uniqueName = randomUUID();
       const ext = extname(file.originalname).toLowerCase();
       cb(null, `${uniqueName}${ext}`);
     },

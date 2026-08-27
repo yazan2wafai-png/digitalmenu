@@ -2,13 +2,27 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
+import type { Request } from 'express';
+import { AdminRole } from '../../common/roles.enum';
 
 export interface JwtPayload {
   sub: string;          // AdminUser.id
   email: string;
-  restaurantId: string;
-  restaurantSlug: string;
-  role: string;
+  restaurantId: string | null;
+  restaurantSlug: string | null;
+  role: AdminRole | string;
+}
+
+export interface AuthenticatedUser {
+  id: string;
+  email: string;
+  restaurantId: string | null;
+  restaurantSlug: string | null;
+  role: AdminRole | string;
+}
+
+export interface AuthenticatedRequest extends Request {
+  user: AuthenticatedUser;
 }
 
 @Injectable()
@@ -23,16 +37,16 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: JwtPayload) {
-    if (!payload.sub || (!payload.restaurantId && payload.role !== 'SUPER_ADMIN')) {
+  async validate(payload: JwtPayload): Promise<AuthenticatedUser> {
+    if (!payload.sub || (!payload.restaurantId && payload.role !== AdminRole.SUPER_ADMIN && payload.role !== 'SUPER_ADMIN')) {
       throw new UnauthorizedException();
     }
     // This object is attached to request.user
     return {
       id: payload.sub,
       email: payload.email,
-      restaurantId: payload.restaurantId,
-      restaurantSlug: payload.restaurantSlug,
+      restaurantId: payload.restaurantId ?? null,
+      restaurantSlug: payload.restaurantSlug ?? null,
       role: payload.role,
     };
   }

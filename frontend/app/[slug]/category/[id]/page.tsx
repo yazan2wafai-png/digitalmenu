@@ -8,11 +8,9 @@ import { useSearchParams } from 'next/navigation';
 import { ProductModal } from '@/components/ProductModal';
 import { TableBanner } from '@/components/TableBanner';
 import { LogoPlaceholder } from '@/components/LogoPlaceholder';
+import { ProductCard } from '@/components/ProductCard';
 
 const DEFAULT_LOCALE = process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'tr';
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://digitalmenu-backend-production.up.railway.app';
-
-import { ProductCard } from '@/components/ProductCard';
 
 export default function CategoryPage({ params }: { params: Promise<{ slug: string; id: string }> }) {
   const { slug, id } = use(params);

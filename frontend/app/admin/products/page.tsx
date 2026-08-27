@@ -5,23 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { AdminHeader } from '@/components/admin/AdminHeader';
 import { ProductModal } from '@/components/admin/ProductModal';
 
-interface Product {
-  id: string;
-  name: Record<string, string>;
-  description: Record<string, string> | null;
-  price: string;
-  photoUrl: string | null;
-  sortOrder: number;
-  categoryId: string;
-}
-
-interface Category {
-  id: string;
-  name: Record<string, string>;
-  sortOrder: number;
-  restaurantId: string;
-  products: Product[];
-}
+import type { AdminProduct as Product, AdminCategory as Category } from '@/types/admin';
 
 function getCookie(name: string): string {
   if (typeof document === 'undefined') return '';

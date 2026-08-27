@@ -128,6 +128,8 @@ export default function HomePage() {
         isRTL={isRTL}
       />
 
+      <TableBanner tableId={tableId} themeColor={restaurant.themeColor} />
+
       {loading && (
         <div className="fixed inset-0 bg-neutral-950/60 backdrop-blur-sm z-50 flex items-center justify-center">
           <motion.div

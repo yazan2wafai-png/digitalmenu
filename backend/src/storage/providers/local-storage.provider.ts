@@ -16,7 +16,7 @@ export class LocalStorageProvider implements IStorageProvider {
   constructor(private readonly config: ConfigService) {}
 
   async store(file: Express.Multer.File): Promise<string> {
-    const baseUrl = this.config.get<string>('BASE_URL', 'http://localhost:3001');
+    const baseUrl = this.config.get<string>('BASE_URL') ?? 'http://localhost:3001';
     return `${baseUrl}/uploads/${file.filename}`;
   }
 }

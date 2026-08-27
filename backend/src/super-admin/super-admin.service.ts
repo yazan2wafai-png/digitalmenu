@@ -9,6 +9,58 @@ import { PrismaService } from '../prisma/prisma.service';
 import { SuperAdminLoginDto } from './dto/super-admin-login.dto';
 import { CreateRestaurantDto } from './dto/create-restaurant.dto';
 import * as bcrypt from 'bcryptjs';
+import { AdminRole } from '../common/roles.enum';
+import type { Prisma, Restaurant, RestaurantSettings } from '@prisma/client';
+
+export interface SuperAdminLoginResponse {
+  accessToken: string;
+  user: {
+    id: string;
+    email: string;
+    role: string;
+  };
+}
+
+export interface CreateRestaurantResponse {
+  restaurant: Restaurant & { settings: RestaurantSettings };
+  adminUser: {
+    id: string;
+    email: string;
+    role: string;
+    restaurantId: string | null;
+    createdAt: Date;
+  };
+}
+
+export interface DeleteRestaurantResponse {
+  success: boolean;
+  message: string;
+}
+
+export interface RestaurantSummaryItem {
+  id: string;
+  slug: string;
+  name: Prisma.JsonValue;
+  themeColor: string;
+  supportedLocales: string[];
+  defaultLocale: string;
+  isActive: boolean;
+  createdAt: Date;
+  categoryCount: number;
+  productCount: number;
+  viewCount: number;
+}
+
+export interface DailyViewCount {
+  date: string;
+  count: number;
+}
+
+export interface RestaurantViewsResponse {
+  slug: string;
+  totalViews: number;
+  dailyViews: DailyViewCount[];
+}
 
 @Injectable()
 export class SuperAdminService {
@@ -20,12 +72,12 @@ export class SuperAdminService {
   /**
    * SuperAdmin Login
    */
-  async login(dto: SuperAdminLoginDto) {
+  async login(dto: SuperAdminLoginDto): Promise<SuperAdminLoginResponse> {
     const admin = await this.prisma.adminUser.findUnique({
       where: { email: dto.email },
     });
 
-    if (!admin || admin.role !== 'SUPER_ADMIN') {
+    if (!admin || admin.role !== AdminRole.SUPER_ADMIN) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
@@ -57,7 +109,7 @@ export class SuperAdminService {
   /**
    * Create Restaurant & First Admin User
    */
-  async createRestaurant(dto: CreateRestaurantDto) {
+  async createRestaurant(dto: CreateRestaurantDto): Promise<CreateRestaurantResponse> {
     const slug = dto.slug.toLowerCase().trim();
     const adminEmail = dto.adminEmail.toLowerCase().trim();
 
@@ -82,12 +134,12 @@ export class SuperAdminService {
         data: {
           name: dto.name,
           slug,
-          themeColor: dto.themeColor || '#E63946',
+          themeColor: dto.themeColor ?? '#E63946',
           supportedLocales:
             dto.supportedLocales && dto.supportedLocales.length > 0
               ? dto.supportedLocales
               : ['tr', 'en', 'ar'],
-          defaultLocale: dto.defaultLocale || 'tr',
+          defaultLocale: dto.defaultLocale ?? 'tr',
           isActive: true,
         },
       });
@@ -115,7 +167,7 @@ export class SuperAdminService {
           restaurantId: restaurant.id,
           email: adminEmail,
           passwordHash,
-          role: 'RESTAURANT_ADMIN',
+          role: AdminRole.RESTAURANT_ADMIN,
         },
       });
 
@@ -138,7 +190,7 @@ export class SuperAdminService {
   /**
    * Delete Restaurant by Slug (Cascades all child records)
    */
-  async deleteRestaurant(slug: string) {
+  async deleteRestaurant(slug: string): Promise<DeleteRestaurantResponse> {
     const restaurant = await this.prisma.restaurant.findUnique({
       where: { slug },
     });
@@ -160,7 +212,7 @@ export class SuperAdminService {
   /**
    * List All Restaurants with Counts
    */
-  async findAllRestaurants() {
+  async findAllRestaurants(): Promise<RestaurantSummaryItem[]> {
     const restaurants = await this.prisma.restaurant.findMany({
       orderBy: { createdAt: 'desc' },
       include: {
@@ -184,7 +236,7 @@ export class SuperAdminService {
 
     return restaurants.map((r) => {
       const productCount = r.categories.reduce(
-        (sum, cat) => sum + (cat._count?.products || 0),
+        (sum, cat) => sum + (cat._count?.products ?? 0),
         0,
       );
 
@@ -207,7 +259,7 @@ export class SuperAdminService {
   /**
    * Get Restaurant PageView Stats (Total & 30-day breakdown)
    */
-  async getRestaurantViews(slug: string) {
+  async getRestaurantViews(slug: string): Promise<RestaurantViewsResponse> {
     const restaurant = await this.prisma.restaurant.findUnique({
       where: { slug },
     });
@@ -245,7 +297,7 @@ export class SuperAdminService {
     for (const pv of pageViews) {
       const dateStr = pv.timestamp.toISOString().split('T')[0];
       if (dailyMap.has(dateStr)) {
-        dailyMap.set(dateStr, (dailyMap.get(dateStr) || 0) + 1);
+        dailyMap.set(dateStr, (dailyMap.get(dateStr) ?? 0) + 1);
       }
     }
 

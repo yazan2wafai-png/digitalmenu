@@ -23,7 +23,7 @@ export class UploadController {
 
   @Post('image')
   @UseInterceptors(FileInterceptor('file', imageUploadOptions))
-  uploadImage(@UploadedFile() file: Express.Multer.File) {
+  uploadImage(@UploadedFile() file: Express.Multer.File): Promise<{ url: string }> {
     return this.uploadService.handleImageUpload(file);
   }
 }

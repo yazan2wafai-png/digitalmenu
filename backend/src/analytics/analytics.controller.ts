@@ -11,8 +11,11 @@ import {
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { AnalyticsService } from './analytics.service';
+import type { RecordViewResponse, AnalyticsStatsResponse } from './analytics.service';
 import type { Request } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import type { AuthenticatedRequest } from '../auth/strategies/jwt.strategy';
+import { AdminRole } from '../common/roles.enum';
 
 @Controller()
 export class AnalyticsController {
@@ -26,7 +29,7 @@ export class AnalyticsController {
     @Req() req: Request,
     @Headers('user-agent') userAgent: string,
     @Headers('x-forwarded-for') xForwardedFor: string,
-  ) {
+  ): Promise<RecordViewResponse> {
     const ip = xForwardedFor
       ? Array.isArray(xForwardedFor)
         ? xForwardedFor[0]
@@ -34,7 +37,7 @@ export class AnalyticsController {
       : req.ip;
     return this.analyticsService.recordView(
       restaurantSlug,
-      ip || '0.0.0.0',
+      ip ?? '0.0.0.0',
       userAgent,
       tableId,
     );
@@ -42,8 +45,11 @@ export class AnalyticsController {
 
   @UseGuards(JwtAuthGuard)
   @Get(['admin/analytics/:slug', 'admin/restaurants/:slug/analytics'])
-  async getStats(@Param('slug') slug: string, @Req() req: any) {
-    if (req.user.role !== 'SUPER_ADMIN' && req.user.restaurantSlug !== slug) {
+  async getStats(
+    @Param('slug') slug: string,
+    @Req() req: AuthenticatedRequest,
+  ): Promise<AnalyticsStatsResponse> {
+    if (req.user.role !== AdminRole.SUPER_ADMIN && req.user.role !== 'SUPER_ADMIN' && req.user.restaurantSlug !== slug) {
       throw new ForbiddenException(
         'You can only access analytics for your own restaurant',
       );

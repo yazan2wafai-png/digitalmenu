@@ -21,13 +21,38 @@ import {
 import type { Locale } from '@/lib/translations';
 import { translations } from '@/lib/translations';
 
+export interface LiveDemoItem {
+  name: string;
+  tag: string;
+  slug: string;
+  badgeColor: string;
+  url: string;
+  image: string;
+  description: string;
+  buttonText: string;
+  highlights: string[];
+}
+
+export interface PricingCardItem {
+  id: string;
+  badge: string;
+  title: string;
+  price: string;
+  unit: string;
+  subtitle: string;
+  features: string[];
+  cta: string;
+  popular: boolean;
+  action: () => void;
+}
+
 export default function LandingPage() {
   const [locale, setLocale] = useState<Locale>('tr');
   const [isDiscountOpen, setIsDiscountOpen] = useState(false);
 
   const t = translations[locale];
 
-  const LIVE_DEMOS = [
+  const LIVE_DEMOS: LiveDemoItem[] = [
     {
       name: 'Baltazar Burger',
       tag: t.saas.baltazarTag,
@@ -60,7 +85,7 @@ export default function LandingPage() {
     },
   ];
 
-  const PRICING_CARDS = [
+  const PRICING_CARDS: PricingCardItem[] = [
     {
       id: 'stand',
       badge: locale === 'tr' ? 'Donanım Odaklı' : 'Hardware Focused',

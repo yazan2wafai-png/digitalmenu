@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsOptional, IsInt, Min } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsBoolean } from 'class-validator';
 
 export class CreateTableDto {
   @IsString()
@@ -7,10 +7,13 @@ export class CreateTableDto {
 
   @IsString()
   @IsOptional()
-  identifier?: string;
+  qrIdentifier?: string;
 
-  @IsInt()
-  @Min(1)
+  @IsString()
   @IsOptional()
-  capacity?: number;
+  nfcIdentifier?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  isActive?: boolean;
 }

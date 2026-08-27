@@ -2,19 +2,20 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateLocationDto } from './dto/create-location.dto';
 import { UpdateLocationDto } from './dto/update-location.dto';
+import type { Location } from '@prisma/client';
 
 @Injectable()
 export class LocationsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(restaurantId: string) {
+  async findAll(restaurantId: string): Promise<Location[]> {
     return this.prisma.location.findMany({
       where: { restaurantId, isActive: true },
       orderBy: { createdAt: 'desc' },
     });
   }
 
-  async create(restaurantId: string, dto: CreateLocationDto) {
+  async create(restaurantId: string, dto: CreateLocationDto): Promise<Location> {
     return this.prisma.location.create({
       data: {
         ...dto,
@@ -23,7 +24,7 @@ export class LocationsService {
     });
   }
 
-  async update(id: string, restaurantId: string, dto: UpdateLocationDto) {
+  async update(id: string, restaurantId: string, dto: UpdateLocationDto): Promise<Location> {
     const location = await this.prisma.location.findFirst({
       where: { id, restaurantId, isActive: true },
     });
@@ -41,7 +42,7 @@ export class LocationsService {
     });
   }
 
-  async remove(id: string, restaurantId: string) {
+  async remove(id: string, restaurantId: string): Promise<Location> {
     const location = await this.prisma.location.findFirst({
       where: { id, restaurantId, isActive: true },
     });

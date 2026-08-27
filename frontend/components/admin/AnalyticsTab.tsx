@@ -1,19 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-
-interface DailyBreakdown {
-  date: string;
-  views: number;
-}
-
-interface AnalyticsData {
-  totalViews: number;
-  todayViews: number;
-  last7DaysViews: number;
-  last30DaysViews: number;
-  dailyBreakdown: DailyBreakdown[];
-}
+import type { AnalyticsData, DailyBreakdown } from '@/types/admin';
 
 export default function AnalyticsTab({ slug }: { slug: string }) {
   const [data, setData] = useState<AnalyticsData | null>(null);
@@ -30,11 +18,11 @@ export default function AnalyticsTab({ slug }: { slug: string }) {
       if (!res.ok) {
         throw new Error('Failed to fetch analytics');
       }
-      const json = await res.json();
+      const json: AnalyticsData = await res.json();
       setData(json);
       setLastUpdated(new Date());
-    } catch (err: any) {
-      setError(err.message || 'Unknown error');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setLoading(false);
     }

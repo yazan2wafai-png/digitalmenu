@@ -20,19 +20,21 @@ export function resolveTranslation(
     return String(json);
   }
 
-  const map = json as Record<string, any>;
+  const map = json as Record<string, unknown>;
   const effective = Array.isArray(supportedLocales) && supportedLocales.includes(requestedLocale)
     ? requestedLocale
     : defaultLocale;
 
-  if (map[effective] && typeof map[effective] === 'string') {
-    return map[effective];
+  const effectiveVal = map[effective];
+  if (typeof effectiveVal === 'string') {
+    return effectiveVal;
   }
-  if (map[defaultLocale] && typeof map[defaultLocale] === 'string') {
-    return map[defaultLocale];
+  const defaultVal = map[defaultLocale];
+  if (typeof defaultVal === 'string') {
+    return defaultVal;
   }
 
-  const values = Object.values(map).filter((v) => typeof v === 'string');
+  const values = Object.values(map).filter((v): v is string => typeof v === 'string');
   if (values.length > 0) {
     return values[0];
   }

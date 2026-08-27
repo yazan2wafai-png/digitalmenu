@@ -2,12 +2,13 @@ import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/commo
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTableDto } from './dto/create-table.dto';
 import { UpdateTableDto } from './dto/update-table.dto';
+import type { Table } from '@prisma/client';
 
 @Injectable()
 export class TablesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  private async verifyLocation(locationId: string, restaurantId: string) {
+  private async verifyLocation(locationId: string, restaurantId: string): Promise<void> {
     const settings = await this.prisma.restaurantSettings.findUnique({
       where: { restaurantId },
     });
@@ -23,7 +24,7 @@ export class TablesService {
     }
   }
 
-  async findAll(locationId: string, restaurantId: string) {
+  async findAll(locationId: string, restaurantId: string): Promise<Table[]> {
     await this.verifyLocation(locationId, restaurantId);
     return this.prisma.table.findMany({
       where: { locationId, isActive: true },
@@ -31,18 +32,21 @@ export class TablesService {
     });
   }
 
-  async create(locationId: string, restaurantId: string, dto: CreateTableDto) {
+  async create(locationId: string, restaurantId: string, dto: CreateTableDto): Promise<Table> {
     await this.verifyLocation(locationId, restaurantId);
     return this.prisma.table.create({
       data: {
-        ...dto,
+        name: dto.name,
+        qrIdentifier: dto.qrIdentifier,
+        nfcIdentifier: dto.nfcIdentifier,
+        isActive: dto.isActive ?? true,
         locationId,
         restaurantId,
       },
     });
   }
 
-  async update(id: string, locationId: string, restaurantId: string, dto: UpdateTableDto) {
+  async update(id: string, locationId: string, restaurantId: string, dto: UpdateTableDto): Promise<Table> {
     await this.verifyLocation(locationId, restaurantId);
     const table = await this.prisma.table.findFirst({
       where: { id, locationId, restaurantId, isActive: true },
@@ -55,14 +59,17 @@ export class TablesService {
     return this.prisma.table.update({
       where: { id },
       data: {
-        ...dto,
+        ...(dto.name !== undefined && { name: dto.name }),
+        ...(dto.qrIdentifier !== undefined && { qrIdentifier: dto.qrIdentifier }),
+        ...(dto.nfcIdentifier !== undefined && { nfcIdentifier: dto.nfcIdentifier }),
+        ...(dto.isActive !== undefined && { isActive: dto.isActive }),
         locationId,
         restaurantId,
       },
     });
   }
 
-  async remove(id: string, locationId: string, restaurantId: string) {
+  async remove(id: string, locationId: string, restaurantId: string): Promise<Table> {
     await this.verifyLocation(locationId, restaurantId);
     const table = await this.prisma.table.findFirst({
       where: { id, locationId, restaurantId, isActive: true },

@@ -2,11 +2,11 @@
 import { NFCShowcase } from './nfc-showcase';
 import type { Locale } from '@/lib/translations';
 
-interface Props {
+export interface Nfc3DCanvasProps {
   locale?: Locale;
 }
 
-export function Nfc3DCanvas({ locale = 'tr' }: Props) {
+export function Nfc3DCanvas({ locale = 'tr' }: Nfc3DCanvasProps) {
   return <NFCShowcase locale={locale} />;
 }
 

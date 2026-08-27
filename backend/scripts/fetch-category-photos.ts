@@ -36,10 +36,27 @@ const CATEGORY_SEARCH_MAP: Record<string, string> = {
   Tatlılar: 'desserts bakery',
 };
 
-function getCategoryQuery(catNameJson: any): string {
+import type { Prisma } from '@prisma/client';
+
+interface PexelsPhotoSrc {
+  landscape?: string;
+  medium?: string;
+  original?: string;
+}
+
+interface PexelsPhoto {
+  src: PexelsPhotoSrc;
+}
+
+interface PexelsApiResponse {
+  photos?: PexelsPhoto[];
+}
+
+function getCategoryQuery(catNameJson: Prisma.JsonValue): string {
   if (!catNameJson) return 'restaurant food';
-  const nameEn = typeof catNameJson === 'object' ? catNameJson.en : String(catNameJson);
-  const nameTr = typeof catNameJson === 'object' ? catNameJson.tr : String(catNameJson);
+  const nameMap = (typeof catNameJson === 'object' && !Array.isArray(catNameJson)) ? (catNameJson as Record<string, string>) : null;
+  const nameEn = nameMap?.en ?? (typeof catNameJson === 'string' ? catNameJson : '');
+  const nameTr = nameMap?.tr ?? (typeof catNameJson === 'string' ? catNameJson : '');
 
   if (nameEn && CATEGORY_SEARCH_MAP[nameEn]) return CATEGORY_SEARCH_MAP[nameEn];
   if (nameTr && CATEGORY_SEARCH_MAP[nameTr]) return CATEGORY_SEARCH_MAP[nameTr];
@@ -58,9 +75,10 @@ async function fetchPexelsPhotoUrl(query: string, apiKey: string): Promise<strin
       console.warn(`  ⚠️ Pexels API returned status ${res.status} for query "${query}"`);
       return null;
     }
-    const data = (await res.json()) as any;
+    const data = (await res.json()) as PexelsApiResponse;
     if (data.photos && data.photos.length > 0) {
-      return data.photos[0].src.landscape || data.photos[0].src.medium || data.photos[0].src.original;
+      const src = data.photos[0].src;
+      return src.landscape ?? src.medium ?? src.original ?? null;
     }
   } catch (err) {
     console.error(`  ❌ Failed to fetch category photo from Pexels for "${query}":`, err);
@@ -105,9 +123,10 @@ async function main() {
 
   for (const cat of categories) {
     const query = getCategoryQuery(cat.name);
-    const catNameStr = typeof cat.name === 'object' && cat.name !== null
-      ? (cat.name as any).en || (cat.name as any).tr
-      : String(cat.name);
+    const catMap = typeof cat.name === 'object' && cat.name !== null && !Array.isArray(cat.name)
+      ? (cat.name as Record<string, string>)
+      : null;
+    const catNameStr = catMap?.en ?? catMap?.tr ?? String(cat.name);
 
     console.log(`\n📂 Category: "${catNameStr}" (Query: "${query}")`);
 
@@ -133,7 +152,7 @@ async function main() {
         fallbackCount++;
       }
     } else {
-      console.log(`  ℹ️ No photo fetched (or key missing), category photoUrl remains: ${cat.photoUrl || 'null'}`);
+      console.log(`  ℹ️ No photo fetched (or key missing), category photoUrl remains: ${cat.photoUrl ?? 'null'}`);
       fallbackCount++;
     }
   }

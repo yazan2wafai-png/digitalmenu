@@ -1,4 +1,5 @@
 'use client';
+import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import type { Product } from '@/types/menu';
 
@@ -12,26 +13,40 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, themeColor, onSelect, categoryName }: ProductCardProps) {
-  // Determine badges
-  const badges: string[] = [];
-  const nameLower = product.name.toLowerCase();
-  
-  if (categoryName?.toLowerCase().includes('coffee') || nameLower.includes('coffee') || nameLower.includes('kahve') || nameLower.includes('latte') || nameLower.includes('espresso')) {
-    badges.push('Specialty Coffee');
-    if (Math.random() > 0.5) badges.push('Single Origin');
-  }
-  if (nameLower.includes('cake') || nameLower.includes('kek') || nameLower.includes('pasta') || nameLower.includes('cookie') || nameLower.includes('kurabiye') || nameLower.includes('croissant') || nameLower.includes('kruvasan')) {
-    badges.push('Freshly Baked');
-  }
-  if (nameLower.includes('special') || nameLower.includes('chef') || nameLower.includes('şef')) {
-    badges.push('Chef\'s Choice');
-  }
-  if (nameLower.includes('spice') || nameLower.includes('baharat')) {
-    badges.push('Bursting Flavour');
-  }
-  if (badges.length === 0 && Math.random() > 0.8) {
-    badges.push('Popular');
-  }
+  // Determine badges deterministically
+  const badges = useMemo(() => {
+    const list: string[] = [];
+    const nameLower = (product.name ?? '').toLowerCase();
+    const catLower = (categoryName ?? '').toLowerCase();
+
+    if (
+      catLower.includes('coffee') ||
+      nameLower.includes('coffee') ||
+      nameLower.includes('kahve') ||
+      nameLower.includes('latte') ||
+      nameLower.includes('espresso')
+    ) {
+      list.push('Specialty Coffee');
+    }
+    if (
+      nameLower.includes('cake') ||
+      nameLower.includes('kek') ||
+      nameLower.includes('pasta') ||
+      nameLower.includes('cookie') ||
+      nameLower.includes('kurabiye') ||
+      nameLower.includes('croissant') ||
+      nameLower.includes('kruvasan')
+    ) {
+      list.push('Freshly Baked');
+    }
+    if (nameLower.includes('special') || nameLower.includes('chef') || nameLower.includes('şef')) {
+      list.push("Chef's Choice");
+    }
+    if (nameLower.includes('spice') || nameLower.includes('baharat')) {
+      list.push('Bursting Flavour');
+    }
+    return list;
+  }, [product.name, categoryName]);
 
   return (
     <motion.article

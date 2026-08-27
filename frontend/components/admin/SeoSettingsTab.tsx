@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, FormEvent } from 'react';
+import type { RestaurantSettings } from '@/types/admin';
 
 export default function SeoSettingsTab({ slug, onSettingsUpdated }: { slug: string; onSettingsUpdated?: () => void }) {
   const [loading, setLoading] = useState(true);
@@ -23,13 +24,13 @@ export default function SeoSettingsTab({ slug, onSettingsUpdated }: { slug: stri
   useEffect(() => {
     fetch('/api/proxy/admin/me/restaurant')
       .then(res => res.json())
-      .then(d => {
-        const s = d.settings || d;
-        setMetaTitle(s.metaTitle || '');
-        setMetaDescription(s.metaDescription || '');
-        setKeywords(s.keywords || '');
-        setCurrency(s.currency || 'TRY');
-        setTimezone(s.timezone || 'Europe/Istanbul');
+      .then((d: { settings?: RestaurantSettings } & RestaurantSettings) => {
+        const s = d.settings ?? d;
+        setMetaTitle(s.metaTitle ?? '');
+        setMetaDescription(s.metaDescription ?? '');
+        setKeywords(s.keywords ?? '');
+        setCurrency(s.currency ?? 'TRY');
+        setTimezone(s.timezone ?? 'Europe/Istanbul');
         setEnableOrdering(s.enableOrdering ?? true);
         setEnableTables(s.enableTables ?? true);
         setEnableAnalytics(s.enableAnalytics ?? true);
@@ -74,8 +75,8 @@ export default function SeoSettingsTab({ slug, onSettingsUpdated }: { slug: stri
       if (onSettingsUpdated) {
         onSettingsUpdated();
       }
-    } catch (err: any) {
-      setError(err.message || 'Error saving settings');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Error saving settings');
     } finally {
       setSaving(false);
     }

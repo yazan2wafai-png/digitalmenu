@@ -48,8 +48,9 @@ async function proxy(request: NextRequest, params: Params, method: string) {
     }
 
     return NextResponse.json(data, { status: res.status });
-  } catch (err: any) {
-    return NextResponse.json({ message: err?.message || 'Proxy backend connection error' }, { status: 502 });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Proxy backend connection error';
+    return NextResponse.json({ message }, { status: 502 });
   }
 }
 

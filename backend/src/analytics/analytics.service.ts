@@ -2,16 +2,33 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import * as crypto from 'crypto';
 
+export interface RecordViewResponse {
+  recorded: boolean;
+}
+
+export interface DailyAnalyticsItem {
+  date: string;
+  views: number;
+}
+
+export interface AnalyticsStatsResponse {
+  totalViews: number;
+  today: number;
+  last7Days: number;
+  last30Days: number;
+  dailyBreakdown: DailyAnalyticsItem[];
+}
+
 @Injectable()
 export class AnalyticsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async recordView(
     restaurantSlug: string,
     ip: string,
     userAgent: string,
     tableId?: string,
-  ) {
+  ): Promise<RecordViewResponse> {
     const restaurant = await this.prisma.restaurant.findUnique({
       where: { slug: restaurantSlug, isActive: true },
     });
@@ -20,9 +37,12 @@ export class AnalyticsService {
       throw new NotFoundException('Restaurant not found');
     }
 
+    const effectiveIp = ip ? ip : '0.0.0.0';
+    const effectiveUserAgent = userAgent ? userAgent : 'Unknown';
+
     const ipHash = crypto
       .createHash('sha256')
-      .update(ip || '0.0.0.0')
+      .update(effectiveIp)
       .digest('hex')
       .substring(0, 16);
 
@@ -31,7 +51,7 @@ export class AnalyticsService {
         restaurantId: restaurant.id,
         tableId,
         ipHash,
-        userAgent: userAgent || 'Unknown',
+        userAgent: effectiveUserAgent,
         recordedAt: new Date(),
       },
     });
@@ -39,7 +59,7 @@ export class AnalyticsService {
     return { recorded: true };
   }
 
-  async getStats(restaurantId: string) {
+  async getStats(restaurantId: string): Promise<AnalyticsStatsResponse> {
     const now = new Date();
 
     const todayStart = new Date(now);
@@ -76,14 +96,14 @@ export class AnalyticsService {
 
     let todayViews = 0;
     let last7DaysViews = 0;
-    let last30DaysViews = recentViews.length;
+    const last30DaysViews = recentViews.length;
 
     for (const view of recentViews) {
       const viewDate = view.recordedAt;
       const dateStr = viewDate.toISOString().split('T')[0];
 
       if (breakdownMap.has(dateStr)) {
-        breakdownMap.set(dateStr, breakdownMap.get(dateStr)! + 1);
+        breakdownMap.set(dateStr, (breakdownMap.get(dateStr) ?? 0) + 1);
       }
 
       if (viewDate >= todayStart) todayViews++;
@@ -103,7 +123,7 @@ export class AnalyticsService {
     };
   }
 
-  async getStatsBySlug(slug: string) {
+  async getStatsBySlug(slug: string): Promise<AnalyticsStatsResponse> {
     const restaurant = await this.prisma.restaurant.findUnique({
       where: { slug },
     });
