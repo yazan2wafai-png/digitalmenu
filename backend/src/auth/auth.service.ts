@@ -38,6 +38,7 @@ export class AuthService {
       restaurantId: admin.restaurantId,
       restaurantSlug: admin.restaurant?.slug ?? null,
       role: admin.role,
+      staffRole: admin.staffRole,
     };
 
     const token = this.jwt.sign(payload);

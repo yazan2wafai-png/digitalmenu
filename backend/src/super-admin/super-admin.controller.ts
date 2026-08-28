@@ -28,6 +28,7 @@ import { CreateRestaurantDto } from './dto/create-restaurant.dto';
 import { UpdateRestaurantPermissionsDto } from './dto/update-restaurant-permissions.dto';
 import type { StaffMember } from '../staff/staff.service';
 import { CreateStaffDto } from '../staff/dto/create-staff.dto';
+import { UpdateStaffRoleDto } from '../staff/dto/update-staff-role.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { SuperAdminGuard } from './guards/super-admin.guard';
 import type { AuthenticatedRequest } from '../auth/strategies/jwt.strategy';
@@ -172,6 +173,22 @@ export class SuperAdminController {
     @Param('id') id: string,
   ): Promise<{ success: boolean }> {
     return this.superAdminService.deleteRestaurantStaff(slug, id);
+  }
+
+  /**
+   * PATCH /super-admin/restaurants/:slug/staff/:id/role
+   * Protected: change a staff account's role (OWNER/EDITOR/VIEWER) for any
+   * restaurant. Demoting the last remaining OWNER is rejected by the
+   * service layer (a restaurant must always keep at least one owner).
+   */
+  @Patch('restaurants/:slug/staff/:id/role')
+  @UseGuards(JwtAuthGuard, SuperAdminGuard)
+  updateRestaurantStaffRole(
+    @Param('slug') slug: string,
+    @Param('id') id: string,
+    @Body() dto: UpdateStaffRoleDto,
+  ): Promise<StaffMember> {
+    return this.superAdminService.updateRestaurantStaffRole(slug, id, dto);
   }
 
   /**

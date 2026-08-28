@@ -4,6 +4,9 @@ import type { RestaurantWithSettings } from './restaurant-admin.service';
 import { UpdateRestaurantSettingsDto } from './dto/update-restaurant-settings.dto';
 import { UpdateRestaurantProfileDto } from './dto/update-restaurant-profile.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { StaffRoleGuard } from '../common/guards/staff-role.guard';
+import { RequireStaffRole } from '../common/decorators/require-staff-role.decorator';
+import { StaffRole } from '../common/staff-role.enum';
 import type { AuthenticatedRequest } from '../auth/strategies/jwt.strategy';
 import type { Restaurant, RestaurantSettings } from '@prisma/client';
 
@@ -18,6 +21,8 @@ export class RestaurantAdminController {
   }
 
   @Patch('settings')
+  @UseGuards(StaffRoleGuard)
+  @RequireStaffRole(StaffRole.OWNER)
   updateSettings(
     @Req() req: AuthenticatedRequest,
     @Body() updateData: UpdateRestaurantSettingsDto,
@@ -32,6 +37,8 @@ export class RestaurantAdminController {
    * but that were otherwise never editable afterward.
    */
   @Patch('profile')
+  @UseGuards(StaffRoleGuard)
+  @RequireStaffRole(StaffRole.OWNER)
   updateProfile(
     @Req() req: AuthenticatedRequest,
     @Body() updateData: UpdateRestaurantProfileDto,

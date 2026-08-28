@@ -3,6 +3,9 @@ import { LocationsService } from './locations.service';
 import { CreateLocationDto } from './dto/create-location.dto';
 import { UpdateLocationDto } from './dto/update-location.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { StaffRoleGuard } from '../common/guards/staff-role.guard';
+import { RequireStaffRole } from '../common/decorators/require-staff-role.decorator';
+import { StaffRole } from '../common/staff-role.enum';
 import type { AuthenticatedRequest } from '../auth/strategies/jwt.strategy';
 import type { Location } from '@prisma/client';
 
@@ -24,6 +27,8 @@ export class LocationsController {
   }
 
   @Post()
+  @UseGuards(StaffRoleGuard)
+  @RequireStaffRole(StaffRole.OWNER, StaffRole.EDITOR)
   create(
     @Param('slug') slug: string,
     @Req() req: AuthenticatedRequest,
@@ -34,6 +39,8 @@ export class LocationsController {
   }
 
   @Patch(':id')
+  @UseGuards(StaffRoleGuard)
+  @RequireStaffRole(StaffRole.OWNER, StaffRole.EDITOR)
   update(
     @Param('slug') slug: string,
     @Param('id') id: string,
@@ -45,6 +52,8 @@ export class LocationsController {
   }
 
   @Delete(':id')
+  @UseGuards(StaffRoleGuard)
+  @RequireStaffRole(StaffRole.OWNER, StaffRole.EDITOR)
   remove(
     @Param('slug') slug: string,
     @Param('id') id: string,

@@ -3,6 +3,9 @@ import {
   Param, Body, Request, HttpCode, HttpStatus, UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { StaffRoleGuard } from '../common/guards/staff-role.guard';
+import { RequireStaffRole } from '../common/decorators/require-staff-role.decorator';
+import { StaffRole } from '../common/staff-role.enum';
 import { CategoriesService } from './categories.service';
 import type { CategoryWithProducts, DeleteCategoryResponse } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -37,6 +40,8 @@ export class CategoriesController {
   }
 
   @Post()
+  @UseGuards(StaffRoleGuard)
+  @RequireStaffRole(StaffRole.OWNER, StaffRole.EDITOR)
   create(
     @Param('slug') slug: string,
     @Body() dto: CreateCategoryDto,
@@ -46,6 +51,8 @@ export class CategoriesController {
   }
 
   @Patch(':id')
+  @UseGuards(StaffRoleGuard)
+  @RequireStaffRole(StaffRole.OWNER, StaffRole.EDITOR)
   update(
     @Param('slug') slug: string,
     @Param('id') id: string,
@@ -57,6 +64,8 @@ export class CategoriesController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
+  @UseGuards(StaffRoleGuard)
+  @RequireStaffRole(StaffRole.OWNER, StaffRole.EDITOR)
   remove(
     @Param('slug') slug: string,
     @Param('id') id: string,

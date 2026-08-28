@@ -3,6 +3,9 @@ import { TablesService } from './tables.service';
 import { CreateTableDto } from './dto/create-table.dto';
 import { UpdateTableDto } from './dto/update-table.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { StaffRoleGuard } from '../common/guards/staff-role.guard';
+import { RequireStaffRole } from '../common/decorators/require-staff-role.decorator';
+import { StaffRole } from '../common/staff-role.enum';
 import type { AuthenticatedRequest } from '../auth/strategies/jwt.strategy';
 import type { Table } from '@prisma/client';
 
@@ -20,6 +23,8 @@ export class TablesController {
   }
 
   @Post()
+  @UseGuards(StaffRoleGuard)
+  @RequireStaffRole(StaffRole.OWNER, StaffRole.EDITOR)
   create(
     @Param('locationId') locationId: string,
     @Req() req: AuthenticatedRequest,
@@ -29,6 +34,8 @@ export class TablesController {
   }
 
   @Patch(':id')
+  @UseGuards(StaffRoleGuard)
+  @RequireStaffRole(StaffRole.OWNER, StaffRole.EDITOR)
   update(
     @Param('locationId') locationId: string,
     @Param('id') id: string,
@@ -39,6 +46,8 @@ export class TablesController {
   }
 
   @Delete(':id')
+  @UseGuards(StaffRoleGuard)
+  @RequireStaffRole(StaffRole.OWNER, StaffRole.EDITOR)
   remove(
     @Param('locationId') locationId: string,
     @Param('id') id: string,

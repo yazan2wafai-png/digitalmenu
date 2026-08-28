@@ -1,4 +1,5 @@
-import { IsEmail, IsOptional, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsEnum, IsOptional, IsString, MinLength } from 'class-validator';
+import { StaffRole } from '../../common/staff-role.enum';
 
 export class CreateStaffDto {
   @IsEmail({}, { message: 'A valid email is required' })
@@ -11,4 +12,8 @@ export class CreateStaffDto {
   @IsOptional()
   @IsString()
   name?: string;
+
+  @IsOptional()
+  @IsEnum(StaffRole, { message: 'staffRole must be one of OWNER, EDITOR, VIEWER' })
+  staffRole?: StaffRole;
 }

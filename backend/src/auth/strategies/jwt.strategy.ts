@@ -4,6 +4,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 import type { Request } from 'express';
 import { AdminRole } from '../../common/roles.enum';
+import { StaffRole } from '../../common/staff-role.enum';
 
 export interface JwtPayload {
   sub: string;          // AdminUser.id
@@ -11,6 +12,7 @@ export interface JwtPayload {
   restaurantId: string | null;
   restaurantSlug: string | null;
   role: AdminRole | string;
+  staffRole?: StaffRole | string;
 }
 
 export interface AuthenticatedUser {
@@ -19,6 +21,7 @@ export interface AuthenticatedUser {
   restaurantId: string | null;
   restaurantSlug: string | null;
   role: AdminRole | string;
+  staffRole?: StaffRole | string;
 }
 
 export interface AuthenticatedRequest extends Request {
@@ -48,6 +51,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       restaurantId: payload.restaurantId ?? null,
       restaurantSlug: payload.restaurantSlug ?? null,
       role: payload.role,
+      staffRole: payload.staffRole,
     };
   }
 }

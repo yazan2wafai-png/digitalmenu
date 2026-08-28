@@ -12,6 +12,15 @@ enum AdminRole {
   SUPER_ADMIN
 }
 
+// Fine-grained permission level within a single restaurant's admin
+// accounts (only meaningful when AdminRole = RESTAURANT_ADMIN). Defaults
+// to OWNER so every pre-existing AdminUser row needs no backfill.
+enum StaffRole {
+  OWNER
+  EDITOR
+  VIEWER
+}
+
 enum OrderStatus {
   PENDING
   CONFIRMED
@@ -76,12 +85,13 @@ model AdminUser {
   restaurantId String?
   email        String   @unique
   passwordHash String
-  // Display name for staff accounts (e.g. "Ahmet - Garson"); the restaurant's
-  // very first AdminUser (earliest createdAt) is treated as its "owner" at
-  // read time - no stored flag, so existing rows never needed a backfill.
+  // Display name for staff accounts (e.g. "Ahmet - Garson").
   name         String?
   createdAt    DateTime @default(now())
   role         AdminRole @default(RESTAURANT_ADMIN)
+  // Permission level within the restaurant (OWNER/EDITOR/VIEWER) - see
+  // the StaffRole enum above.
+  staffRole    StaffRole @default(OWNER)
 
   restaurant Restaurant? @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 }

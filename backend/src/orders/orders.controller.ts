@@ -10,6 +10,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { StaffRoleGuard } from '../common/guards/staff-role.guard';
+import { RequireStaffRole } from '../common/decorators/require-staff-role.decorator';
+import { StaffRole } from '../common/staff-role.enum';
 import { OrdersService } from './orders.service';
 import type { FormattedOrder } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -53,6 +56,8 @@ export class AdminOrdersController {
   }
 
   @Patch(':id/status')
+  @UseGuards(StaffRoleGuard)
+  @RequireStaffRole(StaffRole.OWNER, StaffRole.EDITOR)
   updateStatus(
     @Param('id') id: string,
     @Req() req: AuthenticatedRequest,

@@ -12,9 +12,11 @@ import { UpdateRestaurantPermissionsDto } from './dto/update-restaurant-permissi
 import { StaffService } from '../staff/staff.service';
 import type { StaffMember } from '../staff/staff.service';
 import { CreateStaffDto } from '../staff/dto/create-staff.dto';
+import { UpdateStaffRoleDto } from '../staff/dto/update-staff-role.dto';
 import * as bcrypt from 'bcryptjs';
 import { randomBytes } from 'crypto';
 import { AdminRole } from '../common/roles.enum';
+import { StaffRole } from '../common/staff-role.enum';
 import type { Prisma, Restaurant, RestaurantSettings } from '@prisma/client';
 
 export interface RestaurantPermissions {
@@ -205,6 +207,7 @@ export class SuperAdminService {
           email: adminEmail,
           passwordHash,
           role: AdminRole.RESTAURANT_ADMIN,
+          staffRole: StaffRole.OWNER,
         },
       });
 
@@ -470,7 +473,7 @@ export class SuperAdminService {
   /**
    * List every staff/admin account for a restaurant, by slug. Cross-tenant
    * counterpart of GET /admin/me/staff - delegates to the same StaffService
-   * so ownership rules (earliest-created account = owner) stay in one place.
+   * so ownership rules stay in one place.
    */
   async listRestaurantStaff(slug: string): Promise<StaffMember[]> {
     const restaurant = await this.prisma.restaurant.findUnique({ where: { slug } });
@@ -494,7 +497,20 @@ export class SuperAdminService {
     return this.staffService.createStaff(restaurant.id, dto, { bypassGate: true });
   }
 
-  /** Remove a staff account from any restaurant, by slug. The primary owner account is still protected. */
+  /** Change a staff account's role for any restaurant, by slug. The last remaining OWNER is still protected. */
+  async updateRestaurantStaffRole(
+    slug: string,
+    staffId: string,
+    dto: UpdateStaffRoleDto,
+  ): Promise<StaffMember> {
+    const restaurant = await this.prisma.restaurant.findUnique({ where: { slug } });
+    if (!restaurant) {
+      throw new NotFoundException(`Restaurant with slug "${slug}" not found`);
+    }
+    return this.staffService.updateStaffRole(restaurant.id, staffId, dto);
+  }
+
+  /** Remove a staff account from any restaurant, by slug. The last remaining OWNER account is still protected. */
   async deleteRestaurantStaff(slug: string, staffId: string): Promise<{ success: boolean }> {
     const restaurant = await this.prisma.restaurant.findUnique({ where: { slug } });
     if (!restaurant) {
@@ -533,6 +549,10 @@ export class SuperAdminService {
       restaurantId: restaurant.id,
       restaurantSlug: restaurant.slug,
       role: AdminRole.RESTAURANT_ADMIN,
+      // Impersonation always grants full OWNER-level access regardless of
+      // the borrowed admin's actual staffRole - the point of "login as"
+      // is unrestricted troubleshooting/support access for super-admin.
+      staffRole: StaffRole.OWNER,
     };
 
     const accessToken = this.jwtService.sign(payload, { expiresIn: '2h' });
