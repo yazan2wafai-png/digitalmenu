@@ -2,11 +2,14 @@
 
 import { useState, useEffect, FormEvent } from 'react';
 
+type StaffRole = 'OWNER' | 'EDITOR' | 'VIEWER';
+
 interface StaffMember {
   id: string;
   email: string;
   name: string | null;
   role: string;
+  staffRole: StaffRole;
   createdAt: string;
   isOwner: boolean;
 }
@@ -17,6 +20,18 @@ interface Props {
   onClose: () => void;
 }
 
+const ROLE_LABELS: Record<StaffRole, string> = {
+  OWNER: 'Owner',
+  EDITOR: 'Editor',
+  VIEWER: 'Viewer',
+};
+
+const ROLE_BADGE_STYLE: Record<StaffRole, string> = {
+  OWNER: 'text-amber-300 bg-amber-500/10 border-amber-500/30',
+  EDITOR: 'text-sky-300 bg-sky-500/10 border-sky-500/30',
+  VIEWER: 'text-slate-300 bg-slate-500/10 border-slate-500/30',
+};
+
 export function StaffModal({ slug, restaurantName, onClose }: Props) {
   const [staff, setStaff] = useState<StaffMember[]>([]);
   const [loading, setLoading] = useState(true);
@@ -26,6 +41,8 @@ export function StaffModal({ slug, restaurantName, onClose }: Props) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [staffRole, setStaffRole] = useState<StaffRole>('EDITOR');
+  const [roleUpdatingId, setRoleUpdatingId] = useState<string | null>(null);
 
   function load() {
     setLoading(true);
@@ -49,7 +66,7 @@ export function StaffModal({ slug, restaurantName, onClose }: Props) {
       const res = await fetch(`/api/proxy/super-admin/restaurants/${slug}/staff`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, name: name || undefined }),
+        body: JSON.stringify({ email, password, name: name || undefined, staffRole }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -59,6 +76,7 @@ export function StaffModal({ slug, restaurantName, onClose }: Props) {
       setName('');
       setEmail('');
       setPassword('');
+      setStaffRole('EDITOR');
       setShowForm(false);
       load();
     } catch {
@@ -68,8 +86,29 @@ export function StaffModal({ slug, restaurantName, onClose }: Props) {
     }
   }
 
+  async function handleRoleChange(member: StaffMember, next: StaffRole) {
+    if (next === member.staffRole) return;
+    setRoleUpdatingId(member.id);
+    try {
+      const res = await fetch(`/api/proxy/super-admin/restaurants/${slug}/staff/${member.id}/role`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ staffRole: next }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert(data.message || 'Failed to update role');
+        return;
+      }
+      load();
+    } catch {
+      alert('Failed to update role');
+    } finally {
+      setRoleUpdatingId(null);
+    }
+  }
+
   async function handleDelete(member: StaffMember) {
-    if (member.isOwner) return;
     if (!confirm(`Remove staff account "${member.email}"?`)) return;
     try {
       const res = await fetch(`/api/proxy/super-admin/restaurants/${slug}/staff/${member.id}`, {
@@ -109,8 +148,9 @@ export function StaffModal({ slug, restaurantName, onClose }: Props) {
         </div>
 
         <p className="text-xs text-slate-400">
-          Create as many staff/admin accounts as this restaurant needs - super-admin can always add
-          accounts here even if the tenant's own staff management is switched off.
+          Create as many staff/admin accounts as this restaurant needs, with any of the three
+          roles - super-admin can always add accounts here even if the tenant's own staff
+          management is switched off.
         </p>
 
         {!showForm ? (
@@ -157,6 +197,18 @@ export function StaffModal({ slug, restaurantName, onClose }: Props) {
                 className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-indigo-500"
               />
             </div>
+            <div>
+              <label className="block text-[11px] text-slate-400 mb-1">Role</label>
+              <select
+                value={staffRole}
+                onChange={(e) => setStaffRole(e.target.value as StaffRole)}
+                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-indigo-500"
+              >
+                <option value="OWNER">Owner - full access incl. settings & staff</option>
+                <option value="EDITOR">Editor - menu, orders, tables</option>
+                <option value="VIEWER">Viewer - read-only</option>
+              </select>
+            </div>
 
             {error && (
               <div className="p-2.5 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-xs">
@@ -196,20 +248,30 @@ export function StaffModal({ slug, restaurantName, onClose }: Props) {
               {staff.map((member) => (
                 <div
                   key={member.id}
-                  className="flex items-center justify-between p-2.5 bg-slate-950/40 border border-slate-800 rounded-xl"
+                  className="flex items-center justify-between p-2.5 bg-slate-950/40 border border-slate-800 rounded-xl gap-2 flex-wrap"
                 >
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-white font-medium">{member.name || member.email}</span>
-                      {member.isOwner && (
-                        <span className="text-[10px] font-semibold uppercase text-amber-300 bg-amber-500/10 border border-amber-500/30 rounded px-1.5 py-0.5">
-                          Owner
-                        </span>
-                      )}
+                      <span
+                        className={`text-[10px] font-semibold uppercase border rounded px-1.5 py-0.5 ${ROLE_BADGE_STYLE[member.staffRole]}`}
+                      >
+                        {ROLE_LABELS[member.staffRole]}
+                      </span>
                     </div>
                     <p className="text-[11px] text-slate-500 font-mono">{member.email}</p>
                   </div>
-                  {!member.isOwner && (
+                  <div className="flex items-center gap-2">
+                    <select
+                      value={member.staffRole}
+                      disabled={roleUpdatingId === member.id}
+                      onChange={(e) => handleRoleChange(member, e.target.value as StaffRole)}
+                      className="text-[11px] bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-slate-200 disabled:opacity-50"
+                    >
+                      <option value="OWNER">Owner</option>
+                      <option value="EDITOR">Editor</option>
+                      <option value="VIEWER">Viewer</option>
+                    </select>
                     <button
                       type="button"
                       onClick={() => handleDelete(member)}
@@ -217,7 +279,7 @@ export function StaffModal({ slug, restaurantName, onClose }: Props) {
                     >
                       Remove
                     </button>
-                  )}
+                  </div>
                 </div>
               ))}
             </div>

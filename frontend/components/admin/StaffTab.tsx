@@ -2,14 +2,23 @@
 import { useState, useEffect, FormEvent } from 'react';
 import { useAdminI18n } from '@/lib/admin-i18n';
 
+type StaffRole = 'OWNER' | 'EDITOR' | 'VIEWER';
+
 interface StaffMember {
   id: string;
   email: string;
   name: string | null;
   role: string;
+  staffRole: StaffRole;
   createdAt: string;
   isOwner: boolean;
 }
+
+const ROLE_BADGE_STYLE: Record<StaffRole, string> = {
+  OWNER: 'text-amber-700 bg-amber-50 border-amber-200',
+  EDITOR: 'text-blue-700 bg-blue-50 border-blue-200',
+  VIEWER: 'text-gray-600 bg-gray-100 border-gray-200',
+};
 
 export default function StaffTab() {
   const { t, locale } = useAdminI18n();
@@ -21,6 +30,19 @@ export default function StaffTab() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [staffRole, setStaffRole] = useState<StaffRole>('EDITOR');
+  const [roleUpdatingId, setRoleUpdatingId] = useState<string | null>(null);
+
+  const roleLabels: Record<StaffRole, string> = {
+    OWNER: t.staff.roleOwner,
+    EDITOR: t.staff.roleEditor,
+    VIEWER: t.staff.roleViewer,
+  };
+  const roleHints: Record<StaffRole, string> = {
+    OWNER: t.staff.roleOwnerHint,
+    EDITOR: t.staff.roleEditorHint,
+    VIEWER: t.staff.roleViewerHint,
+  };
 
   function load() {
     setLoading(true);
@@ -43,7 +65,7 @@ export default function StaffTab() {
       const res = await fetch('/api/proxy/admin/me/staff', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, name: name || undefined }),
+        body: JSON.stringify({ email, password, name: name || undefined, staffRole }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -59,6 +81,7 @@ export default function StaffTab() {
       setName('');
       setEmail('');
       setPassword('');
+      setStaffRole('EDITOR');
       setShowForm(false);
       load();
     } catch {
@@ -68,11 +91,29 @@ export default function StaffTab() {
     }
   }
 
-  async function handleDelete(member: StaffMember) {
-    if (member.isOwner) {
-      alert(t.staff.deleteOwnerError);
-      return;
+  async function handleRoleChange(member: StaffMember, next: StaffRole) {
+    if (next === member.staffRole) return;
+    setRoleUpdatingId(member.id);
+    try {
+      const res = await fetch(`/api/proxy/admin/me/staff/${member.id}/role`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ staffRole: next }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert(data.message || t.staff.roleUpdateError);
+        return;
+      }
+      load();
+    } catch {
+      alert(t.staff.roleUpdateError);
+    } finally {
+      setRoleUpdatingId(null);
     }
+  }
+
+  async function handleDelete(member: StaffMember) {
     if (!confirm(t.staff.deleteConfirm)) return;
     try {
       const res = await fetch(`/api/proxy/admin/me/staff/${member.id}`, { method: 'DELETE' });
@@ -114,7 +155,7 @@ export default function StaffTab() {
           onSubmit={handleCreate}
           className="border border-gray-200 rounded-xl p-4 mb-6 bg-gray-50/50 space-y-3"
         >
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">{t.staff.nameLabel}</label>
               <input
@@ -147,7 +188,20 @@ export default function StaffTab() {
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
               />
             </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">{t.staff.roleLabel}</label>
+              <select
+                value={staffRole}
+                onChange={(e) => setStaffRole(e.target.value as StaffRole)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
+              >
+                <option value="OWNER">{t.staff.roleOwner}</option>
+                <option value="EDITOR">{t.staff.roleEditor}</option>
+                <option value="VIEWER">{t.staff.roleViewer}</option>
+              </select>
+            </div>
           </div>
+          <p className="text-[11px] text-gray-400">{roleHints[staffRole]}</p>
 
           {error && <p className="text-red-600 text-sm bg-red-50 p-2.5 rounded-lg border border-red-200">{error}</p>}
 
@@ -184,18 +238,28 @@ export default function StaffTab() {
                   <span className="font-medium text-gray-800 text-sm">
                     {member.name || member.email}
                   </span>
-                  {member.isOwner && (
-                    <span className="text-[10px] font-semibold uppercase text-amber-700 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5">
-                      {t.staff.ownerBadge}
-                    </span>
-                  )}
+                  <span
+                    className={`text-[10px] font-semibold uppercase border rounded px-1.5 py-0.5 ${ROLE_BADGE_STYLE[member.staffRole]}`}
+                  >
+                    {roleLabels[member.staffRole]}
+                  </span>
                 </div>
                 <p className="text-xs text-gray-400 font-mono">{member.email}</p>
                 <p className="text-[11px] text-gray-400 mt-0.5">
                   {t.staff.createdAt}: {new Date(member.createdAt).toLocaleDateString(locale === 'tr' ? 'tr-TR' : 'en-US')}
                 </p>
               </div>
-              {!member.isOwner && (
+              <div className="flex items-center gap-2">
+                <select
+                  value={member.staffRole}
+                  disabled={roleUpdatingId === member.id}
+                  onChange={(e) => handleRoleChange(member, e.target.value as StaffRole)}
+                  className="text-xs border border-gray-300 rounded-lg px-2 py-1.5 bg-white text-gray-700 disabled:opacity-50"
+                >
+                  <option value="OWNER">{t.staff.roleOwner}</option>
+                  <option value="EDITOR">{t.staff.roleEditor}</option>
+                  <option value="VIEWER">{t.staff.roleViewer}</option>
+                </select>
                 <button
                   type="button"
                   onClick={() => handleDelete(member)}
@@ -203,7 +267,7 @@ export default function StaffTab() {
                 >
                   {t.staff.deleteBtn}
                 </button>
-              )}
+              </div>
             </div>
           ))}
         </div>
