@@ -29,10 +29,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description,
       keywords,
+      icons: restaurant.logoUrl ? { icon: restaurant.logoUrl, shortcut: restaurant.logoUrl, apple: restaurant.logoUrl } : undefined,
       openGraph: {
         title,
         description,
-        images: restaurant.logo ? [restaurant.logo] : [],
+        images: restaurant.logoUrl ? [restaurant.logoUrl] : [],
         type: 'website',
       },
       twitter: {
