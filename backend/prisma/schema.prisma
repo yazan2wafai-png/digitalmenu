@@ -91,7 +91,12 @@ model RestaurantSettings {
   estimatedPrepMinutes  Int      @default(15)
   currency              String   @default("TRY")
   timezone              String   @default("Europe/Istanbul")
-  
+
+  // SEO & social sharing (used by the public menu's page metadata)
+  metaTitle             String?
+  metaDescription       String?
+  keywords              String?
+
   // Feature flags
   enableOrdering        Boolean  @default(true)
   enableTables          Boolean  @default(true)

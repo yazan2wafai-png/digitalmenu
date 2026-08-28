@@ -27,6 +27,18 @@ export class UpdateRestaurantSettingsDto {
   timezone?: string;
 
   @IsOptional()
+  @IsString()
+  metaTitle?: string;
+
+  @IsOptional()
+  @IsString()
+  metaDescription?: string;
+
+  @IsOptional()
+  @IsString()
+  keywords?: string;
+
+  @IsOptional()
   @IsBoolean()
   enableOrdering?: boolean;
 

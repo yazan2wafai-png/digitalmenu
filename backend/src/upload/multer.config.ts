@@ -1,28 +1,16 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
-import { diskStorage } from 'multer';
-import { extname, join } from 'path';
-import { existsSync, mkdirSync } from 'fs';
-import { randomUUID } from 'crypto';
+import { memoryStorage } from 'multer';
 
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
-const UPLOADS_DIR = join(process.cwd(), 'uploads');
 
-// Ensure uploads directory exists at startup
-if (!existsSync(UPLOADS_DIR)) {
-  mkdirSync(UPLOADS_DIR, { recursive: true });
-}
-
+// Buffer the upload in memory instead of writing straight to local disk.
+// The active StorageProvider (local disk or S3/R2) decides where the bytes
+// actually end up - see src/storage. Keeping multer disk-agnostic means the
+// provider can be swapped without touching this file.
 export const imageUploadOptions: MulterOptions = {
-  storage: diskStorage({
-    destination: UPLOADS_DIR,
-    filename: (_req, file, cb) => {
-      const uniqueName = randomUUID();
-      const ext = extname(file.originalname).toLowerCase();
-      cb(null, `${uniqueName}${ext}`);
-    },
-  }),
+  storage: memoryStorage(),
   fileFilter: (_req, file, cb) => {
     if (ALLOWED_MIME_TYPES.includes(file.mimetype)) {
       cb(null, true);

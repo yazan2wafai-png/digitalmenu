@@ -16,12 +16,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       return { title: 'Restaurant Not Found - Digital Menu' };
     }
     const restaurant = await res.json();
+    // A tenant admin can override these from Settings & SEO; fall back to
+    // sensible defaults built from the restaurant's own name when unset.
+    const seoSettings = restaurant.settings ?? {};
+    const title = seoSettings.metaTitle || `${restaurant.name} | Digital Menu`;
+    const description =
+      seoSettings.metaDescription || restaurant.description || `Digital menu for ${restaurant.name}`;
+    const keywords: string[] | undefined = seoSettings.keywords
+      ? seoSettings.keywords.split(',').map((k: string) => k.trim()).filter(Boolean)
+      : undefined;
     return {
-      title: `${restaurant.name} | Digital Menu`,
-      description: restaurant.description || `Digital menu for ${restaurant.name}`,
+      title,
+      description,
+      keywords,
       openGraph: {
-        title: `${restaurant.name} | Digital Menu`,
-        description: restaurant.description || `Digital menu for ${restaurant.name}`,
+        title,
+        description,
         images: restaurant.logo ? [restaurant.logo] : [],
         type: 'website',
       },
