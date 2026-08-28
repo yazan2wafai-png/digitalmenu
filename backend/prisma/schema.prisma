@@ -76,6 +76,10 @@ model AdminUser {
   restaurantId String?
   email        String   @unique
   passwordHash String
+  // Display name for staff accounts (e.g. "Ahmet - Garson"); the restaurant's
+  // very first AdminUser (earliest createdAt) is treated as its "owner" at
+  // read time - no stored flag, so existing rows never needed a backfill.
+  name         String?
   createdAt    DateTime @default(now())
   role         AdminRole @default(RESTAURANT_ADMIN)
 

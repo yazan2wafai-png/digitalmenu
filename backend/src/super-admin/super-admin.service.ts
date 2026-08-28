@@ -9,6 +9,9 @@ import { PrismaService } from '../prisma/prisma.service';
 import { SuperAdminLoginDto } from './dto/super-admin-login.dto';
 import { CreateRestaurantDto } from './dto/create-restaurant.dto';
 import { UpdateRestaurantPermissionsDto } from './dto/update-restaurant-permissions.dto';
+import { StaffService } from '../staff/staff.service';
+import type { StaffMember } from '../staff/staff.service';
+import { CreateStaffDto } from '../staff/dto/create-staff.dto';
 import * as bcrypt from 'bcryptjs';
 import { randomBytes } from 'crypto';
 import { AdminRole } from '../common/roles.enum';
@@ -73,6 +76,12 @@ export interface ResetAdminPasswordResponse {
   newPassword: string;
 }
 
+export interface ImpersonateRestaurantResponse {
+  accessToken: string;
+  restaurantSlug: string;
+  email: string;
+}
+
 export interface DailyViewCount {
   date: string;
   count: number;
@@ -89,6 +98,7 @@ export class SuperAdminService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
+    private readonly staffService: StaffService,
   ) {}
 
   /**
@@ -454,6 +464,83 @@ export class SuperAdminService {
       slug: restaurant.slug,
       email: adminUser.email,
       newPassword,
+    };
+  }
+
+  /**
+   * List every staff/admin account for a restaurant, by slug. Cross-tenant
+   * counterpart of GET /admin/me/staff - delegates to the same StaffService
+   * so ownership rules (earliest-created account = owner) stay in one place.
+   */
+  async listRestaurantStaff(slug: string): Promise<StaffMember[]> {
+    const restaurant = await this.prisma.restaurant.findUnique({ where: { slug } });
+    if (!restaurant) {
+      throw new NotFoundException(`Restaurant with slug "${slug}" not found`);
+    }
+    return this.staffService.listStaff(restaurant.id);
+  }
+
+  /**
+   * Create a staff account for any restaurant, by slug. Bypasses the
+   * tenant's own canManageStaff toggle - super-admin can always provision
+   * accounts for a tenant even if that tenant's self-service staff
+   * management has been switched off for them.
+   */
+  async createRestaurantStaff(slug: string, dto: CreateStaffDto): Promise<StaffMember> {
+    const restaurant = await this.prisma.restaurant.findUnique({ where: { slug } });
+    if (!restaurant) {
+      throw new NotFoundException(`Restaurant with slug "${slug}" not found`);
+    }
+    return this.staffService.createStaff(restaurant.id, dto, { bypassGate: true });
+  }
+
+  /** Remove a staff account from any restaurant, by slug. The primary owner account is still protected. */
+  async deleteRestaurantStaff(slug: string, staffId: string): Promise<{ success: boolean }> {
+    const restaurant = await this.prisma.restaurant.findUnique({ where: { slug } });
+    if (!restaurant) {
+      throw new NotFoundException(`Restaurant with slug "${slug}" not found`);
+    }
+    return this.staffService.deleteStaff(restaurant.id, staffId);
+  }
+
+  /**
+   * Issue a short-lived tenant-admin token for a restaurant so super-admin
+   * can act through the exact same endpoints/UI a real tenant admin uses
+   * ("login as this restaurant"), instead of needing a parallel
+   * super-admin-only route for every single tenant-scoped feature
+   * (categories, products, orders, tables, settings, ...). The token
+   * carries the restaurant's owner identity but expires in 2h, well short
+   * of a normal 7-day login token, since it was minted by a platform
+   * action rather than the tenant's own credentials.
+   */
+  async impersonateRestaurant(slug: string): Promise<ImpersonateRestaurantResponse> {
+    const restaurant = await this.prisma.restaurant.findUnique({ where: { slug } });
+    if (!restaurant) {
+      throw new NotFoundException(`Restaurant with slug "${slug}" not found`);
+    }
+
+    const adminUser = await this.prisma.adminUser.findFirst({
+      where: { restaurantId: restaurant.id },
+      orderBy: { createdAt: 'asc' },
+    });
+    if (!adminUser) {
+      throw new NotFoundException(`No admin user found for restaurant "${slug}"`);
+    }
+
+    const payload = {
+      sub: adminUser.id,
+      email: adminUser.email,
+      restaurantId: restaurant.id,
+      restaurantSlug: restaurant.slug,
+      role: AdminRole.RESTAURANT_ADMIN,
+    };
+
+    const accessToken = this.jwtService.sign(payload, { expiresIn: '2h' });
+
+    return {
+      accessToken,
+      restaurantSlug: restaurant.slug,
+      email: adminUser.email,
     };
   }
 

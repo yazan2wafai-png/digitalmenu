@@ -21,10 +21,13 @@ import type {
   RestaurantViewsResponse,
   UpdateRestaurantPermissionsResponse,
   ResetAdminPasswordResponse,
+  ImpersonateRestaurantResponse,
 } from './super-admin.service';
 import { SuperAdminLoginDto } from './dto/super-admin-login.dto';
 import { CreateRestaurantDto } from './dto/create-restaurant.dto';
 import { UpdateRestaurantPermissionsDto } from './dto/update-restaurant-permissions.dto';
+import type { StaffMember } from '../staff/staff.service';
+import { CreateStaffDto } from '../staff/dto/create-staff.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { SuperAdminGuard } from './guards/super-admin.guard';
 import type { AuthenticatedRequest } from '../auth/strategies/jwt.strategy';
@@ -132,5 +135,56 @@ export class SuperAdminController {
   @UseGuards(JwtAuthGuard, SuperAdminGuard)
   resetAdminPassword(@Param('slug') slug: string): Promise<ResetAdminPasswordResponse> {
     return this.superAdminService.resetAdminPassword(slug);
+  }
+
+  /**
+   * GET /super-admin/restaurants/:slug/staff
+   * Protected: list every staff/admin account for a restaurant.
+   */
+  @Get('restaurants/:slug/staff')
+  @UseGuards(JwtAuthGuard, SuperAdminGuard)
+  listRestaurantStaff(@Param('slug') slug: string): Promise<StaffMember[]> {
+    return this.superAdminService.listRestaurantStaff(slug);
+  }
+
+  /**
+   * POST /super-admin/restaurants/:slug/staff
+   * Protected: create a staff account for any restaurant - unlimited per
+   * restaurant, bypasses that tenant's own canManageStaff toggle.
+   */
+  @Post('restaurants/:slug/staff')
+  @UseGuards(JwtAuthGuard, SuperAdminGuard)
+  createRestaurantStaff(
+    @Param('slug') slug: string,
+    @Body() dto: CreateStaffDto,
+  ): Promise<StaffMember> {
+    return this.superAdminService.createRestaurantStaff(slug, dto);
+  }
+
+  /**
+   * DELETE /super-admin/restaurants/:slug/staff/:id
+   * Protected: remove a staff account from any restaurant (owner protected).
+   */
+  @Delete('restaurants/:slug/staff/:id')
+  @UseGuards(JwtAuthGuard, SuperAdminGuard)
+  deleteRestaurantStaff(
+    @Param('slug') slug: string,
+    @Param('id') id: string,
+  ): Promise<{ success: boolean }> {
+    return this.superAdminService.deleteRestaurantStaff(slug, id);
+  }
+
+  /**
+   * POST /super-admin/restaurants/:slug/impersonate
+   * Protected: SuperAdmin only. Issues a short-lived tenant-admin token for
+   * the given restaurant, so super-admin can act through the exact same
+   * endpoints/UI a real tenant admin uses ("login as this restaurant")
+   * instead of needing a parallel super-admin-only route for every single
+   * tenant-scoped feature (orders, categories, products, tables, settings...).
+   */
+  @Post('restaurants/:slug/impersonate')
+  @UseGuards(JwtAuthGuard, SuperAdminGuard)
+  impersonateRestaurant(@Param('slug') slug: string): Promise<ImpersonateRestaurantResponse> {
+    return this.superAdminService.impersonateRestaurant(slug);
   }
 }
