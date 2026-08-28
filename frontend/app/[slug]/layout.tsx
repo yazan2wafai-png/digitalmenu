@@ -11,7 +11,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://digitalmenu-backend-production.up.railway.app';
-    const res = await fetch(`${apiUrl}/restaurants/${slug}?locale=en`);
+    const res = await fetch(`${apiUrl}/restaurants/${slug}?locale=en`, { cache: 'no-store' });
     if (!res.ok) {
       return { title: 'Restaurant Not Found - Digital Menu' };
     }

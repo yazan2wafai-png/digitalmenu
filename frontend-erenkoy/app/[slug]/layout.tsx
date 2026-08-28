@@ -11,7 +11,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://digitalmenu-backend-production.up.railway.app';
-    const res = await fetch(`${apiUrl}/restaurants/${slug}?locale=en`);
+    const res = await fetch(`${apiUrl}/restaurants/${slug}?locale=en`, { cache: 'no-store' });
     if (!res.ok) {
       return { title: 'Restaurant Not Found - Digital Menu' };
     }
@@ -19,10 +19,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
       title: `${restaurant.name} | Digital Menu`,
       description: restaurant.description || `Digital menu for ${restaurant.name}`,
+      icons: restaurant.logoUrl
+        ? { icon: restaurant.logoUrl, shortcut: restaurant.logoUrl, apple: restaurant.logoUrl }
+        : undefined,
       openGraph: {
         title: `${restaurant.name} | Digital Menu`,
         description: restaurant.description || `Digital menu for ${restaurant.name}`,
-        images: restaurant.logo ? [restaurant.logo] : [],
+        images: restaurant.logoUrl ? [restaurant.logoUrl] : [],
         type: 'website',
       },
       twitter: {
@@ -40,7 +43,7 @@ export default async function Layout({ params, children }: Props) {
   let restaurant = null;
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://digitalmenu-backend-production.up.railway.app';
-    const res = await fetch(`${apiUrl}/restaurants/${slug}?locale=en`);
+    const res = await fetch(`${apiUrl}/restaurants/${slug}?locale=en`, { cache: 'no-store' });
     if (res.ok) {
       restaurant = await res.json();
     }
@@ -58,7 +61,7 @@ export default async function Layout({ params, children }: Props) {
       {
         "@type": "Restaurant",
         "name": restaurant.name,
-        "image": restaurant.logo,
+        "image": restaurant.logoUrl,
         "url": `https://digitalmenu-backend-production.up.railway.app/restaurants/${slug}`,
         "menu": `https://digitalmenu-backend-production.up.railway.app/restaurants/${slug}`
       },
