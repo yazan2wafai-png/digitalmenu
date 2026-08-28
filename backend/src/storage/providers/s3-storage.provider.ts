@@ -51,6 +51,14 @@ export class S3StorageProvider implements IStorageProvider {
       endpoint,
       region,
       credentials: { accessKeyId, secretAccessKey },
+      // R2 is S3-compatible but doesn't implement the newer AWS SDK v3
+      // "flexible checksums" feature the same way S3 does - leaving it on
+      // its default ('WHEN_SUPPORTED') makes R2 reject otherwise-valid
+      // requests with a bare "AccessDenied". Forcing path-style addressing
+      // avoids virtual-hosted-style DNS/signature quirks against R2 too.
+      requestChecksumCalculation: 'WHEN_REQUIRED',
+      responseChecksumValidation: 'WHEN_REQUIRED',
+      forcePathStyle: true,
     });
   }
 
