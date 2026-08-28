@@ -939,8 +939,13 @@ export default function Stand3D({
       }}
       className={className}
     >
-      {/* ── HIGH-END STUDIO LIGHTING RIG ── */}
-      <ambientLight intensity={0.55} />
+      {/* ── HIGH-END STUDIO LIGHTING RIG ──
+          Note: the stand spins continuously (groupRef rotation.y) while these
+          lights stay fixed in world space, so every angle needs enough
+          coverage on its own - not just the front-on hero angle. Ambient +
+          rim/fill are kept high enough that the black acrylic never goes flat
+          or dark as it rotates past the key light. */}
+      <ambientLight intensity={0.85} />
 
       {/* Main Warm Key Light */}
       <directionalLight
@@ -956,21 +961,21 @@ export default function Stand3D({
       {/* Cyan Rim Silhouette Light (Highlights Back & Side Edges of Black Acrylic) */}
       <directionalLight
         position={[-6, 4, -4]}
-        intensity={0.7}
+        intensity={1.3}
         color="#38bdf8"
       />
 
       {/* Cool White Secondary Rim Light */}
       <directionalLight
         position={[6, -2, -4]}
-        intensity={0.65}
+        intensity={1.1}
         color="#e0f2fe"
       />
 
       {/* Warm Golden Bottom Fill Light (Illuminates the Base Foot) */}
       <pointLight
         position={[0, -2.2, 3.5]}
-        intensity={0.95}
+        intensity={1.6}
         color="#fbbf24"
         distance={9}
       />
@@ -978,7 +983,7 @@ export default function Stand3D({
       {/* High-Key Top Spot */}
       <spotLight
         position={[0, 8, 2]}
-        intensity={1.1}
+        intensity={1.3}
         angle={0.7}
         penumbra={0.8}
         color="#ffffff"
