@@ -768,12 +768,12 @@ function StandMesh({
             ) : (
               <meshPhysicalMaterial
                 color="#0d0d0f"
-                roughness={0.15}
-                metalness={0.05}
-                clearcoat={0.8}
-                clearcoatRoughness={0.08}
-                reflectivity={0.9}
-                specularIntensity={1.0}
+                roughness={0.32}
+                metalness={0.04}
+                clearcoat={0.4}
+                clearcoatRoughness={0.25}
+                reflectivity={0.5}
+                specularIntensity={0.55}
                 specularColor="#ffffff"
               />
             )}
@@ -821,12 +821,13 @@ function StandMesh({
           ) : (
             <meshPhysicalMaterial
               color="#0d0d0f"
-              roughness={0.15}
-              metalness={0.05}
-              clearcoat={0.8}
-              clearcoatRoughness={0.08}
-              reflectivity={0.9}
-              specularIntensity={1.0}
+              roughness={0.32}
+              metalness={0.04}
+              clearcoat={0.4}
+              clearcoatRoughness={0.25}
+              reflectivity={0.5}
+              specularIntensity={0.55}
+              specularColor="#ffffff"
             />
           )}
         </mesh>
@@ -853,12 +854,12 @@ function StandMesh({
             ) : (
               <meshPhysicalMaterial
                 color="#0d0d0f"
-                roughness={0.15}
-                metalness={0.05}
-                clearcoat={0.8}
-                clearcoatRoughness={0.08}
-                reflectivity={0.9}
-                specularIntensity={1.0}
+                roughness={0.32}
+                metalness={0.04}
+                clearcoat={0.4}
+                clearcoatRoughness={0.25}
+                reflectivity={0.5}
+                specularIntensity={0.55}
                 specularColor="#ffffff"
               />
             )}
@@ -939,12 +940,12 @@ export default function Stand3D({
       className={className}
     >
       {/* ── HIGH-END STUDIO LIGHTING RIG ── */}
-      <ambientLight intensity={1.1} />
+      <ambientLight intensity={0.55} />
 
       {/* Main Warm Key Light */}
       <directionalLight
         position={[4, 7, 5]}
-        intensity={2.8}
+        intensity={2.1}
         castShadow
         shadow-mapSize-width={1024}
         shadow-mapSize-height={1024}
@@ -955,21 +956,21 @@ export default function Stand3D({
       {/* Cyan Rim Silhouette Light (Highlights Back & Side Edges of Black Acrylic) */}
       <directionalLight
         position={[-6, 4, -4]}
-        intensity={2.4}
+        intensity={0.7}
         color="#38bdf8"
       />
 
       {/* Cool White Secondary Rim Light */}
       <directionalLight
         position={[6, -2, -4]}
-        intensity={1.8}
+        intensity={0.65}
         color="#e0f2fe"
       />
 
       {/* Warm Golden Bottom Fill Light (Illuminates the Base Foot) */}
       <pointLight
         position={[0, -2.2, 3.5]}
-        intensity={2.4}
+        intensity={0.95}
         color="#fbbf24"
         distance={9}
       />
@@ -977,14 +978,14 @@ export default function Stand3D({
       {/* High-Key Top Spot */}
       <spotLight
         position={[0, 8, 2]}
-        intensity={2.0}
+        intensity={1.1}
         angle={0.7}
         penumbra={0.8}
         color="#ffffff"
       />
 
       {/* Studio Reflection Environment */}
-      <Environment preset="city" />
+      <Environment preset="studio" />
 
       {/* Stand 3D Mesh */}
       <StandMesh
