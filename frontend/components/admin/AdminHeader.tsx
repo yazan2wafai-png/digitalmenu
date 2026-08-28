@@ -36,6 +36,7 @@ export function AdminHeader({ slug, email, permissions }: Props) {
       : []),
     ...(permissions?.canTrackTables !== false ? [{ label: t.nav.tables, href: '/admin/locations' }] : []),
     { label: t.nav.settings, href: '/admin/settings' },
+    ...(permissions?.canManageStaff !== false ? [{ label: t.nav.staff, href: '/admin/staff' }] : []),
   ];
 
   return (

@@ -9,6 +9,7 @@ import { AnalyticsModal } from '@/components/super-admin/AnalyticsModal';
 import { DeleteConfirmModal } from '@/components/super-admin/DeleteConfirmModal';
 import { PermissionsModal } from '@/components/super-admin/PermissionsModal';
 import { PasswordResetModal } from '@/components/super-admin/PasswordResetModal';
+import { StaffModal } from '@/components/super-admin/StaffModal';
 
 import type { TenantRestaurantItem as RestaurantItem, RestaurantPermissions } from '@/types/super-admin';
 
@@ -42,6 +43,8 @@ export default function SuperAdminDashboardPage() {
   const [analyticsTarget, setAnalyticsTarget] = useState<{ slug: string; name: string } | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<{ slug: string; name: string } | null>(null);
   const [passwordResetTarget, setPasswordResetTarget] = useState<{ slug: string; name: string } | null>(null);
+  const [staffTarget, setStaffTarget] = useState<{ slug: string; name: string } | null>(null);
+  const [impersonatingSlug, setImpersonatingSlug] = useState<string | null>(null);
   const [permissionsTarget, setPermissionsTarget] = useState<{
     slug: string;
     name: string;
@@ -95,6 +98,32 @@ export default function SuperAdminDashboardPage() {
     setCopiedSlug(slug);
     setTimeout(() => setCopiedSlug(null), 2000);
     showToast(`Copied ${url} to clipboard!`);
+  }
+
+  // "Login as": mints a short-lived tenant-admin token via the backend's
+  // impersonate endpoint and opens the tenant's own /admin panel already
+  // signed in - no password needed, works even if the tenant has never
+  // shared their credentials.
+  async function handleImpersonate(slug: string) {
+    setImpersonatingSlug(slug);
+    try {
+      const res = await fetch(`/api/proxy/super-admin/restaurants/${slug}/impersonate`, {
+        method: 'POST',
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        showToast(data.message || 'Could not sign in as this restaurant');
+        return;
+      }
+      const url = `https://${slug}.nfcmyplace.com/impersonate?token=${encodeURIComponent(
+        data.accessToken
+      )}&slug=${encodeURIComponent(data.restaurantSlug)}&email=${encodeURIComponent(data.email)}`;
+      window.open(url, '_blank');
+    } catch {
+      showToast('Could not sign in as this restaurant');
+    } finally {
+      setImpersonatingSlug(null);
+    }
   }
 
   // Quick inline permission toggle handler
@@ -543,6 +572,27 @@ export default function SuperAdminDashboardPage() {
                               <span>Admin</span>
                             </Link>
 
+                            {/* Login As (impersonate) - no password needed */}
+                            <button
+                              onClick={() => handleImpersonate(r.slug)}
+                              disabled={impersonatingSlug === r.slug}
+                              className="px-2.5 py-1 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-lg text-xs font-medium transition cursor-pointer disabled:opacity-40 flex items-center gap-1"
+                              title="Sign in as this restaurant's admin, no password needed"
+                            >
+                              <span>🔓</span>
+                              <span>{impersonatingSlug === r.slug ? '…' : 'Login As'}</span>
+                            </button>
+
+                            {/* Staff Accounts */}
+                            <button
+                              onClick={() => setStaffTarget({ slug: r.slug, name: displayName })}
+                              className="px-2.5 py-1 bg-sky-500/10 hover:bg-sky-500/20 text-sky-300 border border-sky-500/30 rounded-lg text-xs font-medium transition cursor-pointer flex items-center gap-1"
+                              title="Manage staff accounts"
+                            >
+                              <span>👥</span>
+                              <span>Staff</span>
+                            </button>
+
                             {/* Reset Admin Password */}
                             <button
                               onClick={() => setPasswordResetTarget({ slug: r.slug, name: displayName })}
@@ -629,6 +679,14 @@ export default function SuperAdminDashboardPage() {
           slug={passwordResetTarget.slug}
           restaurantName={passwordResetTarget.name}
           onClose={() => setPasswordResetTarget(null)}
+        />
+      )}
+
+      {staffTarget && (
+        <StaffModal
+          slug={staffTarget.slug}
+          restaurantName={staffTarget.name}
+          onClose={() => setStaffTarget(null)}
         />
       )}
     </div>
