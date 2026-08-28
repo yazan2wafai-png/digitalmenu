@@ -13,7 +13,7 @@ export const translations = {
     hero: {
       badge: 'Fiziksel NFC Donanımları & Akıllı Menü SaaS',
       title: 'Fiziksel dünyayı dijitalle buluştur.',
-      tagline: 'Restoranlar ve kafeler için yeni nesil NFC & QR akıllı masa donanımları ve bulut tabanlı dijital menü SaaS altyapısı.',
+      tagline: 'Restoranlar ve kafeler için Google yorum kartı, NFC & QR menü stickerı ve bulut tabanlı dijital menü SaaS altyapısı.',
       primaryCta: '3D Standı İncele ↓',
       secondaryCta: 'Canlı Demoları İncele →',
       stats: {
@@ -25,15 +25,15 @@ export const translations = {
     },
     stand: {
       badge: 'Hizmet 1: Amiral Gemisi Donanım',
-      title: 'NFC & QR Google Değerlendirme Standı',
+      title: 'NFC & QR Google Yorum Standı',
       subtitle: '75° ergonomik açılı monolitik akrilik gövde, NTAG213 temassız çip ve restoranınıza özel kurumsal tasarım baskı ile Google puanınızı katlayın.',
       unitPrice: '1.750 TL / Adet',
       dragHint: '360° Döndürmek İçin Sürükleyin',
     },
     sticker: {
       badge: 'Hizmet 2: Masa Çözümleri',
-      title: 'Akrilik Masa Stickerı (NFC + QR)',
-      subtitle: 'Ultra dayanıklı 2mm pleksi akrilik, 3M endüstriyel VHB yapışkan ve IP68 sıvı geçirmez koruma ile masalarınızı tek dokunuşla dijitalleştirin.',
+      title: 'Akrilik Masa Stickerı (NFC + QR Menü)',
+      subtitle: 'Ultra dayanıklı 2mm pleksi akrilik, 3M endüstriyel VHB yapışkan ve IP68 sıvı geçirmez koruma ile masalarınızı tek dokunuşla dijital menünüze bağlayın.',
       unitPrice: '175 TL / Adet',
       minOrder: 'Minimum 10 adet',
     },

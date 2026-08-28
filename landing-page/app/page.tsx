@@ -105,7 +105,7 @@ export default function LandingPage() {
     {
       id: 'stand',
       badge: locale === 'tr' ? 'Donanım Odaklı' : 'Hardware Focused',
-      title: locale === 'tr' ? 'Google Değerlendirme Standı' : 'Google Review Stand',
+      title: locale === 'tr' ? 'Google Yorum Standı' : 'Google Review Stand',
       price: '1.750 TL',
       unit: locale === 'tr' ? '/ adet' : '/ unit',
       subtitle:
@@ -185,7 +185,7 @@ export default function LandingPage() {
       features:
         locale === 'tr'
           ? [
-              '1x Özel Tasarım NFC & QR Google Değerlendirme Standı (1.750 TL Değerinde)',
+              '1x Özel Tasarım NFC & QR Google Yorum Standı (1.750 TL Değerinde)',
               '10x Numaralı Akrilik Masa Stickerı (1.750 TL Değerinde)',
               '1 Yıllık Tam Kapsamlı Restoran Dijital Menü SaaS Altyapısı (3.000 TL Değerinde)',
               'Ücretsiz Menü Veri Girişi, Tasarım & Yerinde Kurulum Desteği',
@@ -364,7 +364,7 @@ export default function LandingPage() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/products/lstand-mockup.png"
-              alt={locale === 'tr' ? 'Google Değerlendirme Standı - gerçek ürün' : 'Google Review Stand - real product'}
+              alt={locale === 'tr' ? 'Google Yorum Standı - NFC ve QR kodlu gerçek ürün' : 'Google Review Stand - real product'}
               className="w-full h-80 sm:h-96 object-cover group-hover:scale-105 transition-transform duration-700"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/0 to-transparent" />
@@ -385,7 +385,7 @@ export default function LandingPage() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/products/masa-stickeri-mockup.png"
-              alt={locale === 'tr' ? 'Akrilik Masa Stickerı - gerçek ürün' : 'Acrylic Table Sticker - real product'}
+              alt={locale === 'tr' ? 'NFC ve QR menü stickerı - Akrilik Masa Stickerı gerçek ürün' : 'Acrylic Table Sticker - real product'}
               className="w-full h-80 sm:h-96 object-cover group-hover:scale-105 transition-transform duration-700"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/0 to-transparent" />

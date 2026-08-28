@@ -101,7 +101,7 @@ export function GoogleReviewCard({ isHovered = false }: GoogleReviewCardProps) {
         anchorX="left"
         anchorY="middle"
       >
-        5 Yıldızlı Değerlendirme İçin Dokundurun
+        5 Yıldızlı Yorum İçin Dokundurun
       </Text>
 
       {/* 5-STAR GOLD BADGE */}

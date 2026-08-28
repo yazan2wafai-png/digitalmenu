@@ -82,7 +82,7 @@ export function NFCShowcase({ locale = 'tr', onOrderClick }: NFCShowcaseProps) {
         <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-zinc-100 drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]">
           {locale === 'tr' ? 'Özel Kurumsal Tasarım ' : 'Custom Corporate Design '}
           <span className="text-zinc-100 font-extrabold tracking-tight bg-gradient-to-r from-white via-zinc-200 to-amber-400 bg-clip-text text-transparent drop-shadow-sm inline-block">
-            {locale === 'tr' ? 'NFC & QR Google Değerlendirme Standı' : 'NFC & QR Google Review Stand'}
+            {locale === 'tr' ? 'NFC & QR Google Yorum Standı' : 'NFC & QR Google Review Stand'}
           </span>
         </h2>
         <p className="text-sm sm:text-base text-white/60 max-w-2xl mx-auto leading-relaxed">
