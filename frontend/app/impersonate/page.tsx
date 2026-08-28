@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 /**
@@ -13,7 +13,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
  * Living at the app root instead just passes through normally for any
  * tenant subdomain, no admin_token needed yet.
  */
-export default function ImpersonatePage() {
+function ImpersonateInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState('');
@@ -40,9 +40,19 @@ export default function ImpersonatePage() {
       .catch(() => setError('Could not sign in as this restaurant'));
   }, [router, searchParams]);
 
+  return error ? <p className="text-red-400">{error}</p> : <p>Signing in…</p>;
+}
+
+// useSearchParams() bails out of static prerendering unless the component
+// using it is wrapped in Suspense - without this, `next build` fails to
+// prerender this route entirely (see the Next.js "missing-suspense-with-
+// csr-bailout" error) and the whole deploy is rejected.
+export default function ImpersonatePage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-neutral-950 text-white/60 text-sm">
-      {error ? <p className="text-red-400">{error}</p> : <p>Signing in…</p>}
+      <Suspense fallback={<p>Signing in…</p>}>
+        <ImpersonateInner />
+      </Suspense>
     </div>
   );
 }
