@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Navbar } from '@/components/Navbar';
 import { NFCShowcase } from '@/components/nfc-showcase';
 import { StickerSection } from '@/components/StickerSection';
+import { SignupForm } from '@/components/SignupForm';
 import { DiscountModal } from '@/components/DiscountModal';
 import { AmbientNfcWaves } from '@/components/AmbientNfcWaves';
 import { motion } from 'framer-motion';
@@ -605,6 +606,8 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      <SignupForm />
 
       {/* ── FOOTER ── */}
       <footer className="py-14 px-4 sm:px-6 border-t border-ink/80 bg-ink backdrop-blur-xl relative z-10">
