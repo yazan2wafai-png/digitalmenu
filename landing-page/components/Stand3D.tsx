@@ -243,6 +243,9 @@ function drawMusicNoteAndBrand(
 ) {
   ctx.save();
   const goldGrad = createGoldGradient(ctx, cx - 350, cy, cx + 350, cy);
+  // Bug fix: isWhite was previously accepted but never used, so the brand name/note
+  // rendered in light gold on the white acrylic body with ~1.7:1 contrast (illegible).
+  const brandFill = isWhite ? '#92400e' : goldGrad;
 
   ctx.font = '800 86px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif';
   const textWidth = ctx.measureText(brandText).width;
@@ -255,8 +258,8 @@ function drawMusicNoteAndBrand(
   const noteX = startX + 32;
   const noteY = cy;
 
-  ctx.fillStyle = goldGrad;
-  ctx.strokeStyle = goldGrad;
+  ctx.fillStyle = brandFill;
+  ctx.strokeStyle = brandFill;
   ctx.lineWidth = 6;
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
@@ -297,7 +300,7 @@ function drawMusicNoteAndBrand(
   ctx.stroke();
 
   // Brand Typography in Gold
-  ctx.fillStyle = goldGrad;
+  ctx.fillStyle = brandFill;
   ctx.textAlign = 'left';
   ctx.textBaseline = 'middle';
   ctx.fillText(brandText, startX + noteW + gap, cy - 2);
@@ -356,7 +359,7 @@ function drawSmartphoneNFCIcon(
   ctx.stroke();
 
   ctx.font = '900 18px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-  ctx.fillStyle = primaryGold;
+  ctx.fillStyle = isWhite ? '#92400e' : primaryGold;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText('NFC', cx, cy - 2);

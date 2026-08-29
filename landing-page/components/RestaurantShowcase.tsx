@@ -222,7 +222,7 @@ export function RestaurantShowcase({
                           </div>
 
                           {/* Products - horizontal scroll */}
-                          <div className="flex items-center gap-1 text-[11px] text-ink/40 font-semibold">
+                          <div className="flex items-center gap-1 text-[11px] text-ink/70 font-semibold">
                             <span>{t.scrollHint}</span>
                             <ChevronRight className="w-3 h-3" />
                           </div>

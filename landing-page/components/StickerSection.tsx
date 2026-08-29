@@ -215,7 +215,7 @@ export function StickerSection({ locale = 'tr', onOrderClick }: StickerSectionPr
                   <text
                     y="29"
                     textAnchor="middle"
-                    fill="url(#stickerGoldGrad)"
+                    fill={isWhite ? '#92400e' : 'url(#stickerGoldGrad)'}
                     fontSize="18"
                     fontWeight="900"
                     letterSpacing="4"
@@ -363,7 +363,7 @@ export function StickerSection({ locale = 'tr', onOrderClick }: StickerSectionPr
                   x="180"
                   y="336"
                   textAnchor="middle"
-                  fill={isWhite ? 'rgba(0,0,0,0.38)' : 'rgba(255,255,255,0.38)'}
+                  fill={isWhite ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.55)'}
                   fontSize="7.5"
                   fontWeight="700"
                   letterSpacing="1.2"

@@ -635,7 +635,7 @@ export default function LandingPage() {
               </span>
             </div>
             <p className="text-xs text-cream/60 max-w-sm">{t.footer.tagline}</p>
-            <p className="text-[11px] text-cream/40">{t.footer.rights}</p>
+            <p className="text-[11px] text-cream/60">{t.footer.rights}</p>
           </div>
 
           {/* Quick Nav Links */}
