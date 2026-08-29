@@ -1,9 +1,85 @@
 'use client';
 
-import React, { useRef, useState, useMemo, useEffect } from 'react';
+import React, { useRef, useState, useMemo, useEffect, useLayoutEffect } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Float, ContactShadows, Environment, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
+
+/**
+ * Cubic ease-in-out - used for every color/scale/shadow transition below so
+ * the black<->white swap reads as one consistent, non-bouncy motion language.
+ */
+function easeInOutCubic(t: number): number {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+}
+
+/** Shared acrylic body material presets (base foot / front corner / face slab). */
+const ACRYLIC_BLACK = {
+  color: new THREE.Color('#0d0d0f'),
+  roughness: 0.32,
+  metalness: 0.04,
+  clearcoat: 0.4,
+  clearcoatRoughness: 0.25,
+  transmission: 0,
+  opacity: 1,
+  specularIntensity: 0.55,
+};
+const ACRYLIC_WHITE = {
+  color: new THREE.Color('#f4f4f5'),
+  roughness: 0.35,
+  metalness: 0,
+  clearcoat: 0.1,
+  clearcoatRoughness: 0.2,
+  transmission: 0.02,
+  opacity: 0.98,
+  specularIntensity: 0.85,
+};
+
+/** Bevel accent line: warm gold (black body) <-> cool cyan (white body). */
+const BEVEL_BLACK = { color: new THREE.Color('#e5c158'), emissive: new THREE.Color('#d4af37') };
+const BEVEL_WHITE = { color: new THREE.Color('#38bdf8'), emissive: new THREE.Color('#38bdf8') };
+
+/**
+ * Eases a 0/1 target value over `duration` seconds using the R3F clock, so a
+ * prop flip (e.g. isWhite) becomes a smooth ~300ms transition instead of an
+ * instant snap. Returns refs (not state) so the per-frame write costs nothing
+ * beyond a couple of lerps, and the internal useFrame subscription no-ops
+ * (single boolean check) once the transition has settled.
+ */
+function useColorTransition(target: number, duration = 0.28) {
+  const blend = useRef(target);
+  const progress = useRef(1);
+  const active = useRef(false);
+  const fromVal = useRef(target);
+  const toVal = useRef(target);
+  const startTime = useRef<number | null>(null);
+  const prevTarget = useRef(target);
+
+  useEffect(() => {
+    if (prevTarget.current !== target) {
+      fromVal.current = blend.current;
+      toVal.current = target;
+      prevTarget.current = target;
+      startTime.current = null;
+      active.current = true;
+    }
+  }, [target]);
+
+  useFrame((state) => {
+    if (!active.current) return;
+    if (startTime.current === null) startTime.current = state.clock.elapsedTime;
+    const elapsed = state.clock.elapsedTime - startTime.current;
+    const rawT = Math.min(elapsed / duration, 1);
+    progress.current = rawT;
+    blend.current = THREE.MathUtils.lerp(fromVal.current, toVal.current, easeInOutCubic(rawT));
+    if (rawT >= 1) {
+      active.current = false;
+      startTime.current = null;
+    }
+  });
+
+  return { blend, progress, active };
+}
 
 export type StandMaterialType = 'walnut' | 'oak' | 'black' | 'crystal' | 'white';
 export type StandTemplate = 'templateA' | 'templateB';
@@ -657,6 +733,57 @@ function StandMesh({
 
   const isWhite = Boolean(white);
 
+  // Premium color-swap: single materials whose props are eased between the
+  // black/white presets (no more instant ternary unmount/remount), plus a
+  // matching subtle "breathe" scale pulse on the whole stand.
+  const baseFootMatRef = useRef<THREE.MeshPhysicalMaterial>(null);
+  const cornerMatRef = useRef<THREE.MeshPhysicalMaterial>(null);
+  const faceMatRef = useRef<THREE.MeshPhysicalMaterial>(null);
+  const bevelMatRef = useRef<THREE.MeshStandardMaterial>(null);
+  const colorTransition = useColorTransition(isWhite ? 1 : 0, 0.28);
+  const tmpAcrylicColor = useRef(new THREE.Color());
+  const tmpBevelColor = useRef(new THREE.Color());
+  const tmpBevelEmissive = useRef(new THREE.Color());
+
+  const applyMaterialBlend = () => {
+    const t = colorTransition.blend.current;
+    const acrylicColor = tmpAcrylicColor.current.copy(ACRYLIC_BLACK.color).lerp(ACRYLIC_WHITE.color, t);
+    const roughness = THREE.MathUtils.lerp(ACRYLIC_BLACK.roughness, ACRYLIC_WHITE.roughness, t);
+    const metalness = THREE.MathUtils.lerp(ACRYLIC_BLACK.metalness, ACRYLIC_WHITE.metalness, t);
+    const clearcoat = THREE.MathUtils.lerp(ACRYLIC_BLACK.clearcoat, ACRYLIC_WHITE.clearcoat, t);
+    const clearcoatRoughness = THREE.MathUtils.lerp(ACRYLIC_BLACK.clearcoatRoughness, ACRYLIC_WHITE.clearcoatRoughness, t);
+    const transmission = THREE.MathUtils.lerp(ACRYLIC_BLACK.transmission, ACRYLIC_WHITE.transmission, t);
+    const opacity = THREE.MathUtils.lerp(ACRYLIC_BLACK.opacity, ACRYLIC_WHITE.opacity, t);
+    const specularIntensity = THREE.MathUtils.lerp(ACRYLIC_BLACK.specularIntensity, ACRYLIC_WHITE.specularIntensity, t);
+
+    [baseFootMatRef, cornerMatRef, faceMatRef].forEach((ref) => {
+      const m = ref.current;
+      if (!m) return;
+      m.color.copy(acrylicColor);
+      m.roughness = roughness;
+      m.metalness = metalness;
+      m.clearcoat = clearcoat;
+      m.clearcoatRoughness = clearcoatRoughness;
+      m.transmission = transmission;
+      m.opacity = opacity;
+      m.specularIntensity = specularIntensity;
+    });
+
+    const bevelColor = tmpBevelColor.current.copy(BEVEL_BLACK.color).lerp(BEVEL_WHITE.color, t);
+    const bevelEmissive = tmpBevelEmissive.current.copy(BEVEL_BLACK.emissive).lerp(BEVEL_WHITE.emissive, t);
+    if (bevelMatRef.current) {
+      bevelMatRef.current.color.copy(bevelColor);
+      bevelMatRef.current.emissive.copy(bevelEmissive);
+    }
+  };
+
+  // Paint the correct initial state immediately (no black-then-white flash
+  // on first mount when `white` starts true).
+  useLayoutEffect(() => {
+    applyMaterialBlend();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Exact Physical Dimension Ratios (10cm × 15cm):
   const standWidth = 2.5;
   const faceHeight = 3.75;
@@ -713,6 +840,12 @@ function StandMesh({
       pulseRing2Ref.current.scale.setScalar(1 + Math.cos(t * 3.5) * 0.06);
     }
 
+    // Only touch material uniforms while an actual color transition is in
+    // flight - once settled this branch is skipped entirely (zero idle cost).
+    if (colorTransition.active.current) {
+      applyMaterialBlend();
+    }
+
     if (!groupRef.current) return;
 
     const targetRotX = pointer.y * 0.22;
@@ -735,6 +868,16 @@ function StandMesh({
         delta
       );
     }
+
+    // Subtle "breathe" pulse in sync with the color swap: eases up to a
+    // ~1.8% scale bump at the midpoint of the transition and back to 1,
+    // never bouncy/springy - just a soft sine hump over the same window.
+    if (colorTransition.progress.current < 1) {
+      const breathe = 1 + Math.sin(Math.min(colorTransition.progress.current, 1) * Math.PI) * 0.018;
+      groupRef.current.scale.setScalar(breathe);
+    } else if (groupRef.current.scale.x !== 1) {
+      groupRef.current.scale.setScalar(1);
+    }
   });
 
   return (
@@ -756,40 +899,32 @@ function StandMesh({
         <group position={[0, baseY, frontEdgeZ - baseDepth / 2]}>
           <mesh castShadow receiveShadow position={[0, 0, 0]}>
             <boxGeometry args={[standWidth, acrylicThickness, baseDepth]} />
-            {isWhite ? (
-              <meshPhysicalMaterial
-                color="#f4f4f5"
-                roughness={0.35}
-                transmission={0.02}
-                opacity={0.98}
-                transparent
-                clearcoat={0.1}
-                clearcoatRoughness={0.2}
-                reflectivity={0.5}
-                ior={1.5}
-              />
-            ) : (
-              <meshPhysicalMaterial
-                color="#0d0d0f"
-                roughness={0.32}
-                metalness={0.04}
-                clearcoat={0.4}
-                clearcoatRoughness={0.25}
-                reflectivity={0.5}
-                specularIntensity={0.55}
-                specularColor="#ffffff"
-              />
-            )}
+            <meshPhysicalMaterial
+              ref={baseFootMatRef}
+              color="#0d0d0f"
+              roughness={0.32}
+              metalness={0.04}
+              clearcoat={0.4}
+              clearcoatRoughness={0.25}
+              transmission={0}
+              opacity={1}
+              transparent
+              reflectivity={0.5}
+              ior={1.5}
+              specularIntensity={0.55}
+              specularColor="#ffffff"
+            />
           </mesh>
 
           {/* Front Bevel Accent Glow Line */}
           <mesh position={[0, acrylicThickness / 2, baseDepth / 2 - 0.01]}>
             <boxGeometry args={[standWidth - 0.04, 0.015, 0.015]} />
             <meshStandardMaterial
-              color={isWhite ? '#38bdf8' : '#e5c158'}
+              ref={bevelMatRef}
+              color="#e5c158"
               metalness={0.9}
               roughness={0.1}
-              emissive={isWhite ? '#38bdf8' : '#d4af37'}
+              emissive="#d4af37"
               emissiveIntensity={0.45}
             />
           </mesh>
@@ -810,29 +945,21 @@ function StandMesh({
             ────────────────────────────────────────────────────────── */}
         <mesh position={[0, baseTopY, frontEdgeZ]} rotation={[0, 0, Math.PI / 2]}>
           <cylinderGeometry args={[acrylicThickness / 2, acrylicThickness / 2, standWidth, 32]} />
-          {isWhite ? (
-            <meshPhysicalMaterial
-              color="#f4f4f5"
-              roughness={0.35}
-              transmission={0.02}
-              opacity={0.98}
-              transparent
-              clearcoat={0.1}
-              clearcoatRoughness={0.2}
-              reflectivity={0.5}
-            />
-          ) : (
-            <meshPhysicalMaterial
-              color="#0d0d0f"
-              roughness={0.32}
-              metalness={0.04}
-              clearcoat={0.4}
-              clearcoatRoughness={0.25}
-              reflectivity={0.5}
-              specularIntensity={0.55}
-              specularColor="#ffffff"
-            />
-          )}
+          <meshPhysicalMaterial
+            ref={cornerMatRef}
+            color="#0d0d0f"
+            roughness={0.32}
+            metalness={0.04}
+            clearcoat={0.4}
+            clearcoatRoughness={0.25}
+            transmission={0}
+            opacity={1}
+            transparent
+            reflectivity={0.5}
+            ior={1.5}
+            specularIntensity={0.55}
+            specularColor="#ffffff"
+          />
         </mesh>
 
         {/* ──────────────────────────────────────────────────────────
@@ -842,30 +969,21 @@ function StandMesh({
           {/* Monolithic Acrylic Slab */}
           <mesh castShadow receiveShadow position={[0, 0, 0]}>
             <boxGeometry args={[standWidth, faceHeight, acrylicThickness]} />
-            {isWhite ? (
-              <meshPhysicalMaterial
-                color="#f4f4f5"
-                roughness={0.35}
-                transmission={0.02}
-                opacity={0.98}
-                transparent
-                clearcoat={0.1}
-                clearcoatRoughness={0.2}
-                reflectivity={0.5}
-                ior={1.5}
-              />
-            ) : (
-              <meshPhysicalMaterial
-                color="#0d0d0f"
-                roughness={0.32}
-                metalness={0.04}
-                clearcoat={0.4}
-                clearcoatRoughness={0.25}
-                reflectivity={0.5}
-                specularIntensity={0.55}
-                specularColor="#ffffff"
-              />
-            )}
+            <meshPhysicalMaterial
+              ref={faceMatRef}
+              color="#0d0d0f"
+              roughness={0.32}
+              metalness={0.04}
+              clearcoat={0.4}
+              clearcoatRoughness={0.25}
+              transmission={0}
+              opacity={1}
+              transparent
+              reflectivity={0.5}
+              ior={1.5}
+              specularIntensity={0.55}
+              specularColor="#ffffff"
+            />
           </mesh>
 
           {/* Full-Bleed 100% UV Vector Texture Canvas Front Mesh */}
@@ -917,6 +1035,54 @@ function StandMesh({
 }
 
 /**
+ * Eases ContactShadows opacity/blur (and a touch of ambient intensity)
+ * between the black-body and white-body presets over the same ~300ms
+ * window as the material swap, using a plain rAF loop (this lives outside
+ * the R3F render tree, driven by regular React state) so idle frames after
+ * the transition settles cost nothing extra.
+ */
+function useAnimatedShadowProps(isWhite: boolean, duration = 300) {
+  const BLACK_PRESET = { opacity: 0.65, blur: 2.2, ambient: 0.85 };
+  const WHITE_PRESET = { opacity: 0.45, blur: 3.0, ambient: 0.92 };
+
+  const [props, setProps] = useState(isWhite ? WHITE_PRESET : BLACK_PRESET);
+  const fromRef = useRef(isWhite ? WHITE_PRESET : BLACK_PRESET);
+  const rafRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const from = fromRef.current;
+    const to = isWhite ? WHITE_PRESET : BLACK_PRESET;
+    const start = performance.now();
+    if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+
+    const tick = (now: number) => {
+      const raw = Math.min((now - start) / duration, 1);
+      const eased = easeInOutCubic(raw);
+      const next = {
+        opacity: from.opacity + (to.opacity - from.opacity) * eased,
+        blur: from.blur + (to.blur - from.blur) * eased,
+        ambient: from.ambient + (to.ambient - from.ambient) * eased,
+      };
+      setProps(next);
+      if (raw < 1) {
+        rafRef.current = requestAnimationFrame(tick);
+      } else {
+        fromRef.current = to;
+        rafRef.current = null;
+      }
+    };
+    rafRef.current = requestAnimationFrame(tick);
+
+    return () => {
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isWhite]);
+
+  return props;
+}
+
+/**
  * Complete Stand3D Canvas Component with Studio Pedestal Lighting
  */
 export default function Stand3D({
@@ -930,6 +1096,8 @@ export default function Stand3D({
   autoRotate = true,
   className = 'w-full h-full',
 }: Stand3DProps) {
+  const shadowProps = useAnimatedShadowProps(Boolean(white));
+
   return (
     <Canvas
       camera={{ position: [0, 0.4, 5.8], fov: 42 }}
@@ -948,7 +1116,7 @@ export default function Stand3D({
           coverage on its own - not just the front-on hero angle. Ambient +
           rim/fill are kept high enough that the black acrylic never goes flat
           or dark as it rotates past the key light. */}
-      <ambientLight intensity={0.85} />
+      <ambientLight intensity={shadowProps.ambient} />
 
       {/* Main Warm Key Light */}
       <directionalLight
@@ -1010,9 +1178,9 @@ export default function Stand3D({
       {/* Contact Floor Shadow Plane */}
       <ContactShadows
         position={[0, -1.56, 0]}
-        opacity={0.65}
+        opacity={shadowProps.opacity}
         scale={9}
-        blur={2.2}
+        blur={shadowProps.blur}
         far={4.5}
         color="#000000"
       />

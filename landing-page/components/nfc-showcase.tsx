@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   Sparkles,
   Layers,
@@ -49,6 +50,9 @@ export interface SpecItem {
 export function NFCShowcase({ locale = 'tr', onOrderClick }: NFCShowcaseProps) {
   // L-Stand Customizer State - Streamlined to color selection & auto-rotate
   const [whiteMode, setWhiteMode] = useState<boolean>(false); // Default: Matte Obsidian Black
+  // Short expanding/fading amber ring pulse on swatch click - purely
+  // decorative feedback, auto-clears itself once the animation completes.
+  const [colorPulse, setColorPulse] = useState<{ id: number; mode: 'black' | 'white' } | null>(null);
   const [autoRotate, setAutoRotate] = useState<boolean>(true);
 
   const t = translations[locale];
@@ -201,13 +205,30 @@ export function NFCShowcase({ locale = 'tr', onOrderClick }: NFCShowcaseProps) {
               <div className="grid grid-cols-2 gap-2.5">
                 <button
                   type="button"
-                  onClick={() => setWhiteMode(false)}
-                  className={`p-3 rounded-2xl border text-left text-xs font-bold flex items-center gap-2.5 transition-all cursor-pointer ${
+                  onClick={() => {
+                    setWhiteMode(false);
+                    setColorPulse({ id: Date.now(), mode: 'black' });
+                  }}
+                  className={`relative p-3 rounded-2xl border text-left text-xs font-bold flex items-center gap-2.5 transition-all cursor-pointer ${
                     !whiteMode
                       ? 'border-amber-500 bg-amber-500/15 text-white ring-2 ring-amber-500/40 shadow-lg shadow-amber-500/10'
                       : 'border-white/10 bg-white/[0.03] text-white/60 hover:text-white hover:bg-white/5'
                   }`}
                 >
+                  <AnimatePresence>
+                    {colorPulse && colorPulse.mode === 'black' && (
+                      <motion.span
+                        key={colorPulse.id}
+                        className="pointer-events-none absolute inset-0 rounded-2xl border-2 border-amber-400"
+                        initial={{ scale: 1, opacity: 0.5 }}
+                        animate={{ scale: 1.4, opacity: 0 }}
+                        transition={{ duration: 0.55, ease: 'easeOut' }}
+                        onAnimationComplete={() =>
+                          setColorPulse((cur) => (cur?.id === colorPulse.id ? null : cur))
+                        }
+                      />
+                    )}
+                  </AnimatePresence>
                   <span className="w-4 h-4 rounded-full border border-neutral-700 bg-neutral-950 shrink-0 shadow-inner" />
                   <div className="truncate">
                     <span className="block font-bold">{locale === 'tr' ? 'Mat Siyah' : 'Matte Black'}</span>
@@ -217,13 +238,30 @@ export function NFCShowcase({ locale = 'tr', onOrderClick }: NFCShowcaseProps) {
 
                 <button
                   type="button"
-                  onClick={() => setWhiteMode(true)}
-                  className={`p-3 rounded-2xl border text-left text-xs font-bold flex items-center gap-2.5 transition-all cursor-pointer ${
+                  onClick={() => {
+                    setWhiteMode(true);
+                    setColorPulse({ id: Date.now(), mode: 'white' });
+                  }}
+                  className={`relative p-3 rounded-2xl border text-left text-xs font-bold flex items-center gap-2.5 transition-all cursor-pointer ${
                     whiteMode
                       ? 'border-amber-500 bg-amber-500/15 text-white ring-2 ring-amber-500/40 shadow-lg shadow-amber-500/10'
                       : 'border-white/10 bg-white/[0.03] text-white/60 hover:text-white hover:bg-white/5'
                   }`}
                 >
+                  <AnimatePresence>
+                    {colorPulse && colorPulse.mode === 'white' && (
+                      <motion.span
+                        key={colorPulse.id}
+                        className="pointer-events-none absolute inset-0 rounded-2xl border-2 border-amber-400"
+                        initial={{ scale: 1, opacity: 0.5 }}
+                        animate={{ scale: 1.4, opacity: 0 }}
+                        transition={{ duration: 0.55, ease: 'easeOut' }}
+                        onAnimationComplete={() =>
+                          setColorPulse((cur) => (cur?.id === colorPulse.id ? null : cur))
+                        }
+                      />
+                    )}
+                  </AnimatePresence>
                   <span className="w-4 h-4 rounded-full border border-slate-300 bg-white shrink-0 shadow-sm" />
                   <div className="truncate">
                     <span className="block font-bold">{locale === 'tr' ? 'Mat Beyaz' : 'Matte White'}</span>
