@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   Sparkles,
   Gem,
@@ -60,31 +60,6 @@ function computeTierPricing(basePrice: number, qty: number, discountPct: number)
   const total = Math.round(rawTotal * (1 - discountPct));
   const savings = rawTotal - total;
   return { rawTotal, total, savings };
-}
-
-/* ────────────────────────────────────────────────────────────────
-   MINI STICKER "FAN": a tidy arc that hugs the outside edge of the
-   hero disc (radius stays fixed, clear of the disc at every
-   breakpoint) - more stickers means a denser arc, never a spike
-   trailing off into the corner of the card.
-   ──────────────────────────────────────────────────────────────── */
-const FAN_SPREAD_DEG = 130;
-const FAN_ANGLE_OFFSET = 58; // centered lower-right, clear of the coffee cup on the left
-const FAN_RADIUS = 182; // fixed - clear of the disc (max 160px radius) at every breakpoint
-
-function fanTransform(index: number, total: number) {
-  const t = total <= 1 ? 0.5 : index / (total - 1);
-  const angle = FAN_ANGLE_OFFSET - FAN_SPREAD_DEG / 2 + t * FAN_SPREAD_DEG;
-  const rad = (angle * Math.PI) / 180;
-  return {
-    x: Math.sin(rad) * FAN_RADIUS,
-    y: Math.cos(rad) * FAN_RADIUS * 0.42 + 14,
-    rotate: angle * 0.35,
-    // Badges further along the arc sit slightly smaller/fainter - a soft
-    // "receding stack" read instead of a wall of identical dots.
-    scale: 1 - t * 0.22,
-    opacity: 1 - t * 0.35,
-  };
 }
 
 /* ────────────────────────────────────────────────────────────────
@@ -316,39 +291,6 @@ export function StickerSection({ locale = 'tr', onOrderClick, demos = [] }: Stic
 
             {/* Ambient Drop Shadow */}
             <div className="absolute w-64 h-64 sm:w-76 sm:h-76 rounded-full bg-black/85 blur-2xl pointer-events-none transform translate-y-6" />
-
-            {/* Fanned mini sticker replicas — count follows quantity (5/10/15),
-                each new one staggers in, footprint stays fixed so it never clutters */}
-            <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 6 }}>
-              <AnimatePresence>
-                {Array.from({ length: stickerQuantity }).map((_, i) => {
-                  const pos = fanTransform(i, stickerQuantity);
-                  return (
-                    <div
-                      key={i}
-                      className="absolute left-1/2 top-1/2"
-                      style={{
-                        transform: `translate(calc(-50% + ${pos.x}px), calc(-50% + ${pos.y}px))`,
-                      }}
-                    >
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0, rotate: pos.rotate - 12 }}
-                        animate={{ opacity: pos.opacity, scale: pos.scale, rotate: pos.rotate }}
-                        exit={{ opacity: 0, scale: 0 }}
-                        transition={{ type: 'spring', damping: 18, stiffness: 260, delay: i * 0.045 }}
-                        className={`w-9 h-9 sm:w-11 sm:h-11 rounded-full border-2 flex items-center justify-center shadow-lg ${
-                          isPlastik
-                            ? 'border-zinc-300/70 bg-gradient-to-b from-[#efece4] to-[#d9d4c6]'
-                            : 'border-amber-400/70 bg-gradient-to-b from-[#181820] to-[#08080a]'
-                        }`}
-                      >
-                        <Radio className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${isPlastik ? 'text-ink/45' : 'text-amber-400/70'}`} />
-                      </motion.div>
-                    </div>
-                  );
-                })}
-              </AnimatePresence>
-            </div>
 
             {/* 2mm Disc Body with Glass Edge Bevels & Specular Reflection — material-keyed cross-fade */}
             <motion.div
