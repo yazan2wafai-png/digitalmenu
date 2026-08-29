@@ -88,7 +88,12 @@ function buildLProfile(): LProfileLandmarks {
   const baseFoot = BASE_FOOT_U;
   const faceLen = mmToUnits(FACE_LEN_MM);
   const R = mmToUnits(BEND_RADIUS_MM);
-  const bendAngleRad = THREE.MathUtils.degToRad(BEND_ANGLE_DEG);
+  // The face must lean BACK over the foot (not away from it), or the stand
+  // tips forward - so the arc has to sweep past vertical (90°) by the same
+  // 15° the face is tilted off vertical, i.e. 90 + (90 - BEND_ANGLE_DEG),
+  // not just BEND_ANGLE_DEG. That extra 15° is what physically balances
+  // the face's weight back over the foot's footprint.
+  const arcSweepRad = THREE.MathUtils.degToRad(180 - BEND_ANGLE_DEG);
 
   const centerline: THREE.Vector2[] = [
     new THREE.Vector2(-baseFoot, half),
@@ -98,7 +103,7 @@ function buildLProfile(): LProfileLandmarks {
 
   const arcCenter = new THREE.Vector2(0, half + R);
   for (let i = 1; i <= ARC_SEGMENTS; i++) {
-    const theta = -Math.PI / 2 + (bendAngleRad * i) / ARC_SEGMENTS;
+    const theta = -Math.PI / 2 + (arcSweepRad * i) / ARC_SEGMENTS;
     centerline.push(new THREE.Vector2(arcCenter.x + R * Math.cos(theta), arcCenter.y + R * Math.sin(theta)));
     tangents.push(new THREE.Vector2(-Math.sin(theta), Math.cos(theta)));
   }
