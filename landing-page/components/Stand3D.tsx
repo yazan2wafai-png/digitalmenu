@@ -39,6 +39,110 @@ const ACRYLIC_WHITE = {
 const BEVEL_BLACK = { color: new THREE.Color('#e5c158'), emissive: new THREE.Color('#d4af37') };
 const BEVEL_WHITE = { color: new THREE.Color('#38bdf8'), emissive: new THREE.Color('#38bdf8') };
 
+/* ────────────────────────────────────────────────────────────────────
+ * REAL BENT-ACRYLIC BODY GEOMETRY
+ *
+ * A single sheet of acrylic, constant thickness, bent through 75°: a
+ * flat foot resting on the table, a smooth radius bend, and an upright
+ * face panel - built as ONE continuous extruded THREE.Shape (not the
+ * three separate box/cylinder pieces this used to be glued from).
+ *
+ * Scene scale: 40mm per Three.js unit (matches the pre-existing
+ * standWidth=2.5 / faceHeight=3.75 convention below, which is exactly
+ * 100mm / 150mm at this scale).
+ * ──────────────────────────────────────────────────────────────────── */
+const MM_PER_UNIT = 40;
+const mmToUnits = (v: number) => v / MM_PER_UNIT;
+
+const STAND_WIDTH_MM = 100;
+const BASE_FOOT_MM = 60; // horizontal foot resting on the table
+const FACE_LEN_MM = 150; // slant length of the upright face panel
+const THICKNESS_MM = 3.5; // 3-4mm clear acrylic sheet
+const BEND_ANGLE_DEG = 75; // the sheet turns through 75° at the bend
+const BEND_RADIUS_MM = 6; // smooth thermo-bend radius
+const BEVEL_MM = 0.35; // subtle bevel on the extruded outer edges
+const ARC_SEGMENTS = 20;
+
+const STAND_WIDTH_U = mmToUnits(STAND_WIDTH_MM);
+const BASE_FOOT_U = mmToUnits(BASE_FOOT_MM);
+const THICKNESS_U = mmToUnits(THICKNESS_MM);
+// Fixed by the bend spec (turns through 75°), not re-derived at runtime.
+const TILT_FROM_VERTICAL_RAD = THREE.MathUtils.degToRad(90 - BEND_ANGLE_DEG);
+
+interface LProfileLandmarks {
+  shape: THREE.Shape;
+  faceCenter: { z: number; y: number };
+  faceLenU: number;
+}
+
+/**
+ * Builds the closed 2D silhouette of the bent acrylic sheet (outer/convex
+ * "front" surface out, cap across the top of the face, inner surface
+ * back, cap across the back of the foot) plus the landmark point needed
+ * to place the decal + NFC rings flush against the outer face. Shape
+ * space (x, y) maps 1:1 onto the mesh's local (Z, Y) once the extrusion
+ * is rotated to run along X (see buildStandBodyGeometry below).
+ */
+function buildLProfile(): LProfileLandmarks {
+  const half = THICKNESS_U / 2;
+  const baseFoot = BASE_FOOT_U;
+  const faceLen = mmToUnits(FACE_LEN_MM);
+  const R = mmToUnits(BEND_RADIUS_MM);
+  const bendAngleRad = THREE.MathUtils.degToRad(BEND_ANGLE_DEG);
+
+  const centerline: THREE.Vector2[] = [
+    new THREE.Vector2(-baseFoot, half),
+    new THREE.Vector2(0, half),
+  ];
+  const tangents: THREE.Vector2[] = [new THREE.Vector2(1, 0), new THREE.Vector2(1, 0)];
+
+  const arcCenter = new THREE.Vector2(0, half + R);
+  for (let i = 1; i <= ARC_SEGMENTS; i++) {
+    const theta = -Math.PI / 2 + (bendAngleRad * i) / ARC_SEGMENTS;
+    centerline.push(new THREE.Vector2(arcCenter.x + R * Math.cos(theta), arcCenter.y + R * Math.sin(theta)));
+    tangents.push(new THREE.Vector2(-Math.sin(theta), Math.cos(theta)));
+  }
+
+  const bendEnd = centerline[centerline.length - 1].clone();
+  const faceTangent = tangents[tangents.length - 1].clone();
+  const faceTop = bendEnd.clone().addScaledVector(faceTangent, faceLen);
+  centerline.push(faceTop);
+  tangents.push(faceTangent);
+
+  const normals = tangents.map((t) => new THREE.Vector2(-t.y, t.x));
+  const outer = centerline.map((p, i) => p.clone().addScaledVector(normals[i], -half));
+  const inner = centerline.map((p, i) => p.clone().addScaledVector(normals[i], half));
+
+  const shape = new THREE.Shape();
+  shape.moveTo(outer[0].x, outer[0].y);
+  outer.slice(1).forEach((p) => shape.lineTo(p.x, p.y));
+  [...inner].reverse().forEach((p) => shape.lineTo(p.x, p.y));
+  shape.closePath();
+
+  const faceMid = bendEnd.clone().addScaledVector(faceTangent, faceLen / 2);
+
+  return {
+    shape,
+    faceCenter: { z: faceMid.x, y: faceMid.y },
+    faceLenU: faceLen,
+  };
+}
+
+function buildStandBodyGeometry(shape: THREE.Shape): THREE.BufferGeometry {
+  const geo = new THREE.ExtrudeGeometry(shape, {
+    depth: STAND_WIDTH_U,
+    bevelEnabled: true,
+    bevelThickness: mmToUnits(BEVEL_MM),
+    bevelSize: mmToUnits(BEVEL_MM),
+    bevelSegments: 3,
+    curveSegments: 1, // the bend arc is already densely pre-sampled via lineTo
+  });
+  geo.rotateY(-Math.PI / 2);
+  geo.translate(STAND_WIDTH_U / 2, 0, 0);
+  geo.computeVertexNormals();
+  return geo;
+}
+
 /**
  * Eases a 0/1 target value over `duration` seconds using the R3F clock, so a
  * prop flip (e.g. isWhite) becomes a smooth ~300ms transition instead of an
@@ -736,9 +840,7 @@ function StandMesh({
   // Premium color-swap: single materials whose props are eased between the
   // black/white presets (no more instant ternary unmount/remount), plus a
   // matching subtle "breathe" scale pulse on the whole stand.
-  const baseFootMatRef = useRef<THREE.MeshPhysicalMaterial>(null);
-  const cornerMatRef = useRef<THREE.MeshPhysicalMaterial>(null);
-  const faceMatRef = useRef<THREE.MeshPhysicalMaterial>(null);
+  const bodyMatRef = useRef<THREE.MeshPhysicalMaterial>(null);
   const bevelMatRef = useRef<THREE.MeshStandardMaterial>(null);
   const colorTransition = useColorTransition(isWhite ? 1 : 0, 0.28);
   const tmpAcrylicColor = useRef(new THREE.Color());
@@ -756,18 +858,17 @@ function StandMesh({
     const opacity = THREE.MathUtils.lerp(ACRYLIC_BLACK.opacity, ACRYLIC_WHITE.opacity, t);
     const specularIntensity = THREE.MathUtils.lerp(ACRYLIC_BLACK.specularIntensity, ACRYLIC_WHITE.specularIntensity, t);
 
-    [baseFootMatRef, cornerMatRef, faceMatRef].forEach((ref) => {
-      const m = ref.current;
-      if (!m) return;
-      m.color.copy(acrylicColor);
-      m.roughness = roughness;
-      m.metalness = metalness;
-      m.clearcoat = clearcoat;
-      m.clearcoatRoughness = clearcoatRoughness;
-      m.transmission = transmission;
-      m.opacity = opacity;
-      m.specularIntensity = specularIntensity;
-    });
+    const bodyMat = bodyMatRef.current;
+    if (bodyMat) {
+      bodyMat.color.copy(acrylicColor);
+      bodyMat.roughness = roughness;
+      bodyMat.metalness = metalness;
+      bodyMat.clearcoat = clearcoat;
+      bodyMat.clearcoatRoughness = clearcoatRoughness;
+      bodyMat.transmission = transmission;
+      bodyMat.opacity = opacity;
+      bodyMat.specularIntensity = specularIntensity;
+    }
 
     const bevelColor = tmpBevelColor.current.copy(BEVEL_BLACK.color).lerp(BEVEL_WHITE.color, t);
     const bevelEmissive = tmpBevelEmissive.current.copy(BEVEL_BLACK.emissive).lerp(BEVEL_WHITE.emissive, t);
@@ -784,21 +885,27 @@ function StandMesh({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Exact Physical Dimension Ratios (10cm × 15cm):
-  const standWidth = 2.5;
-  const faceHeight = 3.75;
-  const baseDepth = 1.4;
-  const acrylicThickness = 0.08;
+  // Real bent-acrylic dimensions (60mm foot, 150mm face, 3.5mm sheet,
+  // smooth 75° bend) - see buildLProfile()/buildStandBodyGeometry() above.
+  const landmarks = useMemo(() => buildLProfile(), []);
+  const bodyGeometry = useMemo(() => buildStandBodyGeometry(landmarks.shape), [landmarks]);
+  useEffect(() => () => bodyGeometry.dispose(), [bodyGeometry]);
+
+  const standWidth = STAND_WIDTH_U;
+  const faceHeight = landmarks.faceLenU;
+  const baseDepth = BASE_FOOT_U;
+  const acrylicThickness = THICKNESS_U;
   const frontEdgeZ = 0.4;
   const baseY = -1.5;
-  const baseTopY = baseY + acrylicThickness / 2; // -1.46
+  const baseTopY = baseY + acrylicThickness / 2;
 
-  // 15° inclination angle from vertical for ergonomic 75° viewing angle
-  const tiltAngle = (15 * Math.PI) / 180;
+  // Fixed by the 75° bend spec (90° - 75° = 15° off true vertical).
+  const tiltAngle = TILT_FROM_VERTICAL_RAD;
 
-  // Center position of tilted face so bottom edge starts exactly at (0, baseTopY, frontEdgeZ)
-  const faceCenterY = baseTopY + (faceHeight / 2) * Math.cos(tiltAngle);
-  const faceCenterZ = frontEdgeZ - (faceHeight / 2) * Math.sin(tiltAngle);
+  // Exact center of the upright face, taken from the real bend geometry
+  // above (not re-derived with a sharp-corner approximation).
+  const faceCenterY = baseY + landmarks.faceCenter.y;
+  const faceCenterZ = frontEdgeZ + landmarks.faceCenter.z;
 
   // Generate 2048x3072 Decal Texture
   const decalTexture = useMemo(() => {
@@ -894,59 +1001,13 @@ function StandMesh({
         floatingRange={[-0.05, 0.05]}
       >
         {/* ──────────────────────────────────────────────────────────
-            1. BASE FOOT: EXTENDS BACKWARDS FROM FRONT EDGE (+0.4)
+            MONOLITHIC BENT ACRYLIC BODY - one continuous extruded
+            L-profile (60mm foot, smooth 75° bend, 150mm face) instead
+            of three separate box/cylinder approximations.
             ────────────────────────────────────────────────────────── */}
-        <group position={[0, baseY, frontEdgeZ - baseDepth / 2]}>
-          <mesh castShadow receiveShadow position={[0, 0, 0]}>
-            <boxGeometry args={[standWidth, acrylicThickness, baseDepth]} />
-            <meshPhysicalMaterial
-              ref={baseFootMatRef}
-              color="#0d0d0f"
-              roughness={0.32}
-              metalness={0.04}
-              clearcoat={0.4}
-              clearcoatRoughness={0.25}
-              transmission={0}
-              opacity={1}
-              transparent
-              reflectivity={0.5}
-              ior={1.5}
-              specularIntensity={0.55}
-              specularColor="#ffffff"
-            />
-          </mesh>
-
-          {/* Front Bevel Accent Glow Line */}
-          <mesh position={[0, acrylicThickness / 2, baseDepth / 2 - 0.01]}>
-            <boxGeometry args={[standWidth - 0.04, 0.015, 0.015]} />
-            <meshStandardMaterial
-              ref={bevelMatRef}
-              color="#e5c158"
-              metalness={0.9}
-              roughness={0.1}
-              emissive="#d4af37"
-              emissiveIntensity={0.45}
-            />
-          </mesh>
-
-          {/* 4 Non-Slip Silicone Resting Foot Pads */}
-          {[-1.05, 1.05].flatMap((x) =>
-            [-0.5, 0.5].map((z, i) => (
-              <mesh key={`${x}-${z}-${i}`} position={[x, -acrylicThickness / 2 - 0.01, z]}>
-                <cylinderGeometry args={[0.06, 0.06, 0.02, 16]} />
-                <meshStandardMaterial color="#111111" roughness={0.9} />
-              </mesh>
-            ))
-          )}
-        </group>
-
-        {/* ──────────────────────────────────────────────────────────
-            2. SEAMLESS THERMO-BENT ACRYLIC ROUNDED FRONT CORNER
-            ────────────────────────────────────────────────────────── */}
-        <mesh position={[0, baseTopY, frontEdgeZ]} rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[acrylicThickness / 2, acrylicThickness / 2, standWidth, 32]} />
+        <mesh geometry={bodyGeometry} castShadow receiveShadow position={[0, baseY, frontEdgeZ]}>
           <meshPhysicalMaterial
-            ref={cornerMatRef}
+            ref={bodyMatRef}
             color="#0d0d0f"
             roughness={0.32}
             metalness={0.04}
@@ -962,30 +1023,36 @@ function StandMesh({
           />
         </mesh>
 
+        {/* Bevel Accent Glow Line - sits right along the bend crease */}
+        <mesh position={[0, baseTopY, frontEdgeZ - 0.03]}>
+          <boxGeometry args={[standWidth - 0.04, 0.015, 0.015]} />
+          <meshStandardMaterial
+            ref={bevelMatRef}
+            color="#e5c158"
+            metalness={0.9}
+            roughness={0.1}
+            emissive="#d4af37"
+            emissiveIntensity={0.45}
+          />
+        </mesh>
+
+        {/* 4 Non-Slip Silicone Resting Foot Pads */}
+        <group position={[0, baseY, frontEdgeZ - baseDepth / 2]}>
+          {[-1.05, 1.05].flatMap((x) =>
+            [-0.5, 0.5].map((z, i) => (
+              <mesh key={`${x}-${z}-${i}`} position={[x, -acrylicThickness / 2 - 0.01, z]}>
+                <cylinderGeometry args={[0.06, 0.06, 0.02, 16]} />
+                <meshStandardMaterial color="#111111" roughness={0.9} />
+              </mesh>
+            ))
+          )}
+        </group>
+
         {/* ──────────────────────────────────────────────────────────
-            3. UPRIGHT FACE: TILTED AT ~75° STARTING AT FRONT EDGE
+            DECAL + NFC PULSE RINGS - positioned flush on the tilted
+            face, independent of the body mesh above.
             ────────────────────────────────────────────────────────── */}
         <group position={[0, faceCenterY, faceCenterZ]} rotation={[-tiltAngle, 0, 0]}>
-          {/* Monolithic Acrylic Slab */}
-          <mesh castShadow receiveShadow position={[0, 0, 0]}>
-            <boxGeometry args={[standWidth, faceHeight, acrylicThickness]} />
-            <meshPhysicalMaterial
-              ref={faceMatRef}
-              color="#0d0d0f"
-              roughness={0.32}
-              metalness={0.04}
-              clearcoat={0.4}
-              clearcoatRoughness={0.25}
-              transmission={0}
-              opacity={1}
-              transparent
-              reflectivity={0.5}
-              ior={1.5}
-              specularIntensity={0.55}
-              specularColor="#ffffff"
-            />
-          </mesh>
-
           {/* Full-Bleed 100% UV Vector Texture Canvas Front Mesh */}
           {decalTexture && (
             <mesh position={[0, 0, acrylicThickness / 2 + 0.002]}>
