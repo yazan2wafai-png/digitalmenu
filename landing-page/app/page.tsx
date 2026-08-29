@@ -39,6 +39,9 @@ export interface PricingCardItem {
   badge: string;
   title: string;
   price: string;
+  /** Struck-through "before" price shown next to `price` - omit to hide the sale treatment. */
+  wasPrice?: string;
+  discountLabel?: string;
   unit: string;
   subtitle: string;
   features: string[];
@@ -107,6 +110,8 @@ export default function LandingPage() {
       badge: locale === 'tr' ? 'Donanım Odaklı' : 'Hardware Focused',
       title: locale === 'tr' ? 'Google Yorum Standı' : 'Google Review Stand',
       price: '1.750 TL',
+      wasPrice: '2.290 TL',
+      discountLabel: locale === 'tr' ? '%24 indirim' : '24% off',
       unit: locale === 'tr' ? '/ adet' : '/ unit',
       subtitle:
         locale === 'tr'
@@ -141,6 +146,8 @@ export default function LandingPage() {
       badge: locale === 'tr' ? 'Hibrit Menü Çözümü' : 'Hybrid Menu Solution',
       title: locale === 'tr' ? 'Akrilik Masa Stickerı + Menü SaaS' : 'Acrylic Table Sticker + Menu SaaS',
       price: '175 TL + 3.000 TL',
+      wasPrice: '225 TL + 3.800 TL',
+      discountLabel: locale === 'tr' ? '%22 indirim' : '22% off',
       unit: locale === 'tr' ? '/ adet (Sticker) + Yıllık SaaS' : '/ unit (Sticker) + Annual SaaS',
       subtitle:
         locale === 'tr'
@@ -177,6 +184,8 @@ export default function LandingPage() {
       badge: locale === 'tr' ? 'Önerilen • Hepsi Dahil Paket' : 'Recommended • All-In-One Pack',
       title: locale === 'tr' ? 'Full Dijital Restoran Paketi' : 'Full Digital Restaurant Package',
       price: '5.000 TL',
+      wasPrice: '6.500 TL',
+      discountLabel: locale === 'tr' ? '%23 indirim' : '23% off',
       unit: locale === 'tr' ? 'Özel İndirimli Paket' : 'Special Discounted Bundle',
       subtitle:
         locale === 'tr'
@@ -574,6 +583,16 @@ export default function LandingPage() {
                   <p className="text-xs text-ink/60 mt-1">{card.subtitle}</p>
 
                   <div className="my-6">
+                    {card.wasPrice && (
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-sm font-semibold text-ink/40 line-through">{card.wasPrice}</span>
+                        {card.discountLabel && (
+                          <span className="text-[10px] font-bold text-rose-600 bg-rose-500/10 border border-rose-500/25 px-2 py-0.5 rounded-full">
+                            {card.discountLabel}
+                          </span>
+                        )}
+                      </div>
+                    )}
                     <span className="text-3xl sm:text-4xl font-black text-terracotta tracking-tight">
                       {card.price}
                     </span>

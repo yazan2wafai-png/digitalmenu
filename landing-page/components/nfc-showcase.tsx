@@ -275,10 +275,16 @@ export function NFCShowcase({ locale = 'tr', onOrderClick }: NFCShowcaseProps) {
             <div className="pt-3 border-t border-white/10 space-y-3">
               <div className="flex items-center justify-between bg-neutral-950 p-3.5 rounded-2xl border border-white/10">
                 <div>
-                  <span className="text-[11px] font-semibold text-white/50 block">
+                  <span className="text-[11px] font-semibold text-white/50 flex items-center gap-1.5">
                     {locale === 'tr' ? 'Stand Fiyatı' : 'Stand Price'}
+                    <span className="text-[10px] font-bold text-rose-400 bg-rose-500/10 border border-rose-500/25 px-1.5 py-0.5 rounded-full">
+                      %24 {locale === 'tr' ? 'indirim' : 'off'}
+                    </span>
                   </span>
-                  <span className="text-xl font-black text-amber-400">1.750 TL <span className="text-xs font-medium text-white/50">{locale === 'tr' ? '/ Adet' : '/ Unit'}</span></span>
+                  <span className="flex items-baseline gap-1.5">
+                    <span className="text-xs font-semibold text-white/35 line-through">2.290 TL</span>
+                    <span className="text-xl font-black text-amber-400">1.750 TL <span className="text-xs font-medium text-white/50">{locale === 'tr' ? '/ Adet' : '/ Unit'}</span></span>
+                  </span>
                 </div>
                 <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">
                   {locale === 'tr' ? 'Özel Baskı Dahil' : 'Custom Print Included'}

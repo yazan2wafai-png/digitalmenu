@@ -31,10 +31,11 @@ type StickerMaterial = 'akrilik' | 'plastik';
 
 const MATERIAL_INFO: Record<
   StickerMaterial,
-  { basePrice: number; nameTr: string; nameEn: string; finishTr: string; finishEn: string }
+  { basePrice: number; wasPrice: number; nameTr: string; nameEn: string; finishTr: string; finishEn: string }
 > = {
   akrilik: {
     basePrice: 150,
+    wasPrice: 195,
     nameTr: 'Akrilik',
     nameEn: 'Acrylic',
     finishTr: 'Parlak Akrilik (Cam Kaplama) • IP68 Sıvı Geçirmez',
@@ -42,6 +43,7 @@ const MATERIAL_INFO: Record<
   },
   plastik: {
     basePrice: 250,
+    wasPrice: 325,
     nameTr: 'Plastik',
     nameEn: 'Plastic',
     finishTr: 'Mat Dayanıklı Plastik • IP68 Sıvı Geçirmez',
@@ -551,7 +553,10 @@ export function StickerSection({ locale = 'tr', onOrderClick, demos = [] }: Stic
             </div>
             <div className="text-right">
               <span className="text-xs text-white/50 block font-semibold">{locale === 'tr' ? 'Birim Fiyat' : 'Unit Price'}</span>
-              <span className="text-base font-black text-amber-400">{material.basePrice} TL / {locale === 'tr' ? 'adet' : 'unit'}</span>
+              <span className="flex items-baseline justify-end gap-1.5">
+                <span className="text-[11px] font-semibold text-white/35 line-through">{material.wasPrice} TL</span>
+                <span className="text-base font-black text-amber-400">{material.basePrice} TL / {locale === 'tr' ? 'adet' : 'unit'}</span>
+              </span>
             </div>
           </div>
         </div>
@@ -582,6 +587,7 @@ export function StickerSection({ locale = 'tr', onOrderClick, demos = [] }: Stic
                   {stickerMaterial === 'akrilik' && <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />}
                 </div>
                 <span className={`text-[10px] font-bold ${stickerMaterial === 'akrilik' ? 'text-amber-300' : 'text-white/40'}`}>
+                  <span className="line-through opacity-60 mr-1">195 TL</span>
                   150 TL / {locale === 'tr' ? 'adet' : 'unit'} · {locale === 'tr' ? 'Parlak Cam Kaplama' : 'Glossy Clearcoat'}
                 </span>
               </button>
@@ -601,6 +607,7 @@ export function StickerSection({ locale = 'tr', onOrderClick, demos = [] }: Stic
                   {stickerMaterial === 'plastik' && <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />}
                 </div>
                 <span className={`text-[10px] font-bold ${stickerMaterial === 'plastik' ? 'text-amber-300' : 'text-white/40'}`}>
+                  <span className="line-through opacity-60 mr-1">325 TL</span>
                   250 TL / {locale === 'tr' ? 'adet' : 'unit'} · {locale === 'tr' ? 'Mat Dayanıklı' : 'Matte Durable'}
                 </span>
               </button>
