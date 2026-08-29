@@ -171,6 +171,20 @@ export default function HomePage() {
           locale={locale}
         />
       </motion.div>
+
+      <footer className="py-8 px-4 text-center border-t border-white/5">
+        <p className="text-[11px] text-white/30 font-medium tracking-wide">
+          ⚡ Powered by{' '}
+          <a
+            href="https://nfcmyplace.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-white/50 font-semibold"
+          >
+            NFCMyPlace
+          </a>
+        </p>
+      </footer>
     </div>
   );
 }
