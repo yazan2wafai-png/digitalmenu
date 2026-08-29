@@ -63,24 +63,27 @@ function computeTierPricing(basePrice: number, qty: number, discountPct: number)
 }
 
 /* ────────────────────────────────────────────────────────────────
-   MINI STICKER "FAN": fixed angular/radial footprint so 15 stickers
-   read as a denser fan rather than a wider (cluttered) one — the
-   on-screen spread does not grow with quantity, only the density.
+   MINI STICKER "FAN": a tidy arc that hugs the outside edge of the
+   hero disc (radius stays fixed, clear of the disc at every
+   breakpoint) - more stickers means a denser arc, never a spike
+   trailing off into the corner of the card.
    ──────────────────────────────────────────────────────────────── */
-const FAN_SPREAD_DEG = 34;
-const FAN_ANGLE_OFFSET = 42; // biases the fan to the lower-right, clear of the coffee cup on the left
-const FAN_RADIUS_MIN = 58;
-const FAN_RADIUS_MAX = 156;
+const FAN_SPREAD_DEG = 130;
+const FAN_ANGLE_OFFSET = 58; // centered lower-right, clear of the coffee cup on the left
+const FAN_RADIUS = 182; // fixed - clear of the disc (max 160px radius) at every breakpoint
 
 function fanTransform(index: number, total: number) {
-  const t = total <= 1 ? 0.4 : index / (total - 1);
+  const t = total <= 1 ? 0.5 : index / (total - 1);
   const angle = FAN_ANGLE_OFFSET - FAN_SPREAD_DEG / 2 + t * FAN_SPREAD_DEG;
-  const radius = FAN_RADIUS_MIN + t * (FAN_RADIUS_MAX - FAN_RADIUS_MIN);
   const rad = (angle * Math.PI) / 180;
   return {
-    x: Math.sin(rad) * radius,
-    y: Math.cos(rad) * radius * 0.5 + radius * 0.3,
-    rotate: angle * 0.6,
+    x: Math.sin(rad) * FAN_RADIUS,
+    y: Math.cos(rad) * FAN_RADIUS * 0.42 + 14,
+    rotate: angle * 0.35,
+    // Badges further along the arc sit slightly smaller/fainter - a soft
+    // "receding stack" read instead of a wall of identical dots.
+    scale: 1 - t * 0.22,
+    opacity: 1 - t * 0.35,
   };
 }
 
@@ -330,7 +333,7 @@ export function StickerSection({ locale = 'tr', onOrderClick, demos = [] }: Stic
                     >
                       <motion.div
                         initial={{ opacity: 0, scale: 0, rotate: pos.rotate - 12 }}
-                        animate={{ opacity: 1, scale: 1, rotate: pos.rotate }}
+                        animate={{ opacity: pos.opacity, scale: pos.scale, rotate: pos.rotate }}
                         exit={{ opacity: 0, scale: 0 }}
                         transition={{ type: 'spring', damping: 18, stiffness: 260, delay: i * 0.045 }}
                         className={`w-9 h-9 sm:w-11 sm:h-11 rounded-full border-2 flex items-center justify-center shadow-lg ${
