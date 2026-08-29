@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { Navbar } from '@/components/Navbar';
-import { RestaurantShowcase } from '@/components/RestaurantShowcase';
 import { NFCShowcase } from '@/components/nfc-showcase';
 import { StickerSection } from '@/components/StickerSection';
 import { DiscountModal } from '@/components/DiscountModal';
@@ -332,6 +331,7 @@ export default function LandingPage() {
         <StickerSection
           locale={locale}
           onOrderClick={() => setIsDiscountOpen(true)}
+          demos={LIVE_DEMOS}
         />
       </div>
 
@@ -523,17 +523,6 @@ export default function LandingPage() {
           </div>
         </div>
 
-        <RestaurantShowcase
-          demos={LIVE_DEMOS}
-          locale={locale}
-          t={t.livePreview}
-          heading={locale === 'tr' ? 'Şu Anki Müşterilerimiz' : 'Our Current Customers'}
-          subheading={
-            locale === 'tr'
-              ? 'Bir kartı açın, menüyü sayfadan hiç ayrılmadan kaydırarak keşfedin.'
-              : 'Tap a card and browse their live menu without ever leaving this page.'
-          }
-        />
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
