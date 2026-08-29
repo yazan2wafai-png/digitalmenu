@@ -319,6 +319,8 @@ export default function LandingPage() {
           SERVICE 1: ÖZEL DESENLİ NFC & QR GOOGLE DEĞERLENDİRME STANDI (1.750 TL)
           ───────────────────────────────────────────────────────────── */}
       <section className="py-8 border-t border-white/5 bg-gradient-to-b from-zinc-950 via-zinc-900/60 to-zinc-950 relative z-10">
+        {/* Soft cream -> dark fade so the hero section doesn't cut off abruptly */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-24 sm:h-36 bg-gradient-to-b from-cream to-transparent" />
         <NFCShowcase
           locale={locale}
           onOrderClick={() => setIsDiscountOpen(true)}
