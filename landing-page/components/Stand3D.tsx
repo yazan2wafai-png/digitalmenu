@@ -16,23 +16,23 @@ function easeInOutCubic(t: number): number {
 /** Shared acrylic body material presets (base foot / front corner / face slab). */
 const ACRYLIC_BLACK = {
   color: new THREE.Color('#0d0d0f'),
-  roughness: 0.12,
+  roughness: 0.2,
   metalness: 0.04,
-  clearcoat: 0.85,
-  clearcoatRoughness: 0.06,
+  clearcoat: 0.55,
+  clearcoatRoughness: 0.12,
   transmission: 0,
   opacity: 1,
-  specularIntensity: 0.9,
+  specularIntensity: 0.75,
 };
 const ACRYLIC_WHITE = {
   color: new THREE.Color('#f4f4f5'),
-  roughness: 0.18,
+  roughness: 0.24,
   metalness: 0,
-  clearcoat: 0.6,
-  clearcoatRoughness: 0.08,
-  transmission: 0.04,
+  clearcoat: 0.4,
+  clearcoatRoughness: 0.14,
+  transmission: 0.03,
   opacity: 0.98,
-  specularIntensity: 0.95,
+  specularIntensity: 0.85,
 };
 
 /** Bevel accent line: warm gold (black body) <-> cool cyan (white body). */
@@ -1009,16 +1009,16 @@ function StandMesh({
           <meshPhysicalMaterial
             ref={bodyMatRef}
             color="#0d0d0f"
-            roughness={0.12}
+            roughness={0.2}
             metalness={0.04}
-            clearcoat={0.85}
-            clearcoatRoughness={0.06}
+            clearcoat={0.55}
+            clearcoatRoughness={0.12}
             transmission={0}
             opacity={1}
             transparent
             reflectivity={0.5}
             ior={1.5}
-            specularIntensity={0.9}
+            specularIntensity={0.75}
             specularColor="#ffffff"
           />
         </mesh>
