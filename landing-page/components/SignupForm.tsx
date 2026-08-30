@@ -16,7 +16,7 @@ function formatCountdown(ms: number): string {
   return `${pad(h)}:${pad(m)}:${pad(s)}`;
 }
 
-export function SignupForm() {
+export function SignupForm({ locale }: { locale: 'tr' | 'en' }) {
   const [mounted, setMounted] = useState(false);
   const [remainingMs, setRemainingMs] = useState<number | null>(null);
   const [email, setEmail] = useState('');
@@ -57,7 +57,7 @@ export function SignupForm() {
     setSubmitError(false);
 
     if (!EMAIL_REGEX.test(email.trim())) {
-      setFieldError('Geçerli bir e-posta adresi girin.');
+      setFieldError(locale === 'tr' ? 'Geçerli bir e-posta adresi girin.' : 'Enter a valid email address.');
       return;
     }
     setFieldError('');
@@ -138,8 +138,10 @@ export function SignupForm() {
             {!mounted
               ? ' '
               : expired
-                ? 'Kampanya sona erdi'
-                : `İlk siparişte %30 indirim — kalan süre ${formatCountdown(remainingMs ?? 0)}`}
+                ? (locale === 'tr' ? 'Kampanya sona erdi' : 'Campaign has ended')
+                : (locale === 'tr'
+                    ? `İlk siparişte %30 indirim — kalan süre ${formatCountdown(remainingMs ?? 0)}`
+                    : `30% off your first order — ${formatCountdown(remainingMs ?? 0)} left`)}
           </p>
         </div>
 
@@ -153,19 +155,21 @@ export function SignupForm() {
                 <Check className="w-6 h-6" style={{ color: '#F5F0E6' }} strokeWidth={3} />
               </div>
               <h3 className="text-xl font-black mb-1" style={{ color: '#3C3428' }}>
-                Katıldın
+                {locale === 'tr' ? 'Katıldın' : "You're in"}
               </h3>
               <p className="text-sm" style={{ color: '#6B5F49' }}>
-                E-postanı kontrol et, kampanyalar yolda.
+                {locale === 'tr' ? 'E-postanı kontrol et, kampanyalar yolda.' : 'Check your inbox — offers are on the way.'}
               </p>
             </div>
           ) : (
             <>
               <h3 className="text-xl sm:text-2xl font-black mb-2" style={{ color: '#3C3428' }}>
-                Fırsatları kaçırma
+                {locale === 'tr' ? 'Fırsatları kaçırma' : "Don't miss out"}
               </h3>
               <p className="text-sm mb-6" style={{ color: '#6B5F49' }}>
-                E-postanı bırak, indirimlerden ve yeniliklerden ilk sen haberdar ol.
+                {locale === 'tr'
+                  ? 'E-postanı bırak, indirimlerden ve yeniliklerden ilk sen haberdar ol.'
+                  : 'Leave your email to be first to hear about discounts and new drops.'}
               </p>
               <form onSubmit={handleSubmit} noValidate className="space-y-3 text-left">
                 <input
@@ -177,7 +181,7 @@ export function SignupForm() {
                     setEmail(e.target.value);
                     if (fieldError) setFieldError('');
                   }}
-                  placeholder="ornek@eposta.com"
+                  placeholder={locale === 'tr' ? 'ornek@eposta.com' : 'you@example.com'}
                   className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-colors"
                   style={{
                     background: '#FBF7EE',
@@ -192,7 +196,7 @@ export function SignupForm() {
                 )}
                 {submitError && (
                   <p className="text-xs" style={{ color: '#b91c1c' }}>
-                    Bir şeyler ters gitti, tekrar dene.
+                    {locale === 'tr' ? 'Bir şeyler ters gitti, tekrar dene.' : 'Something went wrong, please try again.'}
                   </p>
                 )}
                 <button
@@ -201,7 +205,7 @@ export function SignupForm() {
                   className="w-full py-3 rounded-xl text-sm font-bold transition-opacity disabled:opacity-60 cursor-pointer"
                   style={{ background: '#3C3428', color: '#F5F0E6' }}
                 >
-                  {isSubmitting ? 'Gönderiliyor…' : 'Katıl'}
+                  {isSubmitting ? (locale === 'tr' ? 'Gönderiliyor…' : 'Submitting…') : (locale === 'tr' ? 'Katıl' : 'Join')}
                 </button>
               </form>
             </>

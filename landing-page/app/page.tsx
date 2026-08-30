@@ -628,7 +628,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <SignupForm />
+      <SignupForm locale={locale} />
 
       {/* ── FOOTER ── */}
       <footer className="py-14 px-4 sm:px-6 border-t border-ink/80 bg-ink backdrop-blur-xl relative z-10">
