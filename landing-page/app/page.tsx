@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { Navbar } from '@/components/Navbar';
 import { NFCShowcase } from '@/components/nfc-showcase';
 import { StickerSection } from '@/components/StickerSection';
@@ -371,13 +372,14 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.6 }}
-            className="group relative rounded-3xl overflow-hidden border border-ink/10 bg-white/60 shadow-xl shadow-ink/5"
+            className="group relative h-80 sm:h-96 rounded-3xl overflow-hidden border border-ink/10 bg-white/60 shadow-xl shadow-ink/5"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src="/products/lstand-mockup.png"
               alt={locale === 'tr' ? 'Google Yorum Standı - NFC ve QR kodlu gerçek ürün' : 'Google Review Stand - real product'}
-              className="w-full h-80 sm:h-96 object-cover group-hover:scale-105 transition-transform duration-700"
+              fill
+              sizes="(min-width: 640px) 50vw, 100vw"
+              className="object-cover group-hover:scale-105 transition-transform duration-700"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/0 to-transparent" />
             <div className="absolute bottom-5 left-5 right-5">
@@ -392,13 +394,14 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="group relative rounded-3xl overflow-hidden border border-ink/10 bg-white/60 shadow-xl shadow-ink/5"
+            className="group relative h-80 sm:h-96 rounded-3xl overflow-hidden border border-ink/10 bg-white/60 shadow-xl shadow-ink/5"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src="/products/masa-stickeri-mockup.png"
               alt={locale === 'tr' ? 'NFC ve QR menü stickerı - Akrilik Masa Stickerı gerçek ürün' : 'Acrylic Table Sticker - real product'}
-              className="w-full h-80 sm:h-96 object-cover group-hover:scale-105 transition-transform duration-700"
+              fill
+              sizes="(min-width: 640px) 50vw, 100vw"
+              className="object-cover group-hover:scale-105 transition-transform duration-700"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/0 to-transparent" />
             <div className="absolute bottom-5 left-5 right-5">

@@ -140,8 +140,8 @@ export function SignupForm({ locale }: { locale: 'tr' | 'en' }) {
               : expired
                 ? (locale === 'tr' ? 'Kampanya sona erdi' : 'Campaign has ended')
                 : (locale === 'tr'
-                    ? `İlk siparişte %30 indirim — kalan süre ${formatCountdown(remainingMs ?? 0)}`
-                    : `30% off your first order — ${formatCountdown(remainingMs ?? 0)} left`)}
+                    ? `İlk siparişte %24'e kadar indirim — kalan süre ${formatCountdown(remainingMs ?? 0)}`
+                    : `Up to 24% off your first order — ${formatCountdown(remainingMs ?? 0)} left`)}
           </p>
         </div>
 

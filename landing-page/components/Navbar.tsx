@@ -64,6 +64,8 @@ export function Navbar({ locale, onToggleLocale, onOpenDiscount }: NavbarProps) 
           <div className="flex items-center bg-ink/[0.04] border border-ink/10 rounded-xl p-0.5 text-[11px] font-bold">
             <button
               onClick={() => onToggleLocale('tr')}
+              aria-pressed={locale === 'tr'}
+              aria-label="Türkçe"
               className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
                 locale === 'tr'
                   ? 'bg-terracotta text-cream font-black shadow-sm'
@@ -74,6 +76,8 @@ export function Navbar({ locale, onToggleLocale, onOpenDiscount }: NavbarProps) 
             </button>
             <button
               onClick={() => onToggleLocale('en')}
+              aria-pressed={locale === 'en'}
+              aria-label="English"
               className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
                 locale === 'en'
                   ? 'bg-terracotta text-cream font-black shadow-sm'

@@ -124,6 +124,7 @@ export function NFCShowcase({ locale = 'tr', onOrderClick }: NFCShowcaseProps) {
               <button
                 type="button"
                 onClick={() => setAutoRotate(!autoRotate)}
+                aria-pressed={autoRotate}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold border transition-all cursor-pointer ${
                   autoRotate
                     ? 'bg-amber-500/20 border-amber-500/40 text-amber-300'
@@ -209,6 +210,7 @@ export function NFCShowcase({ locale = 'tr', onOrderClick }: NFCShowcaseProps) {
                     setWhiteMode(false);
                     setColorPulse({ id: Date.now(), mode: 'black' });
                   }}
+                  aria-pressed={!whiteMode}
                   className={`relative p-3 rounded-2xl border text-left text-xs font-bold flex items-center gap-2.5 transition-all cursor-pointer ${
                     !whiteMode
                       ? 'border-amber-500 bg-amber-500/15 text-white ring-2 ring-amber-500/40 shadow-lg shadow-amber-500/10'
@@ -242,6 +244,7 @@ export function NFCShowcase({ locale = 'tr', onOrderClick }: NFCShowcaseProps) {
                     setWhiteMode(true);
                     setColorPulse({ id: Date.now(), mode: 'white' });
                   }}
+                  aria-pressed={whiteMode}
                   className={`relative p-3 rounded-2xl border text-left text-xs font-bold flex items-center gap-2.5 transition-all cursor-pointer ${
                     whiteMode
                       ? 'border-amber-500 bg-amber-500/15 text-white ring-2 ring-amber-500/40 shadow-lg shadow-amber-500/10'

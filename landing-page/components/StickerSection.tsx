@@ -575,6 +575,7 @@ export function StickerSection({ locale = 'tr', onOrderClick, demos = [] }: Stic
               <button
                 type="button"
                 onClick={() => setStickerMaterial('akrilik')}
+                aria-pressed={stickerMaterial === 'akrilik'}
                 className={`p-3.5 rounded-2xl border text-left text-xs font-bold flex flex-col gap-1.5 transition-all cursor-pointer ${
                   stickerMaterial === 'akrilik'
                     ? 'border-amber-500 bg-amber-500/15 text-white ring-2 ring-amber-500/40 shadow-lg shadow-amber-500/10'
@@ -595,6 +596,7 @@ export function StickerSection({ locale = 'tr', onOrderClick, demos = [] }: Stic
               <button
                 type="button"
                 onClick={() => setStickerMaterial('plastik')}
+                aria-pressed={stickerMaterial === 'plastik'}
                 className={`p-3.5 rounded-2xl border text-left text-xs font-bold flex flex-col gap-1.5 transition-all cursor-pointer ${
                   stickerMaterial === 'plastik'
                     ? 'border-amber-500 bg-amber-500/15 text-white ring-2 ring-amber-500/40 shadow-lg shadow-amber-500/10'
@@ -655,6 +657,7 @@ export function StickerSection({ locale = 'tr', onOrderClick, demos = [] }: Stic
                     key={tier.qty}
                     type="button"
                     onClick={() => setStickerQuantity(tier.qty)}
+                    aria-pressed={isActive}
                     className={`py-2.5 px-2 rounded-xl border text-center font-bold text-xs transition-all cursor-pointer ${
                       isActive
                         ? 'border-amber-500 bg-amber-500 text-black font-black shadow-md shadow-amber-500/25'

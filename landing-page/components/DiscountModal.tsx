@@ -57,7 +57,7 @@ export function DiscountModal({ locale = 'tr', isOpen, onClose }: DiscountModalP
       // Fallback
     }
 
-    setCode('NFC30PRO');
+    setCode('NFC24PRO');
     setClaimed(true);
     localStorage.setItem(STORAGE_KEY, 'true');
   };
