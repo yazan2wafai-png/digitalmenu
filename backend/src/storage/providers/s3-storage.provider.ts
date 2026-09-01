@@ -1,9 +1,10 @@
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 import { extname } from 'path';
 import { randomUUID } from 'crypto';
-import { IStorageProvider } from '../storage.interface';
+import { IStorageProvider, StoredFileStream } from '../storage.interface';
+import type { Readable } from 'stream';
 
 /**
  * S3StorageProvider
@@ -91,6 +92,30 @@ export class S3StorageProvider implements IStorageProvider {
       throw new InternalServerErrorException('Failed to store uploaded file');
     }
 
+    const baseUrl = (process.env.BASE_URL || '').replace(/\/$/, '');
+    if (this.publicUrl.includes('.r2.dev') && baseUrl) {
+      return `${baseUrl}/upload/file/${key}`;
+    }
     return `${this.publicUrl}/${key}`;
+  }
+
+  async getFile(key: string): Promise<StoredFileStream | null> {
+    try {
+      const cleanKey = key.replace(/^\/+/, '');
+      const response = await this.client.send(
+        new GetObjectCommand({
+          Bucket: this.bucket,
+          Key: cleanKey,
+        }),
+      );
+      if (!response.Body) return null;
+      return {
+        body: response.Body as unknown as NodeJS.ReadableStream,
+        contentType: response.ContentType,
+      };
+    } catch (err) {
+      this.logger.warn(`Could not get file ${key} from S3/R2: ${err instanceof Error ? err.message : err}`);
+      return null;
+    }
   }
 }

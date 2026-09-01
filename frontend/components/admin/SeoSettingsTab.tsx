@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect, useRef, FormEvent, ChangeEvent } from 'react';
 import { useAdminI18n } from '@/lib/admin-i18n';
+import { resolveImageUrl } from '@/lib/image-url';
 import type { RestaurantSettings } from '@/types/admin';
 
 interface RestaurantProfile {
@@ -47,10 +48,7 @@ export default function SeoSettingsTab({ slug, onSettingsUpdated }: { slug: stri
       });
   }, []);
 
-  const resolvedLogoSrc =
-    logoUrl && logoUrl.startsWith('/')
-      ? `${process.env.NEXT_PUBLIC_API_URL ?? ''}${logoUrl}`
-      : logoUrl;
+  const resolvedLogoSrc = resolveImageUrl(logoUrl);
 
   async function handleLogoSelect(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];

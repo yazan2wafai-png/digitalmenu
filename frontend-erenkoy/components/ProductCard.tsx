@@ -1,8 +1,7 @@
 'use client';
 import { motion } from 'framer-motion';
 import type { Product } from '@/types/menu';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://digitalmenu-backend-production.up.railway.app';
+import { resolveImageUrl } from '@/lib/image-url';
 
 interface ProductCardProps {
   product: Product;
@@ -33,6 +32,8 @@ export function ProductCard({ product, themeColor, onSelect, categoryName }: Pro
     badges.push('Popular');
   }
 
+  const resolvedPhoto = resolveImageUrl(product.photoUrl);
+
   return (
     <motion.article
       layoutId={`product-card-${product.id}`}
@@ -55,14 +56,10 @@ export function ProductCard({ product, themeColor, onSelect, categoryName }: Pro
           layoutId={`product-image-${product.id}`}
           className="relative w-full h-48 bg-neutral-950 overflow-hidden"
         >
-          {product.photoUrl ? (
+          {resolvedPhoto ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={
-                product.photoUrl.startsWith('/')
-                  ? `${API_URL}${product.photoUrl}`
-                  : product.photoUrl
-              }
+              src={resolvedPhoto}
               alt={product.name}
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
             />

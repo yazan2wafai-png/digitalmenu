@@ -2,6 +2,7 @@
 import { useState, useEffect, FormEvent } from 'react';
 import { LocaleTabInput } from './LocaleTabInput';
 import { useAdminI18n } from '@/lib/admin-i18n';
+import { resolveImageUrl } from '@/lib/image-url';
 
 interface Category {
   id?: string;
@@ -117,7 +118,7 @@ export function CategoryModal({ slug, locales, category, onClose, onSaved }: Pro
                 <div className="relative w-16 h-16 flex-shrink-0">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={photoUrl.startsWith('/') ? `${process.env.NEXT_PUBLIC_API_URL || ''}${photoUrl}` : photoUrl}
+                    src={resolveImageUrl(photoUrl)}
                     alt="Category"
                     className="w-16 h-16 object-cover rounded-lg border border-gray-200"
                   />

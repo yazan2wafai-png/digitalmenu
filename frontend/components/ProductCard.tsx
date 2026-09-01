@@ -87,14 +87,10 @@ export function ProductCard({ product, themeColor, onSelect, categoryName, slug,
           layoutId={`product-image-${product.id}`}
           className="relative w-full h-48 bg-neutral-950 overflow-hidden"
         >
-          {product.photoUrl ? (
+          {resolvedPhoto ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={
-                product.photoUrl.startsWith('/')
-                  ? `${API_URL}${product.photoUrl}`
-                  : product.photoUrl
-              }
+              src={resolvedPhoto}
               alt={product.name}
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
             />

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { AdminHeader } from '@/components/admin/AdminHeader';
 import { CategoryModal } from '@/components/admin/CategoryModal';
 import { useAdminI18n } from '@/lib/admin-i18n';
+import { resolveImageUrl } from '@/lib/image-url';
 import Link from 'next/link';
 
 import type { AdminCategory as Category, RestaurantPermissions } from '@/types/admin';
@@ -193,7 +194,7 @@ export default function CategoriesAdminPage() {
                       {cat.photoUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
-                          src={cat.photoUrl.startsWith('/') ? `${process.env.NEXT_PUBLIC_API_URL || ''}${cat.photoUrl}` : cat.photoUrl}
+                          src={resolveImageUrl(cat.photoUrl)}
                           alt="Category"
                           className="w-10 h-10 object-cover rounded-lg border border-gray-200 shadow-2xs"
                         />

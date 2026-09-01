@@ -19,17 +19,13 @@ interface Props {
   locale: string;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
+import { resolveImageUrl } from '@/lib/image-url';
 
 export function CategoryCard({ category, themeColor, locale }: Props) {
   const params = useParams();
   const slug = (params?.slug as string) || '';
   const hasPhoto = Boolean(category.photoUrl);
-  const photoSrc = category.photoUrl
-    ? category.photoUrl.startsWith('/')
-      ? `${API_URL}${category.photoUrl}`
-      : category.photoUrl
-    : '';
+  const photoSrc = resolveImageUrl(category.photoUrl);
 
   return (
     <motion.div variants={cardVariants}>

@@ -2,8 +2,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Product } from '@/types/menu';
 import { useEffect } from 'react';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://digitalmenu-backend-production.up.railway.app';
+import { resolveImageUrl } from '@/lib/image-url';
 
 interface Props {
   product: Product | null;
@@ -26,6 +25,8 @@ export function ProductModal({ product, themeColor, isRTL, onClose }: Props) {
       document.body.style.overflow = 'auto';
     };
   }, [product, onClose]);
+
+  const resolvedPhoto = product ? resolveImageUrl(product.photoUrl) : null;
 
   return (
     <AnimatePresence>
@@ -62,14 +63,10 @@ export function ProductModal({ product, themeColor, isRTL, onClose }: Props) {
               layoutId={`product-image-${product.id}`}
               className="relative w-full h-64 sm:h-72 bg-neutral-950 shrink-0 overflow-hidden"
             >
-              {product.photoUrl ? (
+              {resolvedPhoto ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
-                  src={
-                    product.photoUrl.startsWith('/')
-                      ? `${API_URL}${product.photoUrl}`
-                      : product.photoUrl
-                  }
+                  src={resolvedPhoto}
                   alt={product.name}
                   className="w-full h-full object-cover"
                 />

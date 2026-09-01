@@ -7,9 +7,19 @@
  */
 export const STORAGE_PROVIDER = 'STORAGE_PROVIDER';
 
+export interface StoredFileStream {
+  body: NodeJS.ReadableStream;
+  contentType?: string;
+}
+
 export interface IStorageProvider {
   /**
    * Persists the uploaded file and returns the public URL to access it.
    */
   store(file: Express.Multer.File): Promise<string>;
+
+  /**
+   * Retrieves a file stream for proxying / public serving.
+   */
+  getFile?(key: string): Promise<StoredFileStream | null>;
 }

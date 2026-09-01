@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { AdminHeader } from '@/components/admin/AdminHeader';
 import { ProductModal } from '@/components/admin/ProductModal';
 import { useAdminI18n } from '@/lib/admin-i18n';
+import { resolveImageUrl } from '@/lib/image-url';
 
 import type {
   AdminProduct as Product,
@@ -238,7 +239,7 @@ function ProductsContent() {
                       {prod.photoUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
-                          src={prod.photoUrl.startsWith('/') ? `${process.env.NEXT_PUBLIC_API_URL || ''}${prod.photoUrl}` : prod.photoUrl}
+                          src={resolveImageUrl(prod.photoUrl)}
                           alt={prod.name[locale] || prod.name['tr'] || 'Product'}
                           className="w-12 h-12 object-cover rounded-lg border border-gray-200 shadow-2xs"
                         />

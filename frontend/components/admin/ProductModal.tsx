@@ -2,6 +2,7 @@
 import { useState, useEffect, FormEvent, useRef } from 'react';
 import { LocaleTabInput } from './LocaleTabInput';
 import { useAdminI18n } from '@/lib/admin-i18n';
+import { resolveImageUrl } from '@/lib/image-url';
 
 interface Product {
   id?: string;
@@ -147,7 +148,7 @@ export function ProductModal({ categoryId, locales, product, onClose, onSaved }:
               <div className="flex items-start gap-4 p-3 bg-gray-50 rounded-xl border border-gray-200">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={photoUrl.startsWith('/') ? `${process.env.NEXT_PUBLIC_API_URL || ''}${photoUrl}` : photoUrl}
+                    src={resolveImageUrl(photoUrl)}
                     alt="Product"
                     className="w-20 h-20 object-cover rounded-lg border border-gray-200 shadow-2xs"
                   />

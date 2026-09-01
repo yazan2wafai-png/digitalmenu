@@ -1,6 +1,6 @@
 import { Inject, Injectable, BadRequestException } from '@nestjs/common';
 import { STORAGE_PROVIDER } from '../storage/storage.interface';
-import type { IStorageProvider } from '../storage/storage.interface';
+import type { IStorageProvider, StoredFileStream } from '../storage/storage.interface';
 
 @Injectable()
 export class UploadService {
@@ -15,5 +15,12 @@ export class UploadService {
     }
     const url = await this.storage.store(file);
     return { url };
+  }
+
+  async getFile(key: string): Promise<StoredFileStream | null> {
+    if (this.storage.getFile) {
+      return this.storage.getFile(key);
+    }
+    return null;
   }
 }

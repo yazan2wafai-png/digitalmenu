@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { existsSync, mkdirSync } from 'fs';
+import { existsSync, mkdirSync, createReadStream } from 'fs';
 import { writeFile } from 'fs/promises';
 import { extname, join } from 'path';
 import { randomUUID } from 'crypto';
-import { IStorageProvider } from '../storage.interface';
+import { IStorageProvider, StoredFileStream } from '../storage.interface';
 
 const UPLOADS_DIR = join(process.cwd(), 'uploads');
 
@@ -33,5 +33,14 @@ export class LocalStorageProvider implements IStorageProvider {
 
     const baseUrl = (process.env.BASE_URL || '').replace(/\/$/, '');
     return baseUrl ? `${baseUrl}/uploads/${filename}` : `/uploads/${filename}`;
+  }
+
+  async getFile(key: string): Promise<StoredFileStream | null> {
+    const filename = key.replace(/^uploads\//, '').replace(/^\/+/, '');
+    const filepath = join(UPLOADS_DIR, filename);
+    if (!existsSync(filepath)) return null;
+    return {
+      body: createReadStream(filepath),
+    };
   }
 }
