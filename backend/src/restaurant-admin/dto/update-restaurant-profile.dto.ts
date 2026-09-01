@@ -10,7 +10,7 @@ export class UpdateRestaurantProfileDto {
 
   @IsOptional()
   @IsString()
-  logoUrl?: string;
+  logoUrl?: string | null;
 
   @IsOptional()
   @IsString()

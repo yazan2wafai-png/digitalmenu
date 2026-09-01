@@ -13,7 +13,7 @@ export class CreateCategoryDto {
 
   @IsOptional()
   @IsString()
-  photoUrl?: string;
+  photoUrl?: string | null;
 
   @IsOptional()
   @IsInt()

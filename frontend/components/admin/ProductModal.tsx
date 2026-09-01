@@ -26,7 +26,7 @@ export function ProductModal({ categoryId, locales, product, onClose, onSaved }:
   const [name, setName] = useState<Record<string, string>>(product?.name ?? {});
   const [description, setDescription] = useState<Record<string, string>>(product?.description ?? {});
   const [price, setPrice] = useState(product?.price ?? '');
-  const [photoUrl, setPhotoUrl] = useState(product?.photoUrl ?? '');
+  const [photoUrl, setPhotoUrl] = useState<string | null>(product?.photoUrl ?? null);
   const [sortOrder, setSortOrder] = useState(product?.sortOrder ?? 0);
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -56,6 +56,13 @@ export function ProductModal({ categoryId, locales, product, onClose, onSaved }:
     }
   }
 
+  function handleRemovePhoto() {
+    setPhotoUrl(null);
+    if (fileRef.current) {
+      fileRef.current.value = '';
+    }
+  }
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError('');
@@ -68,7 +75,7 @@ export function ProductModal({ categoryId, locales, product, onClose, onSaved }:
         name,
         description: Object.keys(description).length ? description : undefined,
         price,
-        photoUrl: photoUrl || undefined,
+        photoUrl: photoUrl || null,
         sortOrder,
       };
       const res = await fetch(url, {
@@ -133,19 +140,57 @@ export function ProductModal({ categoryId, locales, product, onClose, onSaved }:
             </div>
           </div>
 
-          {/* Photo upload */}
+          {/* Photo upload / management */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">{t.productModal.photoLabel}</label>
-            {photoUrl && (
-              <div className="mb-2 relative w-24 h-24">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={photoUrl} alt="Product" className="w-24 h-24 object-cover rounded border border-gray-200" />
+            {photoUrl ? (
+              <div className="flex items-start gap-4 p-3 bg-gray-50 rounded-xl border border-gray-200">
+                <div className="relative w-20 h-20 flex-shrink-0">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={photoUrl} alt="Product" className="w-20 h-20 object-cover rounded-lg border border-gray-200 shadow-2xs" />
+                  <button
+                    type="button"
+                    onClick={handleRemovePhoto}
+                    title={t.productModal.removePhotoBtn}
+                    className="absolute -top-1.5 -right-1.5 bg-red-600 hover:bg-red-700 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center cursor-pointer shadow-xs transition"
+                  >
+                    ×
+                  </button>
+                </div>
+                <div className="flex-1 min-w-0 flex flex-col justify-between self-stretch py-0.5">
+                  <p className="text-xs text-gray-500 truncate font-mono mb-2" title={photoUrl}>
+                    {photoUrl}
+                  </p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => fileRef.current?.click()}
+                      disabled={uploading}
+                      className="text-xs font-medium px-3 py-1.5 border border-blue-200 text-blue-600 bg-white hover:bg-blue-50 rounded-lg disabled:opacity-50 cursor-pointer transition"
+                    >
+                      {uploading ? t.productModal.uploading : t.productModal.replaceBtn}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleRemovePhoto}
+                      disabled={uploading}
+                      className="text-xs font-medium px-3 py-1.5 border border-red-200 text-red-600 bg-white hover:bg-red-50 rounded-lg disabled:opacity-50 cursor-pointer transition"
+                    >
+                      {t.productModal.removePhotoBtn}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div>
                 <button
                   type="button"
-                  onClick={() => setPhotoUrl('')}
-                  className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center cursor-pointer"
+                  onClick={() => fileRef.current?.click()}
+                  disabled={uploading}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-gray-300 hover:border-blue-500 hover:bg-blue-50/40 text-gray-600 hover:text-blue-600 rounded-xl text-sm font-medium transition cursor-pointer disabled:opacity-50"
                 >
-                  ×
+                  <span className="text-base">📷</span>
+                  <span>{uploading ? t.productModal.uploading : t.productModal.uploadBtn}</span>
                 </button>
               </div>
             )}
@@ -156,15 +201,6 @@ export function ProductModal({ categoryId, locales, product, onClose, onSaved }:
               className="hidden"
               onChange={e => { const f = e.target.files?.[0]; if (f) handleImageUpload(f); e.target.value = ''; }}
             />
-            <button
-              type="button"
-              onClick={() => fileRef.current?.click()}
-              disabled={uploading}
-              className="text-sm text-blue-600 hover:text-blue-700 disabled:opacity-50 cursor-pointer"
-            >
-              {uploading ? t.productModal.uploading : photoUrl ? t.productModal.replaceBtn : t.productModal.uploadBtn}
-            </button>
-            {photoUrl && <p className="text-xs text-gray-400 mt-1 truncate">{photoUrl}</p>}
           </div>
 
           {error && <p className="text-red-600 text-sm bg-red-50 p-2 rounded border border-red-200">{error}</p>}

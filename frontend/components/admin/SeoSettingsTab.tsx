@@ -90,6 +90,31 @@ export default function SeoSettingsTab({ slug, onSettingsUpdated }: { slug: stri
     }
   }
 
+  async function handleRemoveLogo() {
+    setUploading(true);
+    setError('');
+    setSuccess('');
+    try {
+      const profileRes = await fetch('/api/proxy/admin/me/restaurant/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ logoUrl: null }),
+      });
+      if (!profileRes.ok) {
+        setError(t.settings.saveError);
+        return;
+      }
+
+      setLogoUrl(null);
+      setSuccess(t.settings.logoRemoved);
+      onSettingsUpdated?.();
+    } catch {
+      setError(t.settings.saveError);
+    } finally {
+      setUploading(false);
+    }
+  }
+
   async function handleSave(e: FormEvent) {
     e.preventDefault();
     setSaving(true);
@@ -140,14 +165,26 @@ export default function SeoSettingsTab({ slug, onSettingsUpdated }: { slug: stri
                 )}
               </div>
               <div>
-                <button
-                  type="button"
-                  onClick={() => fileRef.current?.click()}
-                  disabled={uploading}
-                  className="text-xs font-semibold text-blue-600 hover:text-blue-800 border border-blue-200 rounded-lg px-3 py-1.5 bg-blue-50/50 hover:bg-blue-50 disabled:opacity-50 cursor-pointer transition"
-                >
-                  {uploading ? t.settings.uploadingBtn : t.settings.uploadLogoBtn}
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => fileRef.current?.click()}
+                    disabled={uploading}
+                    className="text-xs font-semibold text-blue-600 hover:text-blue-800 border border-blue-200 rounded-lg px-3 py-1.5 bg-blue-50/50 hover:bg-blue-50 disabled:opacity-50 cursor-pointer transition"
+                  >
+                    {uploading ? t.settings.uploadingBtn : t.settings.uploadLogoBtn}
+                  </button>
+                  {logoUrl && (
+                    <button
+                      type="button"
+                      onClick={handleRemoveLogo}
+                      disabled={uploading}
+                      className="text-xs font-semibold text-red-600 hover:text-red-800 border border-red-200 rounded-lg px-3 py-1.5 bg-red-50/50 hover:bg-red-50 disabled:opacity-50 cursor-pointer transition"
+                    >
+                      {t.settings.removeLogoBtn}
+                    </button>
+                  )}
+                </div>
                 <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp" className="hidden" onChange={handleLogoSelect} />
                 <p className="text-[11px] text-gray-400 mt-1">{t.settings.logoHint}</p>
               </div>
