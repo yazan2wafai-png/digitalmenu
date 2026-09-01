@@ -26,7 +26,19 @@ async function proxy(request: NextRequest, params: Params, method: string) {
 
   if (method !== 'GET' && method !== 'DELETE') {
     if (contentType.includes('multipart/form-data')) {
-      body = await request.formData();
+      const incomingFormData = await request.formData();
+      const outgoingFormData = new FormData();
+      for (const [key, value] of incomingFormData.entries()) {
+        if (value && typeof value === 'object' && 'arrayBuffer' in value) {
+          const file = value as unknown as File;
+          const buffer = await file.arrayBuffer();
+          const blob = new Blob([buffer], { type: file.type || 'application/octet-stream' });
+          outgoingFormData.append(key, blob, file.name || 'upload.jpg');
+        } else {
+          outgoingFormData.append(key, value as string);
+        }
+      }
+      body = outgoingFormData;
       // Do NOT set Content-Type header — fetch sets multipart boundary automatically
     } else if (contentType.includes('application/json')) {
       headers['Content-Type'] = 'application/json';

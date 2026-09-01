@@ -175,7 +175,8 @@ export default function CategoriesAdminPage() {
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50 text-xs text-gray-500 font-semibold uppercase tracking-wider">
                   <th className="px-6 py-3.5 text-left">{t.categories.thOrder}</th>
-                  <th className="px-6 py-3.5 text-left">{t.categories.thName}</th>
+                  <th className="px-6 py-3.5 text-left">Fotoğraf</th>
+                  <th className="px-6 py-3.5 text-left">{t.categories.thTr}</th>
                   <th className="px-6 py-3.5 text-left">{t.categories.thEn}</th>
                   <th className="px-6 py-3.5 text-left">{t.categories.thAr}</th>
                   <th className="px-6 py-3.5 text-left">{t.categories.thProducts}</th>
@@ -187,6 +188,20 @@ export default function CategoriesAdminPage() {
                   <tr key={cat.id} className="hover:bg-gray-50/70 transition">
                     <td className="px-6 py-4 font-mono text-xs text-gray-400 font-bold">
                       #{cat.sortOrder}
+                    </td>
+                    <td className="px-6 py-4">
+                      {cat.photoUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={cat.photoUrl.startsWith('/') ? `${process.env.NEXT_PUBLIC_API_URL || ''}${cat.photoUrl}` : cat.photoUrl}
+                          alt="Category"
+                          className="w-10 h-10 object-cover rounded-lg border border-gray-200 shadow-2xs"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-400 text-xs">
+                          📁
+                        </div>
+                      )}
                     </td>
                     <td className="px-6 py-4 font-semibold text-gray-900">
                       {cat.name[locale] || cat.name['tr'] || cat.name[locales[0]] || '—'}
