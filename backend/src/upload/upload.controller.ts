@@ -2,14 +2,14 @@ import {
   Controller,
   Get,
   Post,
-  Param,
+  Req,
   Res,
   UploadedFile,
   UseGuards,
   UseInterceptors,
   HttpStatus,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UploadService } from './upload.service';
@@ -23,9 +23,26 @@ export class UploadController {
    * Public file proxy stream — streams image from Cloudflare R2 or local disk
    * without depending on ISP-blocked *.r2.dev domains.
    */
-  @Get(['upload/file/:key(*)', 'uploads/:key(*)'])
-  async serveFile(@Param('key') key: string, @Res() res: Response) {
+  @Get('upload/file/*')
+  async serveFile(@Req() req: Request, @Res() res: Response) {
+    const rawKey = req.url.split('upload/file/')[1] || '';
+    const key = decodeURIComponent(rawKey.split('?')[0]).replace(/^\/+/, '');
     const file = await this.uploadService.getFile(key.startsWith('uploads/') ? key : `uploads/${key}`);
+    if (!file) {
+      return res.status(HttpStatus.NOT_FOUND).send('File not found');
+    }
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    if (file.contentType) {
+      res.setHeader('Content-Type', file.contentType);
+    }
+    return (file.body as any).pipe(res);
+  }
+
+  @Get('uploads/*')
+  async serveUploadsFile(@Req() req: Request, @Res() res: Response) {
+    const rawKey = req.url.split('uploads/')[1] || '';
+    const key = decodeURIComponent(rawKey.split('?')[0]).replace(/^\/+/, '');
+    const file = await this.uploadService.getFile(`uploads/${key}`);
     if (!file) {
       return res.status(HttpStatus.NOT_FOUND).send('File not found');
     }

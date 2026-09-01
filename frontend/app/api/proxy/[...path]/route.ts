@@ -52,8 +52,19 @@ async function proxy(request: NextRequest, params: Params, method: string) {
     // Never cache: admin/tenant data must always reflect the live DB,
     // never a stale Next.js fetch cache.
     const res = await fetch(backendUrl, { method, headers, body, cache: 'no-store' });
-    const text = await res.text();
+    const resContentType = res.headers.get('content-type') || '';
+    if (resContentType.startsWith('image/')) {
+      const buffer = await res.arrayBuffer();
+      return new NextResponse(buffer, {
+        status: res.status,
+        headers: {
+          'Content-Type': resContentType,
+          'Cache-Control': 'public, max-age=31536000, immutable',
+        },
+      });
+    }
 
+    const text = await res.text();
     let data: unknown;
     try {
       data = JSON.parse(text);
