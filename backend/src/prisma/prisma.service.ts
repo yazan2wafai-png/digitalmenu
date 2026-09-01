@@ -1,5 +1,6 @@
 import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
@@ -16,10 +17,13 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
 
   async ensureSeeded(): Promise<void> {
     try {
-      const baltazarExists = await this.restaurant.findUnique({ where: { slug: 'baltazar' } });
-      if (!baltazarExists) {
+      const defaultPasswordHash = await bcrypt.hash('admin123', 10);
+      const erenkoyPasswordHash = await bcrypt.hash('erenkoy123', 10);
+
+      let baltazar = await this.restaurant.findUnique({ where: { slug: 'baltazar' } });
+      if (!baltazar) {
         console.log('🌱 Auto-seeding Baltazar Burger...');
-        const baltazar = await this.restaurant.create({
+        baltazar = await this.restaurant.create({
           data: {
             slug: 'baltazar',
             name: { tr: 'Baltazar Burger', en: 'Baltazar Burger', ar: 'بالتازار برغر' },
@@ -35,6 +39,10 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
                 enableTables: true,
                 enableAnalytics: true,
                 enableMultiLanguage: true,
+                canManageMenu: true,
+                canViewOrders: true,
+                canTrackTables: true,
+                canManageStaff: true,
               },
             },
           },
@@ -74,10 +82,23 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
         console.log('✅ Baltazar Burger seeded successfully.');
       }
 
-      const erenkoyExists = await this.restaurant.findUnique({ where: { slug: 'kahve-erenkoy' } });
-      if (!erenkoyExists) {
+      // Ensure Baltazar admin user exists
+      await this.adminUser.upsert({
+        where: { email: 'admin@baltazar.com' },
+        update: { restaurantId: baltazar.id },
+        create: {
+          restaurantId: baltazar.id,
+          email: 'admin@baltazar.com',
+          passwordHash: defaultPasswordHash,
+          role: 'RESTAURANT_ADMIN',
+          staffRole: 'OWNER',
+        },
+      });
+
+      let erenkoy = await this.restaurant.findUnique({ where: { slug: 'kahve-erenkoy' } });
+      if (!erenkoy) {
         console.log('🌱 Auto-seeding Kahve Erenköy...');
-        const erenkoy = await this.restaurant.create({
+        erenkoy = await this.restaurant.create({
           data: {
             slug: 'kahve-erenkoy',
             name: { tr: 'Kahve Erenköy', en: 'Kahve Erenkoy' },
@@ -93,6 +114,10 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
                 enableTables: true,
                 enableAnalytics: true,
                 enableMultiLanguage: true,
+                canManageMenu: true,
+                canViewOrders: true,
+                canTrackTables: true,
+                canManageStaff: true,
               },
             },
           },
@@ -131,6 +156,43 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
         });
         console.log('✅ Kahve Erenköy seeded successfully.');
       }
+
+      // Ensure Kahve Erenkoy admin users exist and are linked
+      await this.adminUser.upsert({
+        where: { email: 'admin@kahveerenkoy.com' },
+        update: { restaurantId: erenkoy.id },
+        create: {
+          restaurantId: erenkoy.id,
+          email: 'admin@kahveerenkoy.com',
+          passwordHash: erenkoyPasswordHash,
+          role: 'RESTAURANT_ADMIN',
+          staffRole: 'OWNER',
+        },
+      });
+
+      await this.adminUser.upsert({
+        where: { email: 'admin@erenkoy.com' },
+        update: { restaurantId: erenkoy.id },
+        create: {
+          restaurantId: erenkoy.id,
+          email: 'admin@erenkoy.com',
+          passwordHash: erenkoyPasswordHash,
+          role: 'RESTAURANT_ADMIN',
+          staffRole: 'OWNER',
+        },
+      });
+
+      // Ensure Super Admin exists
+      await this.adminUser.upsert({
+        where: { email: 'admin@digitalmenu.com' },
+        update: {},
+        create: {
+          email: 'admin@digitalmenu.com',
+          passwordHash: defaultPasswordHash,
+          role: 'SUPER_ADMIN',
+          staffRole: 'OWNER',
+        },
+      });
     } catch (seedErr: unknown) {
       const msg = seedErr instanceof Error ? seedErr.message : String(seedErr);
       console.warn('⚠️ Auto-seed info:', msg);

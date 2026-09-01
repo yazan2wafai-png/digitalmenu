@@ -26,12 +26,12 @@ export class LocalStorageProvider implements IStorageProvider {
       mkdirSync(UPLOADS_DIR, { recursive: true });
     }
 
-    const ext = extname(file.originalname).toLowerCase();
+    const rawExt = file?.originalname ? extname(file.originalname).toLowerCase() : '';
+    const ext = rawExt || '.jpg';
     const filename = `${randomUUID()}${ext}`;
     await writeFile(join(UPLOADS_DIR, filename), file.buffer);
 
-    // Relative path: frontend consumers (LogoPlaceholder, ProductCard) resolve
-    // this against NEXT_PUBLIC_API_URL, so no BASE_URL env var is needed.
-    return `/uploads/${filename}`;
+    const baseUrl = (process.env.BASE_URL || '').replace(/\/$/, '');
+    return baseUrl ? `${baseUrl}/uploads/${filename}` : `/uploads/${filename}`;
   }
 }

@@ -27,7 +27,7 @@ export class ProductsController {
     @Param('categoryId') categoryId: string,
     @Request() req: AuthenticatedRequest,
   ): Promise<Product[]> {
-    return this.productsService.findAll(categoryId, req.user.restaurantId ?? '');
+    return this.productsService.findAll(categoryId, req.user.restaurantId ?? '', req.user.role);
   }
 
   @Get(':id')
@@ -36,7 +36,7 @@ export class ProductsController {
     @Param('id') id: string,
     @Request() req: AuthenticatedRequest,
   ): Promise<Product> {
-    return this.productsService.findOne(categoryId, id, req.user.restaurantId ?? '');
+    return this.productsService.findOne(categoryId, id, req.user.restaurantId ?? '', req.user.role);
   }
 
   @Post()
@@ -47,7 +47,7 @@ export class ProductsController {
     @Body() dto: CreateProductDto,
     @Request() req: AuthenticatedRequest,
   ): Promise<Product> {
-    return this.productsService.create(categoryId, req.user.restaurantId ?? '', dto);
+    return this.productsService.create(categoryId, req.user.restaurantId ?? '', dto, req.user.role);
   }
 
   @Patch(':id')
@@ -59,7 +59,7 @@ export class ProductsController {
     @Body() dto: UpdateProductDto,
     @Request() req: AuthenticatedRequest,
   ): Promise<Product> {
-    return this.productsService.update(categoryId, id, req.user.restaurantId ?? '', dto);
+    return this.productsService.update(categoryId, id, req.user.restaurantId ?? '', dto, req.user.role);
   }
 
   @Delete(':id')
@@ -71,6 +71,6 @@ export class ProductsController {
     @Param('id') id: string,
     @Request() req: AuthenticatedRequest,
   ): Promise<DeleteProductResponse> {
-    return this.productsService.remove(categoryId, id, req.user.restaurantId ?? '');
+    return this.productsService.remove(categoryId, id, req.user.restaurantId ?? '', req.user.role);
   }
 }

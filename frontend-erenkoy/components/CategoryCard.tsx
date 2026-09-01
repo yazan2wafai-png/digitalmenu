@@ -18,12 +18,21 @@ interface Props {
   locale: string;
 }
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
+
 export function CategoryCard({ category, themeColor, locale }: Props) {
+  const params = useParams();
+  const slug = (params?.slug as string) || '';
   const hasPhoto = Boolean(category.photoUrl);
+  const photoSrc = category.photoUrl
+    ? category.photoUrl.startsWith('/')
+      ? `${API_URL}${category.photoUrl}`
+      : category.photoUrl
+    : '';
 
   return (
     <motion.div variants={cardVariants}>
-      <Link href={`/category/${category.id}?locale=${locale}`} className="block">
+      <Link href={`/${slug}/category/${category.id}?locale=${locale}`} className="block">
         <motion.article
           className="relative overflow-hidden rounded-2xl border border-white/10 cursor-pointer h-44 flex flex-col justify-between"
           style={
@@ -40,7 +49,7 @@ export function CategoryCard({ category, themeColor, locale }: Props) {
             <>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={category.photoUrl!}
+                src={photoSrc}
                 alt={category.name}
                 className="absolute inset-0 w-full h-full object-cover"
                 style={{ zIndex: 0 }}

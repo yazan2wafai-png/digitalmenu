@@ -27,7 +27,7 @@ export class CategoriesController {
     @Param('slug') slug: string,
     @Request() req: AuthenticatedRequest,
   ): Promise<CategoryWithProducts[]> {
-    return this.categoriesService.findAll(slug, req.user.restaurantId ?? '');
+    return this.categoriesService.findAll(slug, req.user.restaurantId ?? '', req.user.role);
   }
 
   @Get(':id')
@@ -36,7 +36,7 @@ export class CategoriesController {
     @Param('id') id: string,
     @Request() req: AuthenticatedRequest,
   ): Promise<CategoryWithProducts> {
-    return this.categoriesService.findOne(slug, id, req.user.restaurantId ?? '');
+    return this.categoriesService.findOne(slug, id, req.user.restaurantId ?? '', req.user.role);
   }
 
   @Post()
@@ -47,7 +47,7 @@ export class CategoriesController {
     @Body() dto: CreateCategoryDto,
     @Request() req: AuthenticatedRequest,
   ): Promise<Category> {
-    return this.categoriesService.create(slug, req.user.restaurantId ?? '', dto);
+    return this.categoriesService.create(slug, req.user.restaurantId ?? '', dto, req.user.role);
   }
 
   @Patch(':id')
@@ -59,7 +59,7 @@ export class CategoriesController {
     @Body() dto: UpdateCategoryDto,
     @Request() req: AuthenticatedRequest,
   ): Promise<Category> {
-    return this.categoriesService.update(slug, id, req.user.restaurantId ?? '', dto);
+    return this.categoriesService.update(slug, id, req.user.restaurantId ?? '', dto, req.user.role);
   }
 
   @Delete(':id')
@@ -71,6 +71,6 @@ export class CategoriesController {
     @Param('id') id: string,
     @Request() req: AuthenticatedRequest,
   ): Promise<DeleteCategoryResponse> {
-    return this.categoriesService.remove(slug, id, req.user.restaurantId ?? '');
+    return this.categoriesService.remove(slug, id, req.user.restaurantId ?? '', req.user.role);
   }
 }

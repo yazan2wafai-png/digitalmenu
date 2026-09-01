@@ -145,9 +145,12 @@ export function ProductModal({ categoryId, locales, product, onClose, onSaved }:
             <label className="block text-sm font-medium text-gray-700 mb-1">{t.productModal.photoLabel}</label>
             {photoUrl ? (
               <div className="flex items-start gap-4 p-3 bg-gray-50 rounded-xl border border-gray-200">
-                <div className="relative w-20 h-20 flex-shrink-0">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={photoUrl} alt="Product" className="w-20 h-20 object-cover rounded-lg border border-gray-200 shadow-2xs" />
+                  <img
+                    src={photoUrl.startsWith('/') ? `${process.env.NEXT_PUBLIC_API_URL || ''}${photoUrl}` : photoUrl}
+                    alt="Product"
+                    className="w-20 h-20 object-cover rounded-lg border border-gray-200 shadow-2xs"
+                  />
                   <button
                     type="button"
                     onClick={handleRemovePhoto}

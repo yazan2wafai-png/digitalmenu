@@ -238,7 +238,7 @@ function ProductsContent() {
                       {prod.photoUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
-                          src={prod.photoUrl}
+                          src={prod.photoUrl.startsWith('/') ? `${process.env.NEXT_PUBLIC_API_URL || ''}${prod.photoUrl}` : prod.photoUrl}
                           alt={prod.name[locale] || prod.name['tr'] || 'Product'}
                           className="w-12 h-12 object-cover rounded-lg border border-gray-200 shadow-2xs"
                         />

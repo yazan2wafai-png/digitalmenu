@@ -33,12 +33,22 @@ export class S3StorageProvider implements IStorageProvider {
   private readonly publicUrl: string;
 
   constructor(private readonly config: ConfigService) {
-    const endpoint = this.config.get<string>('S3_ENDPOINT');
+    let endpoint = this.config.get<string>('S3_ENDPOINT') || '';
     const region = this.config.get<string>('S3_REGION') || 'auto';
-    const accessKeyId = this.config.get<string>('S3_ACCESS_KEY_ID');
-    const secretAccessKey = this.config.get<string>('S3_SECRET_ACCESS_KEY');
+    const accessKeyId = this.config.get<string>('S3_ACCESS_KEY_ID') || '';
+    const secretAccessKey = this.config.get<string>('S3_SECRET_ACCESS_KEY') || '';
     this.bucket = this.config.get<string>('S3_BUCKET_NAME') ?? '';
-    this.publicUrl = (this.config.get<string>('S3_PUBLIC_URL') ?? '').replace(/\/$/, '');
+    let publicUrl = this.config.get<string>('S3_PUBLIC_URL') ?? '';
+
+    if (endpoint && !endpoint.startsWith('http://') && !endpoint.startsWith('https://')) {
+      endpoint = `https://${endpoint}`;
+    }
+    endpoint = endpoint.replace(/\/$/, '');
+
+    if (publicUrl && !publicUrl.startsWith('http://') && !publicUrl.startsWith('https://')) {
+      publicUrl = `https://${publicUrl}`;
+    }
+    this.publicUrl = publicUrl.replace(/\/$/, '');
 
     if (!endpoint || !accessKeyId || !secretAccessKey || !this.bucket || !this.publicUrl) {
       throw new Error(
@@ -63,7 +73,8 @@ export class S3StorageProvider implements IStorageProvider {
   }
 
   async store(file: Express.Multer.File): Promise<string> {
-    const ext = extname(file.originalname).toLowerCase();
+    const rawExt = file?.originalname ? extname(file.originalname).toLowerCase() : '';
+    const ext = rawExt || '.jpg';
     const key = `uploads/${randomUUID()}${ext}`;
 
     try {
@@ -72,7 +83,7 @@ export class S3StorageProvider implements IStorageProvider {
           Bucket: this.bucket,
           Key: key,
           Body: file.buffer,
-          ContentType: file.mimetype,
+          ContentType: file.mimetype || 'image/jpeg',
         }),
       );
     } catch (err) {
