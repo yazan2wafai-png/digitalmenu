@@ -8,9 +8,15 @@ export function resolveImageUrl(url: string | null | undefined): string {
   if (!url) return '';
   const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://digitalmenu-backend-production.up.railway.app').replace(/\/$/, '');
 
+  // If it's a Cloudflare R2 development URL (e.g. https://pub-...r2.dev/uploads/xyz.png)
   if (url.includes('.r2.dev/')) {
-    const key = url.split('.r2.dev/')[1];
-    return `${apiUrl}/upload/file/${key}`;
+    const filename = url.split('/').pop();
+    return `${apiUrl}/upload/file/${filename}`;
+  }
+
+  if (url.startsWith('/uploads/')) {
+    const filename = url.split('/').pop();
+    return `${apiUrl}/upload/file/${filename}`;
   }
 
   if (url.startsWith('/')) {
