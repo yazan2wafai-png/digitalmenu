@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Param,
   Req,
   Res,
   UploadedFile,
