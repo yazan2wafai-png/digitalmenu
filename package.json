@@ -1,0 +1,9 @@
+﻿{
+  "name": "digitalmenu-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "cd backend && pnpm install --no-frozen-lockfile && npx prisma generate && pnpm build",
+    "start": "cd backend && node dist/src/main"
+  }
+}
