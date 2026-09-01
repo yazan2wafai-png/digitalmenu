@@ -35,11 +35,16 @@ function toStaffMember(row: {
   id: string;
   email: string;
   name: string | null;
-  role: AdminRole;
-  staffRole: StaffRole;
+  role: unknown;
+  staffRole: unknown;
   createdAt: Date;
 }): StaffMember {
-  return { ...row, isOwner: row.staffRole === StaffRole.OWNER };
+  return {
+    ...row,
+    role: row.role as AdminRole,
+    staffRole: (row.staffRole as StaffRole) ?? StaffRole.EDITOR,
+    isOwner: (row.staffRole as StaffRole) === StaffRole.OWNER,
+  };
 }
 
 /**

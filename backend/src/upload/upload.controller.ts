@@ -10,7 +10,7 @@ import {
   UseInterceptors,
   HttpStatus,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
+import type { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UploadService } from './upload.service';
