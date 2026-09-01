@@ -92,9 +92,10 @@ export class S3StorageProvider implements IStorageProvider {
       throw new InternalServerErrorException('Failed to store uploaded file');
     }
 
-    const baseUrl = (process.env.BASE_URL || '').replace(/\/$/, '');
-    if (this.publicUrl.includes('.r2.dev') && baseUrl) {
-      return `${baseUrl}/upload/file/${key}`;
+    const baseUrl = (process.env.BASE_URL || 'https://digitalmenu-backend-production.up.railway.app').replace(/\/$/, '');
+    if (this.publicUrl.includes('.r2.dev') || !this.publicUrl) {
+      const filename = key.split('/').pop();
+      return `${baseUrl}/upload/file/${filename}`;
     }
     return `${this.publicUrl}/${key}`;
   }
