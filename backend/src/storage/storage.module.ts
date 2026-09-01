@@ -23,7 +23,11 @@ import { STORAGE_PROVIDER, IStorageProvider } from './storage.interface';
       provide: STORAGE_PROVIDER,
       inject: [ConfigService],
       useFactory: (config: ConfigService): IStorageProvider => {
-        if (config.get<string>('STORAGE_PROVIDER') === 's3' || config.get<string>('S3_BUCKET_NAME')) {
+        const provider = config.get<string>('STORAGE_PROVIDER');
+        if (provider === 'local') {
+          return new LocalStorageProvider();
+        }
+        if (provider === 's3' || config.get<string>('S3_BUCKET_NAME')) {
           try {
             return new S3StorageProvider(config);
           } catch (err) {

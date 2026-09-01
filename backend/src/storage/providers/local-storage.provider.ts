@@ -31,8 +31,8 @@ export class LocalStorageProvider implements IStorageProvider {
     const filename = `${randomUUID()}${ext}`;
     await writeFile(join(UPLOADS_DIR, filename), file.buffer);
 
-    const baseUrl = (process.env.BASE_URL || '').replace(/\/$/, '');
-    return baseUrl ? `${baseUrl}/uploads/${filename}` : `/uploads/${filename}`;
+    const baseUrl = (process.env.BASE_URL || 'https://digitalmenu-backend-production.up.railway.app').replace(/\/$/, '');
+    return `${baseUrl}/uploads/${filename}`;
   }
 
   async getFile(key: string): Promise<StoredFileStream | null> {
