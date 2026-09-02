@@ -31,7 +31,6 @@ interface ProductOrderModalProps {
   initialColor?: ProductColor;
   isOpen: boolean;
   onClose: () => void;
-  locale?: 'tr' | 'en';
 }
 
 const COLOR_OPTIONS: { id: ProductColor; label: string; desc: string; previewClass: string }[] = [
@@ -60,7 +59,6 @@ export function ProductOrderModal({
   initialColor = 'black',
   isOpen,
   onClose,
-  locale = 'tr',
 }: ProductOrderModalProps) {
   const [selectedColor, setSelectedColor] = useState<ProductColor>(initialColor);
   const [quantity, setQuantity] = useState(1);
@@ -139,13 +137,10 @@ export function ProductOrderModal({
     };
 
     try {
-      // Prepared for Claude's backend order endpoint
-      // We also save locally to localStorage as backup
       const existingOrders = JSON.parse(localStorage.getItem('nfc_orders') || '[]');
       existingOrders.push(orderPayload);
       localStorage.setItem('nfc_orders', JSON.stringify(existingOrders));
 
-      // Simulate rapid server dispatch
       await new Promise((resolve) => setTimeout(resolve, 800));
 
       setOrderNumber(generatedOrderId);
@@ -188,7 +183,7 @@ export function ProductOrderModal({
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
               <span className="text-xs font-semibold uppercase tracking-wider text-purple-300">
-                {locale === 'tr' ? 'Özelleştirme & Sipariş Konfigüratörü' : 'Customizer & Order Portal'}
+                Özelleştirme & Sipariş Konfigüratörü
               </span>
             </div>
             <button
@@ -214,12 +209,10 @@ export function ProductOrderModal({
                 </div>
                 <div>
                   <h3 className="text-2xl font-black text-white tracking-tight mb-2">
-                    {locale === 'tr' ? 'Siparişiniz Başarıyla Alındı!' : 'Order Placed Successfully!'}
+                    Siparişiniz Başarıyla Alındı!
                   </h3>
                   <p className="text-sm text-white/60 leading-relaxed">
-                    {locale === 'tr'
-                      ? `Sipariş Numaranız: ${orderNumber}. Tasarım ekibimiz logonuzu işleyip 24 saat içinde onayınız için sizinle iletişime geçecektir.`
-                      : `Order ID: ${orderNumber}. Our design studio will prepare your vector proof and reach out within 24 hours.`}
+                    Sipariş Numaranız: <span className="text-white font-bold">{orderNumber}</span>. Tasarım ekibimiz logonuzu işleyip 24 saat içinde onayınız için sizinle iletişime geçecektir.
                   </p>
                 </div>
 
@@ -240,9 +233,9 @@ export function ProductOrderModal({
 
                 <button
                   onClick={onClose}
-                  className="w-full py-3.5 rounded-2xl bg-white text-black font-bold text-sm hover:bg-neutral-200 transition-colors shadow-lg"
+                  className="w-full py-3.5 rounded-2xl bg-white text-black font-bold text-sm hover:bg-neutral-200 transition-colors shadow-lg cursor-pointer"
                 >
-                  {locale === 'tr' ? 'Tamam & Kapat' : 'Close'}
+                  Tamam & Kapat
                 </button>
               </motion.div>
             ) : (
@@ -272,7 +265,7 @@ export function ProductOrderModal({
                   {product.colors && product.colors.length > 0 && (
                     <div className="space-y-3">
                       <label className="text-xs font-bold uppercase tracking-wider text-white/70 block">
-                        {locale === 'tr' ? 'Pleksi Gövde Rengi Seçin' : 'Select Acrylic Color'}
+                        Pleksi Gövde Rengi Seçin
                       </label>
                       <div className="grid grid-cols-3 gap-2.5">
                         {COLOR_OPTIONS.filter((c) => product.colors?.includes(c.id)).map((opt) => {
@@ -282,7 +275,7 @@ export function ProductOrderModal({
                               key={opt.id}
                               type="button"
                               onClick={() => setSelectedColor(opt.id)}
-                              className={`p-3 rounded-xl border text-left transition-all relative flex flex-col justify-between ${
+                              className={`p-3 rounded-xl border text-left transition-all relative flex flex-col justify-between cursor-pointer ${
                                 isSelected
                                   ? 'bg-purple-600/20 border-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.25)]'
                                   : 'bg-white/5 border-white/10 hover:border-white/20'
@@ -304,7 +297,7 @@ export function ProductOrderModal({
                   <div className="space-y-3 p-4 rounded-2xl bg-white/[0.04] border border-white/10">
                     <div className="flex items-center justify-between">
                       <label className="text-xs font-bold uppercase tracking-wider text-white/70">
-                        {locale === 'tr' ? 'Sipariş Adedi' : 'Quantity'}
+                        Sipariş Adedi
                       </label>
                       {pricing.discountPercentage > 0 && (
                         <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md">
@@ -319,7 +312,7 @@ export function ProductOrderModal({
                           type="button"
                           onClick={() => handleQtyChange(quantity - 1)}
                           disabled={quantity <= minAllowedQty}
-                          className="w-9 h-9 rounded-lg flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-30 transition-colors"
+                          className="w-9 h-9 rounded-lg flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-30 transition-colors cursor-pointer"
                         >
                           <Minus className="w-4 h-4" />
                         </button>
@@ -329,7 +322,7 @@ export function ProductOrderModal({
                         <button
                           type="button"
                           onClick={() => handleQtyChange(quantity + 1)}
-                          className="w-9 h-9 rounded-lg flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+                          className="w-9 h-9 rounded-lg flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
                         >
                           <Plus className="w-4 h-4" />
                         </button>

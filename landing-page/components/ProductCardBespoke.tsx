@@ -12,7 +12,6 @@ import {
   Layers,
   Cpu,
   ChevronDown,
-  ShieldCheck,
 } from 'lucide-react';
 import type { ProductItem, ProductColor } from '@/lib/products';
 import { calculateProductPrice } from '@/lib/products';
@@ -20,7 +19,6 @@ import { calculateProductPrice } from '@/lib/products';
 interface ProductCardBespokeProps {
   product: ProductItem;
   onOrderClick: (product: ProductItem, initialColor?: ProductColor) => void;
-  locale?: 'tr' | 'en';
 }
 
 const COLOR_NAMES: Record<ProductColor, { label: string; border: string; bg: string; dot: string }> = {
@@ -44,12 +42,11 @@ const COLOR_NAMES: Record<ProductColor, { label: string; border: string; bg: str
   },
 };
 
-export function ProductCardBespoke({ product, onOrderClick, locale = 'tr' }: ProductCardBespokeProps) {
+export function ProductCardBespoke({ product, onOrderClick }: ProductCardBespokeProps) {
   const [selectedColor, setSelectedColor] = useState<ProductColor>(
     product.colors && product.colors.length > 0 ? product.colors[0] : 'black',
   );
   const [showSpecs, setShowSpecs] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
 
   // Dynamic image preview based on color
   const currentImage =
@@ -66,8 +63,6 @@ export function ProductCardBespoke({ product, onOrderClick, locale = 'tr' }: Pro
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-50px' }}
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       {/* Ambient Top Glow on Hover */}
       <div
@@ -142,16 +137,16 @@ export function ProductCardBespoke({ product, onOrderClick, locale = 'tr' }: Pro
 
         {/* Title & Tagline */}
         <h3 className="text-xl font-bold text-white tracking-tight mb-2 group-hover:text-purple-200 transition-colors">
-          {locale === 'tr' ? product.name : product.nameEn}
+          {product.name}
         </h3>
 
         <p className="text-sm text-white/60 leading-relaxed line-clamp-2 mb-4">
-          {locale === 'tr' ? product.tagline : product.taglineEn}
+          {product.tagline}
         </p>
 
         {/* Feature Checkpoints */}
         <div className="space-y-2 mb-6">
-          {(locale === 'tr' ? product.features : product.featuresEn).slice(0, 3).map((feat, idx) => (
+          {product.features.slice(0, 3).map((feat, idx) => (
             <div key={idx} className="flex items-start gap-2.5 text-xs text-white/75">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
               <span className="leading-snug">{feat}</span>
@@ -167,7 +162,7 @@ export function ProductCardBespoke({ product, onOrderClick, locale = 'tr' }: Pro
           >
             <span className="flex items-center gap-1.5">
               <Layers className="w-3.5 h-3.5 text-purple-400" />
-              {locale === 'tr' ? 'Teknik Özellikler & Materyal' : 'Technical Specifications'}
+              Teknik Özellikler & Materyal
             </span>
             <ChevronDown
               className={`w-4 h-4 transition-transform duration-300 ${showSpecs ? 'rotate-180 text-purple-400' : ''}`}
@@ -184,22 +179,22 @@ export function ProductCardBespoke({ product, onOrderClick, locale = 'tr' }: Pro
                 className="overflow-hidden space-y-1.5 pt-2 text-[11px] text-white/60"
               >
                 <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-white/40">{locale === 'tr' ? 'Materyal:' : 'Material:'}</span>
+                  <span className="text-white/40">Materyal:</span>
                   <span className="font-medium text-white/80 text-right">{product.specs.material}</span>
                 </div>
                 {product.specs.chipType && (
                   <div className="flex justify-between py-1 border-b border-white/5">
-                    <span className="text-white/40">{locale === 'tr' ? 'NFC Çipi:' : 'NFC Chip:'}</span>
+                    <span className="text-white/40">NFC Çipi:</span>
                     <span className="font-medium text-white/80 text-right">{product.specs.chipType}</span>
                   </div>
                 )}
                 <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-white/40">{locale === 'tr' ? 'Ebatlar:' : 'Dimensions:'}</span>
+                  <span className="text-white/40">Ebatlar:</span>
                   <span className="font-medium text-white/80 text-right">{product.specs.dimensions}</span>
                 </div>
                 {product.specs.finish && (
                   <div className="flex justify-between py-1">
-                    <span className="text-white/40">{locale === 'tr' ? 'Yüzey / Baskı:' : 'Finish:'}</span>
+                    <span className="text-white/40">Yüzey / Baskı:</span>
                     <span className="font-medium text-white/80 text-right">{product.specs.finish}</span>
                   </div>
                 )}
@@ -226,23 +221,23 @@ export function ProductCardBespoke({ product, onOrderClick, locale = 'tr' }: Pro
             <span className="text-[11px] text-white/40">
               {product.isSubscription
                 ? (product.billingPeriod || '/ Ay')
-                : (locale === 'tr' ? '+ KDV Dahil / Başlangıç' : 'VAT Incl. / Base')}
+                : '+ KDV Dahil / Başlangıç'}
             </span>
           </div>
 
           {/* Bulk Tier Hint Badge */}
           {product.bulkTiers && product.bulkTiers.length > 1 && (
             <span className="text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md">
-              {locale === 'tr' ? '%35\'e varan toptan indirim' : 'Up to 35% bulk discount'}
+              %35'e varan toptan indirim
             </span>
           )}
         </div>
 
         <button
           onClick={() => onOrderClick(product, selectedColor)}
-          className="w-full relative group/btn flex items-center justify-center gap-2.5 py-3.5 px-5 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 hover:from-purple-500 hover:via-pink-500 hover:to-blue-500 text-white font-bold text-sm tracking-wide shadow-lg shadow-purple-600/25 hover:shadow-purple-600/40 transition-all duration-300 transform active:scale-[0.98]"
+          className="w-full relative group/btn flex items-center justify-center gap-2.5 py-3.5 px-5 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 hover:from-purple-500 hover:via-pink-500 hover:to-blue-500 text-white font-bold text-sm tracking-wide shadow-lg shadow-purple-600/25 hover:shadow-purple-600/40 transition-all duration-300 transform active:scale-[0.98] cursor-pointer"
         >
-          <span>{locale === 'tr' ? 'Özelleştir & Sipariş Ver' : 'Customize & Order'}</span>
+          <span>Özelleştir & Sipariş Ver</span>
           <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
         </button>
       </div>

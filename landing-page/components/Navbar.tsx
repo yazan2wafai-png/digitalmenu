@@ -2,16 +2,13 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Radio, Menu, X, Sparkles, ArrowRight, Zap } from 'lucide-react';
-import type { Locale } from '@/lib/translations';
+import { Radio, Menu, X, ArrowRight, Zap } from 'lucide-react';
 
 export interface NavbarProps {
-  locale: Locale;
-  onToggleLocale: (locale: Locale) => void;
   onOpenOrder?: () => void;
 }
 
-export function Navbar({ locale, onToggleLocale, onOpenOrder }: NavbarProps) {
+export function Navbar({ onOpenOrder }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -35,63 +32,37 @@ export function Navbar({ locale, onToggleLocale, onOpenOrder }: NavbarProps) {
             href="#products"
             className="hover:text-white hover:text-purple-300 transition-colors tracking-wide"
           >
-            {locale === 'tr' ? 'NFC Ürünleri' : 'NFC Products'}
+            NFC Ürünleri
           </a>
           <a
             href="#simulator"
             className="hover:text-white hover:text-purple-300 transition-colors tracking-wide flex items-center gap-1"
           >
             <Zap className="w-3 h-3 text-amber-400" />
-            {locale === 'tr' ? 'Canlı Simülatör' : 'Live Simulator'}
+            Canlı Simülatör
           </a>
           <a
             href="#vision"
             className="hover:text-white hover:text-purple-300 transition-colors tracking-wide"
           >
-            {locale === 'tr' ? 'Vizyon' : 'Vision'}
+            Vizyon
           </a>
           <a
             href="#demos"
             className="hover:text-white hover:text-purple-300 transition-colors tracking-wide"
           >
-            {locale === 'tr' ? 'Canlı Menüler' : 'Live Menus'}
+            Canlı Menüler
           </a>
         </nav>
 
-        {/* Action Controls & Language Switcher & Order CTA */}
+        {/* Action Controls & Order CTA */}
         <div className="flex items-center gap-3">
-          {/* TR | EN Language Switcher */}
-          <div className="flex items-center bg-white/5 border border-white/10 rounded-xl p-0.5 text-[11px] font-bold">
-            <button
-              onClick={() => onToggleLocale('tr')}
-              aria-pressed={locale === 'tr'}
-              className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
-                locale === 'tr'
-                  ? 'bg-purple-600 text-white font-black shadow-sm'
-                  : 'text-white/50 hover:text-white'
-              }`}
-            >
-              TR
-            </button>
-            <button
-              onClick={() => onToggleLocale('en')}
-              aria-pressed={locale === 'en'}
-              className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
-                locale === 'en'
-                  ? 'bg-purple-600 text-white font-black shadow-sm'
-                  : 'text-white/50 hover:text-white'
-              }`}
-            >
-              EN
-            </button>
-          </div>
-
           {/* Quick Order Button */}
           <a
             href="#products"
-            className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-xs shadow-md transition-all hover:scale-105 active:scale-95"
+            className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600/30 to-blue-600/30 hover:from-purple-600/50 hover:to-blue-600/50 border border-purple-500/30 text-white font-bold text-xs shadow-md transition-all hover:scale-105 active:scale-95"
           >
-            <span>{locale === 'tr' ? 'Sipariş Ver' : 'Order Now'}</span>
+            <span>Sipariş Ver</span>
             <ArrowRight className="w-3.5 h-3.5 text-purple-400" />
           </a>
 
@@ -114,35 +85,35 @@ export function Navbar({ locale, onToggleLocale, onOpenOrder }: NavbarProps) {
             onClick={() => setMobileMenuOpen(false)}
             className="px-3 py-2 rounded-lg hover:bg-white/5 text-white/80 hover:text-white"
           >
-            {locale === 'tr' ? 'NFC Ürünleri' : 'NFC Products'}
+            NFC Ürünleri
           </a>
           <a
             href="#simulator"
             onClick={() => setMobileMenuOpen(false)}
             className="px-3 py-2 rounded-lg hover:bg-white/5 text-white/80 hover:text-white"
           >
-            {locale === 'tr' ? 'Canlı Simülatör' : 'Live Simulator'}
+            Canlı Simülatör
           </a>
           <a
             href="#vision"
             onClick={() => setMobileMenuOpen(false)}
             className="px-3 py-2 rounded-lg hover:bg-white/5 text-white/80 hover:text-white"
           >
-            {locale === 'tr' ? 'Vizyon' : 'Vision'}
+            Vizyon
           </a>
           <a
             href="#demos"
             onClick={() => setMobileMenuOpen(false)}
             className="px-3 py-2 rounded-lg hover:bg-white/5 text-white/80 hover:text-white"
           >
-            {locale === 'tr' ? 'Canlı Menüler' : 'Live Menus'}
+            Canlı Menüler
           </a>
           <a
             href="#products"
             onClick={() => setMobileMenuOpen(false)}
             className="mt-2 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 text-center text-white font-bold text-xs"
           >
-            {locale === 'tr' ? 'Hemen Sipariş Ver' : 'Order Now'}
+            Hemen Sipariş Ver
           </a>
         </div>
       )}

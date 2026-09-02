@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   Sparkles,
   ArrowRight,
@@ -10,13 +10,7 @@ import {
   CheckCircle2,
   Zap,
   Globe2,
-  Smartphone,
-  Radio,
-  Filter,
-  ShieldCheck,
-  Star,
   Layers,
-  Cpu,
 } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
 import { InteractiveBackground } from '@/components/InteractiveBackground';
@@ -26,7 +20,6 @@ import { NfcTapSimulator } from '@/components/NfcTapSimulator';
 import { VisionSection } from '@/components/VisionSection';
 import { EmailCaptureBespoke } from '@/components/EmailCaptureBespoke';
 import { PRODUCTS, ProductItem, ProductColor } from '@/lib/products';
-import type { Locale } from '@/lib/translations';
 
 export interface LiveDemoItem {
   name: string;
@@ -41,7 +34,6 @@ export interface LiveDemoItem {
 }
 
 export default function LandingPage() {
-  const [locale, setLocale] = useState<Locale>('tr');
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'google' | 'menu' | 'saas'>('all');
   const [activeOrderProduct, setActiveOrderProduct] = useState<ProductItem | null>(null);
   const [activeOrderColor, setActiveOrderColor] = useState<ProductColor>('black');
@@ -103,11 +95,7 @@ export default function LandingPage() {
       <InteractiveBackground />
 
       {/* ── FLOATING LUXURY NAVBAR ── */}
-      <Navbar
-        locale={locale}
-        onToggleLocale={setLocale}
-        onOpenOrder={() => handleOpenOrder(PRODUCTS[0])}
-      />
+      <Navbar onOpenOrder={() => handleOpenOrder(PRODUCTS[0])} />
 
       {/* ── HERO SECTION: HIGH-IMPACT MANIFESTO ── */}
       <section className="relative pt-16 sm:pt-24 pb-20 px-4 sm:px-6 lg:px-8 z-10">
@@ -157,7 +145,7 @@ export default function LandingPage() {
           >
             <a
               href="#products"
-              className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 hover:from-purple-500 hover:via-pink-500 hover:to-blue-500 text-white font-black text-sm tracking-wide shadow-xl shadow-purple-600/30 hover:shadow-purple-600/50 transition-all flex items-center justify-center gap-2 transform active:scale-95"
+              className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 hover:from-purple-500 hover:via-pink-500 hover:to-blue-500 text-white font-black text-sm tracking-wide shadow-xl shadow-purple-600/30 hover:shadow-purple-600/50 transition-all flex items-center justify-center gap-2 transform active:scale-95 cursor-pointer"
             >
               <span>Ürünleri İncele & Sipariş Ver</span>
               <ArrowRight className="w-4 h-4" />
@@ -165,7 +153,7 @@ export default function LandingPage() {
 
             <a
               href="#simulator"
-              className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/20 text-white font-bold text-sm tracking-wide backdrop-blur-xl transition-all flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/20 text-white font-bold text-sm tracking-wide backdrop-blur-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               <Zap className="w-4 h-4 text-amber-400" />
               <span>Canlı NFC Simülatörünü Dene</span>
@@ -232,7 +220,7 @@ export default function LandingPage() {
                 <button
                   key={tab.id}
                   onClick={() => setSelectedCategory(tab.id as any)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     selectedCategory === tab.id
                       ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/30'
                       : 'text-white/60 hover:text-white hover:bg-white/5'
@@ -250,7 +238,6 @@ export default function LandingPage() {
               <ProductCardBespoke
                 key={prod.id}
                 product={prod}
-                locale={locale}
                 onOrderClick={(p, col) => handleOpenOrder(p, col)}
               />
             ))}
@@ -335,7 +322,7 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
             <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-purple-600 to-blue-600 flex items-center justify-center text-white font-bold text-xs">
-              <Radio className="w-4 h-4" />
+              <Zap className="w-4 h-4" />
             </div>
             <span className="font-bold text-white text-sm">NFC My Place®</span>
             <span>— Fizikseli Dijitalle Buluşturan Akıllı Ekosistem</span>
@@ -358,7 +345,6 @@ export default function LandingPage() {
         initialColor={activeOrderColor}
         isOpen={isOrderModalOpen}
         onClose={() => setIsOrderModalOpen(false)}
-        locale={locale}
       />
     </div>
   );
