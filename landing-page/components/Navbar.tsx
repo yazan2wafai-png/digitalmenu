@@ -1,75 +1,74 @@
-'use client';
+﻿'use client';
+
 import { useState } from 'react';
 import Link from 'next/link';
-import { Radio, Menu, X, ArrowUpRight } from 'lucide-react';
+import { Radio, Menu, X, Sparkles, ArrowRight, Zap } from 'lucide-react';
 import type { Locale } from '@/lib/translations';
-import { translations } from '@/lib/translations';
 
 export interface NavbarProps {
   locale: Locale;
   onToggleLocale: (locale: Locale) => void;
-  onOpenDiscount?: () => void;
+  onOpenOrder?: () => void;
 }
 
-export function Navbar({ locale, onToggleLocale, onOpenDiscount }: NavbarProps) {
+export function Navbar({ locale, onToggleLocale, onOpenOrder }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const t = translations[locale].nav;
 
   return (
-    <header className="sticky top-0 z-50 w-full px-4 sm:px-6 py-3.5 transition-all">
-      <div className="max-w-6xl mx-auto rounded-2xl bg-cream/90 backdrop-blur-xl border border-ink/10 shadow-lg shadow-ink/5 px-4 sm:px-6 py-3 flex items-center justify-between">
-        {/* ── BRAND LOGO: NFCMyPlace® with Ink/Terracotta Radio Icon Badge ── */}
+    <header className="sticky top-0 z-50 w-full px-4 sm:px-6 py-4 transition-all">
+      <div className="max-w-6xl mx-auto rounded-2xl bg-neutral-900/80 backdrop-blur-2xl border border-white/15 shadow-2xl px-4 sm:px-6 py-3 flex items-center justify-between">
+        {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="relative w-8 h-8 rounded-xl bg-ink flex items-center justify-center shadow-md shadow-ink/20 group-hover:scale-105 transition-transform">
-            <Radio className="w-4 h-4 text-terracotta stroke-[2.5]" />
+          <div className="relative w-8 h-8 rounded-xl bg-gradient-to-tr from-purple-600 to-blue-600 flex items-center justify-center shadow-lg shadow-purple-600/30 group-hover:scale-105 transition-transform">
+            <Radio className="w-4 h-4 text-white stroke-[2.5]" />
           </div>
-          <span className="font-display font-bold text-base sm:text-lg text-ink tracking-tight flex items-center">
+          <span className="font-bold text-base sm:text-lg text-white tracking-tight flex items-center">
             <span>NFC</span>
-            <span className="text-terracotta">MyPlace</span>
-            <span className="text-terracotta text-xs font-bold ml-0.5 self-start">®</span>
+            <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">MyPlace</span>
+            <span className="text-pink-400 text-xs font-bold ml-0.5 self-start">®</span>
           </span>
         </Link>
 
-        {/* ── DESKTOP NAVIGATION LINKS ── */}
-        <nav className="hidden md:flex items-center gap-7 text-xs font-bold text-ink/60">
+        {/* Desktop Navigation Links */}
+        <nav className="hidden md:flex items-center gap-7 text-xs font-semibold text-white/70">
           <a
-            href="#customizer"
-            className="hover:text-terracotta transition-colors tracking-wide"
+            href="#products"
+            className="hover:text-white hover:text-purple-300 transition-colors tracking-wide"
           >
-            {t.products}
+            {locale === 'tr' ? 'NFC Ürünleri' : 'NFC Products'}
           </a>
           <a
-            href="#sticker"
-            className="hover:text-terracotta transition-colors tracking-wide"
+            href="#simulator"
+            className="hover:text-white hover:text-purple-300 transition-colors tracking-wide flex items-center gap-1"
           >
-            {t.tableSolutions}
+            <Zap className="w-3 h-3 text-amber-400" />
+            {locale === 'tr' ? 'Canlı Simülatör' : 'Live Simulator'}
           </a>
           <a
-            href="#saas"
-            className="hover:text-terracotta transition-colors tracking-wide"
+            href="#vision"
+            className="hover:text-white hover:text-purple-300 transition-colors tracking-wide"
           >
-            {t.saas}
+            {locale === 'tr' ? 'Vizyon' : 'Vision'}
           </a>
           <a
-            href="#pricing"
-            className="hover:text-terracotta transition-colors tracking-wide"
+            href="#demos"
+            className="hover:text-white hover:text-purple-300 transition-colors tracking-wide"
           >
-            {t.pricing}
+            {locale === 'tr' ? 'Canlı Menüler' : 'Live Menus'}
           </a>
         </nav>
 
-        {/* ── ACTION CONTROLS & LANGUAGE SWITCHER & ADMIN LOGIN CTA ── */}
+        {/* Action Controls & Language Switcher & Order CTA */}
         <div className="flex items-center gap-3">
           {/* TR | EN Language Switcher */}
-          <div className="flex items-center bg-ink/[0.04] border border-ink/10 rounded-xl p-0.5 text-[11px] font-bold">
+          <div className="flex items-center bg-white/5 border border-white/10 rounded-xl p-0.5 text-[11px] font-bold">
             <button
               onClick={() => onToggleLocale('tr')}
               aria-pressed={locale === 'tr'}
-              aria-label="Türkçe"
               className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
                 locale === 'tr'
-                  ? 'bg-terracotta text-cream font-black shadow-sm'
-                  : 'text-ink/50 hover:text-ink'
+                  ? 'bg-purple-600 text-white font-black shadow-sm'
+                  : 'text-white/50 hover:text-white'
               }`}
             >
               TR
@@ -77,21 +76,29 @@ export function Navbar({ locale, onToggleLocale, onOpenDiscount }: NavbarProps) 
             <button
               onClick={() => onToggleLocale('en')}
               aria-pressed={locale === 'en'}
-              aria-label="English"
               className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
                 locale === 'en'
-                  ? 'bg-terracotta text-cream font-black shadow-sm'
-                  : 'text-ink/50 hover:text-ink'
+                  ? 'bg-purple-600 text-white font-black shadow-sm'
+                  : 'text-white/50 hover:text-white'
               }`}
             >
               EN
             </button>
           </div>
 
+          {/* Quick Order Button */}
+          <a
+            href="#products"
+            className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-xs shadow-md transition-all hover:scale-105 active:scale-95"
+          >
+            <span>{locale === 'tr' ? 'Sipariş Ver' : 'Order Now'}</span>
+            <ArrowRight className="w-3.5 h-3.5 text-purple-400" />
+          </a>
+
           {/* Mobile Menu Toggle Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-lg bg-ink/5 text-ink/80 hover:text-ink"
+            className="md:hidden p-2 rounded-lg bg-white/5 text-white/80 hover:text-white"
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
@@ -99,36 +106,43 @@ export function Navbar({ locale, onToggleLocale, onOpenDiscount }: NavbarProps) 
         </div>
       </div>
 
-      {/* ── MOBILE DROPDOWN MENU ── */}
+      {/* Mobile Dropdown Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden mt-2 p-4 rounded-2xl bg-cream/95 border border-ink/10 backdrop-blur-xl shadow-xl flex flex-col gap-3 text-sm font-semibold">
+        <div className="md:hidden mt-2 p-4 rounded-2xl bg-neutral-900/95 border border-white/15 backdrop-blur-2xl shadow-2xl flex flex-col gap-3 text-sm font-semibold text-white">
           <a
-            href="#customizer"
+            href="#products"
             onClick={() => setMobileMenuOpen(false)}
-            className="px-3 py-2 rounded-lg hover:bg-ink/5 text-ink/80 hover:text-terracotta"
+            className="px-3 py-2 rounded-lg hover:bg-white/5 text-white/80 hover:text-white"
           >
-            {t.products}
+            {locale === 'tr' ? 'NFC Ürünleri' : 'NFC Products'}
           </a>
           <a
-            href="#sticker"
+            href="#simulator"
             onClick={() => setMobileMenuOpen(false)}
-            className="px-3 py-2 rounded-lg hover:bg-ink/5 text-ink/80 hover:text-terracotta"
+            className="px-3 py-2 rounded-lg hover:bg-white/5 text-white/80 hover:text-white"
           >
-            {t.tableSolutions}
+            {locale === 'tr' ? 'Canlı Simülatör' : 'Live Simulator'}
           </a>
           <a
-            href="#saas"
+            href="#vision"
             onClick={() => setMobileMenuOpen(false)}
-            className="px-3 py-2 rounded-lg hover:bg-ink/5 text-ink/80 hover:text-terracotta"
+            className="px-3 py-2 rounded-lg hover:bg-white/5 text-white/80 hover:text-white"
           >
-            {t.saas}
+            {locale === 'tr' ? 'Vizyon' : 'Vision'}
           </a>
           <a
-            href="#pricing"
+            href="#demos"
             onClick={() => setMobileMenuOpen(false)}
-            className="px-3 py-2 rounded-lg hover:bg-ink/5 text-ink/80 hover:text-terracotta"
+            className="px-3 py-2 rounded-lg hover:bg-white/5 text-white/80 hover:text-white"
           >
-            {t.pricing}
+            {locale === 'tr' ? 'Canlı Menüler' : 'Live Menus'}
+          </a>
+          <a
+            href="#products"
+            onClick={() => setMobileMenuOpen(false)}
+            className="mt-2 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 text-center text-white font-bold text-xs"
+          >
+            {locale === 'tr' ? 'Hemen Sipariş Ver' : 'Order Now'}
           </a>
         </div>
       )}
