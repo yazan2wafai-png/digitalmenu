@@ -146,22 +146,23 @@ export function ProductModal({ categoryId, locales, product, onClose, onSaved }:
             <label className="block text-sm font-medium text-gray-700 mb-1">{t.productModal.photoLabel}</label>
             {photoUrl ? (
               <div className="flex items-start gap-4 p-3 bg-gray-50 rounded-xl border border-gray-200">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={resolveImageUrl(photoUrl)}
-                    alt="Product"
-                    className="w-20 h-20 object-cover rounded-lg border border-gray-200 shadow-2xs"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleRemovePhoto}
-                    title={t.productModal.removePhotoBtn}
-                    className="absolute -top-1.5 -right-1.5 bg-red-600 hover:bg-red-700 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center cursor-pointer shadow-xs transition"
-                  >
-                    ×
-                  </button>
-                </div>
-                <div className="flex-1 min-w-0 flex flex-col justify-between self-stretch py-0.5">
+                  <div className="relative shrink-0">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={resolveImageUrl(photoUrl)}
+                      alt="Product"
+                      className="w-20 h-20 object-cover rounded-lg border border-gray-200 shadow-2xs"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleRemovePhoto}
+                      title={t.productModal.removePhotoBtn}
+                      className="absolute -top-1.5 -right-1.5 bg-red-600 hover:bg-red-700 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center cursor-pointer shadow-xs transition"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <div className="flex-1 min-w-0 flex flex-col justify-between self-stretch py-0.5">
                   <p className="text-xs text-gray-500 truncate font-mono mb-2" title={photoUrl}>
                     {photoUrl}
                   </p>
