@@ -1,123 +1,108 @@
 ﻿'use client';
 
 import { motion } from 'framer-motion';
-import {
-  Sparkles,
-  Layers,
-  Cpu,
-  Cloud,
-  Zap,
-} from 'lucide-react';
+import { Layers, Cpu, Cloud, Zap, Sparkles } from 'lucide-react';
 
 export function VisionSection() {
   const PILLARS = [
     {
-      icon: Layers,
-      color: 'from-purple-500 to-indigo-500',
-      tag: '01 / FİZİKSEL ZANAAT',
+      Icon: Layers, num: '01',
+      color: { from: '#8A6835', to: '#C9A86C' },
+      tag: 'FİZİKSEL ZANAAT',
       title: 'Kusursuz Pleksi & Dokunsal Estetik',
-      desc: 'Masanızda veya kasanızda sıradan bir kağıt ya da plastik duramaz. 3mm-5mm dökme akrilik pleksi, elmas polisajlı kenarlar ve yüksek çözünürlüklü kabartmalı UV baskı ile mekanınızın lüks kimliğini tamamlıyoruz.',
+      desc: 'Masanızda sıradan bir kağıt ya da plastik duramaz. 3–5mm dökme akrilik, elmas polisajlı kenarlar ve kabartmalı UV baskı ile mekanınızın lüks kimliğini tamamlıyoruz.',
     },
     {
-      icon: Cpu,
-      color: 'from-pink-500 to-rose-500',
-      tag: '02 / GÖRÜNMEZ ÇİP MİMARİSİ',
+      Icon: Cpu, num: '02',
+      color: { from: '#7A6030', to: '#B8925A' },
+      tag: 'GÖRÜNMEZ ÇİP MİMARİSİ',
       title: 'Pil Yok. Uygulama Yok. 0.2 Saniye.',
-      desc: 'NXP NTAG213 ve NTAG215 yüksek çekimli bobinlerimiz, telefon kılıfı arkasından dahi temas anında aktifleşir. Müşterinizi uygulama indirme veya yavaş QR tarama çilesinden kurtarır.',
+      desc: 'NXP NTAG213/215 yüksek çekimli bobinlerimiz telefon kılıfı arkasından dahi temas anında aktifleşir. Müşterinizi uygulama indirme çilesinden kurtarır.',
     },
     {
-      icon: Cloud,
-      color: 'from-blue-500 to-cyan-500',
-      tag: '03 / AKILLI BULUT SAAS',
+      Icon: Cloud, num: '03',
+      color: { from: '#5A6A4A', to: '#7A9A5A' },
+      tag: 'AKILLI BULUT SAAS',
       title: 'Canlı Veri & Masadan Anında Sipariş',
-      desc: 'Fiziksel donanım yalnızca bir kapıdır; arkasında çalışan bulut motorumuzla tek tıkla fiyat güncelleyebilir, 3 dilde masadan sipariş alabilir ve Google puanınızı organik olarak zirveye taşıyabilirsiniz.',
+      desc: 'Tek tıkla fiyat güncelleyin, 3 dilde masadan sipariş alın ve Google puanınızı organik olarak zirveye taşıyın. Bulut motorumuz her zaman aktif.',
     },
   ];
 
+  const gold = '#C9A86C';
+
   return (
-    <section className="relative py-28 px-4 sm:px-6 lg:px-8 overflow-hidden z-10">
+    <section className="py-28 px-4 sm:px-6 lg:px-8 relative z-10">
       <div className="max-w-6xl mx-auto">
-        {/* Section Headline */}
-        <div className="text-center max-w-3xl mx-auto mb-20 space-y-4">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-purple-500/20 border border-purple-500/40 text-purple-300">
-            <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+        {/* Header */}
+        <div className="text-center max-w-3xl mx-auto mb-20 space-y-5">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest"
+            style={{ background: 'rgba(201,168,108,0.08)', border: '1px solid rgba(201,168,108,0.25)', color: gold }}>
+            <Sparkles className="w-3.5 h-3.5" />
             Vizyon & Felsefemiz
           </div>
-
-          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight" style={{ color: '#F0E6D3' }}>
             Fiziksel Dünyanın Ağırlığı,{' '}
-            <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent">
-              Dijital Dünyanın Hızıyla Buluştu.
-            </span>
+            <span className="gold-text">Dijital Dünyanın Hızıyla Buluştu.</span>
           </h2>
-
-          <p className="text-base sm:text-lg text-slate-200 leading-relaxed font-normal">
-            Biz yalnızca yazılım ya da kart üretmiyoruz. İki dünyayı kusursuz bir hibrit ekosistemde birleştirerek restoran ve işletmelerin müşteri etkileşimini geleceğe taşıyoruz.
+          <p className="text-base leading-relaxed" style={{ color: 'rgba(180,152,104,0.75)' }}>
+            İki dünyayı kusursuz bir hibrit ekosistemde birleştirerek işletmelerin müşteri etkileşimini geleceğe taşıyoruz.
           </p>
         </div>
 
-        {/* 3 Pillars Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {PILLARS.map((pillar, idx) => {
-            const Icon = pillar.icon;
-            return (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-40px' }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className="relative rounded-3xl bg-[#11131C] border border-neutral-800 hover:border-neutral-700 p-8 flex flex-col justify-between group shadow-xl"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-6">
-                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-tr ${pillar.color} flex items-center justify-center text-white shadow-lg group-hover:scale-105 transition-transform duration-300`}>
-                      <Icon className="w-7 h-7" />
-                    </div>
-                    <span className="text-xs font-mono font-bold tracking-wider text-purple-300">
-                      {pillar.tag}
-                    </span>
-                  </div>
-
-                  <h3 className="text-xl font-bold text-white mb-3 tracking-tight">
-                    {pillar.title}
-                  </h3>
-
-                  <p className="text-sm text-slate-300 leading-relaxed font-normal">
-                    {pillar.desc}
-                  </p>
+        {/* Pillars */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {PILLARS.map(({ Icon, num, color, tag, title, desc }, i) => (
+            <motion.div key={i}
+              initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-40px' }} transition={{ duration: 0.55, delay: i * 0.12 }}
+              className="group rounded-3xl p-8 flex flex-col gap-5 transition-all duration-300"
+              style={{
+                background: 'rgba(18,14,8,0.8)',
+                border: '1px solid rgba(201,168,108,0.1)',
+                backdropFilter: 'blur(24px)',
+              }}
+              whileHover={{ borderColor: 'rgba(201,168,108,0.3)', boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}
+            >
+              <div className="flex items-start justify-between">
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center transition-transform duration-300 group-hover:scale-105"
+                  style={{ background: `linear-gradient(135deg, ${color.from}, ${color.to})`, boxShadow: `0 8px 24px ${color.to}40` }}>
+                  <Icon className="w-7 h-7 text-white" />
                 </div>
+                <span className="font-mono font-black text-3xl" style={{ color: 'rgba(201,168,108,0.12)' }}>{num}</span>
+              </div>
 
-                <div className="pt-6 border-t border-neutral-800 mt-8 flex items-center justify-between text-xs font-bold text-purple-300">
-                  <span>Sıfır Sürtünmeli Deneyim</span>
-                  <Zap className="w-4 h-4 text-purple-400" />
-                </div>
-              </motion.div>
-            );
-          })}
+              <div>
+                <span className="text-xs font-bold tracking-widest uppercase block mb-2" style={{ color: 'rgba(201,168,108,0.5)' }}>{tag}</span>
+                <h3 className="text-xl font-black leading-tight" style={{ color: '#F0E6D3' }}>{title}</h3>
+              </div>
+
+              <p className="text-sm leading-relaxed flex-1" style={{ color: 'rgba(180,152,104,0.7)' }}>{desc}</p>
+
+              <div className="flex items-center gap-1.5 text-xs font-bold pt-3" style={{ borderTop: '1px solid rgba(201,168,108,0.08)', color: 'rgba(201,168,108,0.5)' }}>
+                <Zap className="w-3.5 h-3.5" style={{ color: gold }} />
+                Sıfır Sürtünmeli Deneyim
+              </div>
+            </motion.div>
+          ))}
         </div>
 
-        {/* Real Venue Metrics Strip */}
-        <div className="mt-16 rounded-3xl bg-[#12141F] border border-neutral-800 p-8 shadow-xl">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
-            <div>
-              <span className="text-3xl sm:text-4xl font-black text-white block mb-1">0.2 sn</span>
-              <span className="text-xs text-slate-300 font-medium">Ortalama NFC Okuma Süresi</span>
+        {/* Metrics strip */}
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.2 }}
+          className="mt-12 grid grid-cols-2 lg:grid-cols-4 rounded-3xl overflow-hidden"
+          style={{ background: 'rgba(20,15,7,0.9)', border: '1px solid rgba(201,168,108,0.15)' }}>
+          {[
+            { val: '0.2 sn', label: 'NFC Okuma Süresi' },
+            { val: '+%340', label: 'Google Yorum Artışı' },
+            { val: '3 Dil', label: 'TR / EN / AR Otomatik' },
+            { val: '100K+', label: 'Dokunuş Ömrü' },
+          ].map(({ val, label }, i) => (
+            <div key={i} className="p-8 text-center" style={{ borderRight: i < 3 ? '1px solid rgba(201,168,108,0.1)' : 'none' }}>
+              <span className="block text-3xl font-black tracking-tight mb-1 gold-text">{val}</span>
+              <span className="block text-xs font-semibold" style={{ color: 'rgba(180,152,104,0.6)' }}>{label}</span>
             </div>
-            <div>
-              <span className="text-3xl sm:text-4xl font-black text-emerald-400 block mb-1">+%340</span>
-              <span className="text-xs text-slate-300 font-medium">Google Yorum Artış Oranı</span>
-            </div>
-            <div>
-              <span className="text-3xl sm:text-4xl font-black text-purple-400 block mb-1">3 Dil</span>
-              <span className="text-xs text-slate-300 font-medium">TR / EN / AR Otomatik Çeviri</span>
-            </div>
-            <div>
-              <span className="text-3xl sm:text-4xl font-black text-blue-400 block mb-1">100.000+</span>
-              <span className="text-xs text-slate-300 font-medium">Dokunuş Ömrü Garantisi</span>
-            </div>
-          </div>
-        </div>
+          ))}
+        </motion.div>
       </div>
     </section>
   );

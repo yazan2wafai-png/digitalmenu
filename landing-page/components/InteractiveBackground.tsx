@@ -1,83 +1,162 @@
 ﻿'use client';
 
+import { useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
+/* ─── Luxury Warm-Toned Background ───
+   Canvas particle field (micro-gold dust) + layered static mesh glows
+   No mouse tracking. Pure cinematic depth. */
 export function InteractiveBackground() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let raf: number;
+    const particles: {
+      x: number; y: number; vx: number; vy: number;
+      r: number; alpha: number; alphaDir: number;
+    }[] = [];
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    /* Spawn tiny warm-gold dust particles */
+    const COUNT = 90;
+    for (let i = 0; i < COUNT; i++) {
+      particles.push({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        vx: (Math.random() - 0.5) * 0.18,
+        vy: -Math.random() * 0.25 - 0.05,
+        r: Math.random() * 1.2 + 0.2,
+        alpha: Math.random() * 0.5 + 0.1,
+        alphaDir: (Math.random() > 0.5 ? 1 : -1) * 0.004,
+      });
+    }
+
+    const tick = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (const p of particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.alpha += p.alphaDir;
+        if (p.alpha <= 0.05 || p.alpha >= 0.6) p.alphaDir *= -1;
+        if (p.y < -5) { p.y = canvas.height + 5; p.x = Math.random() * canvas.width; }
+        if (p.x < -5) p.x = canvas.width + 5;
+        if (p.x > canvas.width + 5) p.x = -5;
+
+        ctx.beginPath();
+        const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 2.5);
+        grad.addColorStop(0, `rgba(218,188,120,${p.alpha})`);
+        grad.addColorStop(1, `rgba(180,140,70,0)`);
+        ctx.arc(p.x, p.y, p.r * 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+      }
+
+      raf = requestAnimationFrame(tick);
+    };
+    tick();
+
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', resize);
+    };
+  }, []);
+
   return (
-    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden bg-[#07090E]">
-      {/* Deep Obsidian Matte Gradient Base */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#090B10] via-[#07080D] to-[#040508]" />
+    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+      {/* ── WARM BASE GRADIENT ── */}
+      <div className="absolute inset-0" style={{
+        background: 'radial-gradient(ellipse 120% 80% at 50% -10%, #1E170C 0%, #0D0B08 55%, #060504 100%)',
+      }} />
 
-      {/* Subtle Luxury Ambient Glows (Static & Smoothly Breathing, not following mouse) */}
-      <div
-        className="absolute -top-[10%] left-1/2 -translate-x-1/2 w-[1000px] h-[500px] rounded-full opacity-20 blur-[150px] pointer-events-none"
+      {/* ── AMBIENT BLOB 1: warm amber top-left ── */}
+      <motion.div
+        className="absolute pointer-events-none"
         style={{
-          background: 'radial-gradient(ellipse at center, rgba(168, 85, 247, 0.4) 0%, rgba(59, 130, 246, 0.2) 50%, transparent 80%)',
+          top: '-15%', left: '-8%',
+          width: 900, height: 700,
+          background: 'radial-gradient(ellipse, rgba(160,108,40,0.22) 0%, rgba(100,65,15,0.08) 50%, transparent 75%)',
+          filter: 'blur(90px)',
         }}
+        animate={{ x: [0, 40, 0], y: [0, 25, 0] }}
+        transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
       />
 
-      <div
-        className="absolute top-[45%] -left-[10%] w-[600px] h-[600px] rounded-full opacity-15 blur-[160px] pointer-events-none"
+      {/* ── AMBIENT BLOB 2: golden center-right ── */}
+      <motion.div
+        className="absolute pointer-events-none"
         style={{
-          background: 'radial-gradient(circle, rgba(236, 72, 153, 0.35) 0%, transparent 70%)',
+          top: '30%', right: '-12%',
+          width: 700, height: 700,
+          background: 'radial-gradient(ellipse, rgba(180,130,50,0.18) 0%, rgba(120,85,20,0.06) 50%, transparent 75%)',
+          filter: 'blur(110px)',
         }}
+        animate={{ x: [0, -35, 0], y: [0, -20, 0] }}
+        transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut', delay: 5 }}
       />
 
-      <div
-        className="absolute top-[70%] -right-[10%] w-[700px] h-[700px] rounded-full opacity-15 blur-[180px] pointer-events-none"
+      {/* ── AMBIENT BLOB 3: warm bronze bottom-left ── */}
+      <motion.div
+        className="absolute pointer-events-none"
         style={{
-          background: 'radial-gradient(circle, rgba(14, 165, 233, 0.3) 0%, transparent 70%)',
+          bottom: '5%', left: '15%',
+          width: 600, height: 500,
+          background: 'radial-gradient(ellipse, rgba(140,95,30,0.14) 0%, rgba(80,55,10,0.05) 55%, transparent 80%)',
+          filter: 'blur(100px)',
         }}
+        animate={{ x: [0, 20, 0], y: [0, -15, 0] }}
+        transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut', delay: 10 }}
       />
 
-      {/* Elegant Minimalist Cybernetic Grid */}
+      {/* ── PARTICLE CANVAS (gold dust field) ── */}
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 opacity-80"
+        style={{ mixBlendMode: 'screen' }}
+      />
+
+      {/* ── ELEGANT DIAGONAL LINE GRID (very subtle) ── */}
       <div
-        className="absolute inset-0 opacity-[0.03]"
+        className="absolute inset-0 opacity-[0.025]"
         style={{
           backgroundImage: `
-            linear-gradient(to right, rgba(255, 255, 255, 0.3) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255, 255, 255, 0.3) 1px, transparent 1px)
+            linear-gradient(to right, rgba(201,168,108,0.8) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(201,168,108,0.8) 1px, transparent 1px)
           `,
-          backgroundSize: '64px 64px',
-          maskImage: 'radial-gradient(ellipse 90% 80% at 50% 35%, black 40%, transparent 95%)',
-          WebkitMaskImage: 'radial-gradient(ellipse 90% 80% at 50% 35%, black 40%, transparent 95%)',
+          backgroundSize: '80px 80px',
+          maskImage: 'radial-gradient(ellipse 80% 60% at 50% 30%, black 20%, transparent 90%)',
+          WebkitMaskImage: 'radial-gradient(ellipse 80% 60% at 50% 30%, black 20%, transparent 90%)',
         }}
       />
 
-      {/* Gentle Floating Light Particles */}
-      <div className="absolute inset-0 pointer-events-none">
-        {[
-          { top: '15%', left: '20%', size: 3, delay: 0 },
-          { top: '35%', left: '80%', size: 2, delay: 2 },
-          { top: '60%', left: '30%', size: 2.5, delay: 4 },
-          { top: '80%', left: '70%', size: 3, delay: 1 },
-          { top: '25%', left: '55%', size: 2, delay: 3 },
-        ].map((pt, i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full bg-purple-400/40 blur-[1px]"
-            style={{
-              top: pt.top,
-              left: pt.left,
-              width: pt.size,
-              height: pt.size,
-            }}
-            animate={{
-              y: [0, -20, 0],
-              opacity: [0.2, 0.7, 0.2],
-            }}
-            transition={{
-              duration: 6 + i * 2,
-              repeat: Infinity,
-              ease: 'easeInOut',
-              delay: pt.delay,
-            }}
-          />
-        ))}
-      </div>
+      {/* ── HORIZONTAL SCAN LINE (ultra subtle animated) ── */}
+      <motion.div
+        className="absolute left-0 right-0 h-px pointer-events-none"
+        style={{ background: 'linear-gradient(to right, transparent, rgba(201,168,108,0.12), transparent)' }}
+        animate={{ top: ['-2%', '102%'] }}
+        transition={{ duration: 14, repeat: Infinity, ease: 'linear', repeatDelay: 6 }}
+      />
 
-      {/* Top & Bottom Soft Vignette */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#040508]/80 pointer-events-none" />
+      {/* ── VIGNETTE EDGES ── */}
+      <div className="absolute inset-0" style={{
+        background: 'radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, rgba(6,5,4,0.6) 100%)',
+      }} />
+
+      {/* ── BOTTOM FADE ── */}
+      <div className="absolute bottom-0 left-0 right-0 h-64"
+        style={{ background: 'linear-gradient(to top, #060504, transparent)' }}
+      />
     </div>
   );
 }

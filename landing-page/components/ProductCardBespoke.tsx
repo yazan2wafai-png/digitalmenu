@@ -3,240 +3,206 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Sparkles,
-  Zap,
-  CheckCircle2,
-  Radio,
-  ArrowRight,
-  Layers,
-  Cpu,
-  ChevronDown,
-} from 'lucide-react';
+import { Zap, CheckCircle2, Radio, ArrowRight, Layers, Cpu, ChevronDown, Sparkles } from 'lucide-react';
 import type { ProductItem, ProductColor } from '@/lib/products';
 import { calculateProductPrice } from '@/lib/products';
 
-interface ProductCardBespokeProps {
-  product: ProductItem;
-  onOrderClick: (product: ProductItem, initialColor?: ProductColor) => void;
-  isBundle?: boolean;
-}
-
-const COLOR_NAMES: Record<ProductColor, { label: string; border: string; bg: string; dot: string }> = {
-  black: {
-    label: 'Mat Siyah',
-    border: 'border-neutral-600 hover:border-neutral-400',
-    bg: 'bg-neutral-900',
-    dot: 'bg-neutral-900 border-2 border-neutral-600',
-  },
-  white: {
-    label: 'Parlak Beyaz',
-    border: 'border-neutral-300 hover:border-white',
-    bg: 'bg-neutral-100',
-    dot: 'bg-white border-2 border-neutral-300',
-  },
-  transparent: {
-    label: 'Kristal Şeffaf',
-    border: 'border-cyan-400/60 hover:border-cyan-300',
-    bg: 'bg-cyan-950/60',
-    dot: 'bg-gradient-to-tr from-cyan-400/50 to-white/60 border-2 border-cyan-400',
-  },
+const COLOR_META: Record<ProductColor, { label: string; swatch: string; ring: string }> = {
+  black: { label: 'Mat Siyah', swatch: '#1A1A1A', ring: '#555' },
+  white: { label: 'Parlak Beyaz', swatch: '#F0EDE8', ring: '#CCC' },
+  transparent: { label: 'Şeffaf', swatch: 'linear-gradient(135deg, rgba(200,230,250,0.6), rgba(255,255,255,0.4))', ring: 'rgba(180,220,240,0.8)' },
 };
 
-export function ProductCardBespoke({ product, onOrderClick, isBundle = false }: ProductCardBespokeProps) {
-  const [selectedColor, setSelectedColor] = useState<ProductColor>(
-    product.colors && product.colors.length > 0 ? product.colors[0] : 'black',
-  );
-  const [showSpecs, setShowSpecs] = useState(false);
+interface Props { product: ProductItem; onOrderClick: (p: ProductItem, c?: ProductColor) => void; isBundle?: boolean; }
 
-  const currentImage =
-    product.images[selectedColor] ||
-    product.images.default ||
-    'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80';
+export function ProductCardBespoke({ product, onOrderClick, isBundle = false }: Props) {
+  const [color, setColor] = useState<ProductColor>(product.colors?.[0] ?? 'black');
+  const [specsOpen, setSpecsOpen] = useState(false);
 
-  const defaultPricing = calculateProductPrice(product, 1);
+  const img = product.images[color] ?? product.images.default;
+  const { unitPrice, totalPrice, discountPercentage } = calculateProductPrice(product, 1);
+
+  const gold = '#C9A86C';
+  const goldDim = 'rgba(201,168,108,0.6)';
 
   return (
     <motion.div
-      className={`group relative flex flex-col justify-between rounded-3xl p-6 transition-all duration-300 shadow-2xl overflow-hidden ${
-        isBundle
-          ? 'bg-[#151324] border-2 border-purple-500/60 shadow-[0_0_40px_rgba(168,85,247,0.2)] md:col-span-2 lg:col-span-3'
-          : 'bg-[#11131C] border border-neutral-800 hover:border-neutral-700'
-      }`}
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.55 }}
+      className={`group relative flex flex-col rounded-3xl overflow-hidden transition-all duration-400 ${
+        isBundle ? 'md:col-span-2 lg:col-span-3' : ''
+      }`}
+      style={{
+        background: isBundle
+          ? 'linear-gradient(135deg, rgba(30,22,10,0.95) 0%, rgba(22,16,6,0.98) 100%)'
+          : 'rgba(18,14,8,0.85)',
+        border: isBundle
+          ? '1px solid rgba(201,168,108,0.4)'
+          : '1px solid rgba(201,168,108,0.1)',
+        boxShadow: isBundle
+          ? '0 0 60px rgba(180,130,40,0.12), 0 20px 60px rgba(0,0,0,0.5)'
+          : '0 8px 40px rgba(0,0,0,0.5)',
+        backdropFilter: 'blur(24px)',
+      }}
+      whileHover={{ y: -4 }}
     >
-      {/* Top Header Badge & Category */}
-      <div>
-        <div className="flex items-center justify-between gap-2 mb-4">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-purple-500/20 border border-purple-500/40 text-purple-300">
-            <Radio className="w-3 h-3 text-purple-400" />
-            {product.categoryLabel}
-          </span>
+      {/* Gold line top on hover */}
+      <div className="absolute top-0 left-0 right-0 h-px transition-opacity duration-300 opacity-0 group-hover:opacity-100"
+        style={{ background: 'linear-gradient(to right, transparent, rgba(201,168,108,0.6), transparent)' }} />
 
+      {/* ── PRODUCT IMAGE ── */}
+      <div className="relative h-52 overflow-hidden">
+        <Image src={img ?? 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800'} alt={product.name}
+          fill sizes="(max-width:768px) 100vw, 33vw" className="object-cover transition-transform duration-500 group-hover:scale-105" />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(13,11,6,0.95) 0%, rgba(13,11,6,0.2) 55%, transparent 100%)' }} />
+
+        {/* Category badge */}
+        <div className="absolute top-3 left-3 flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold"
+          style={{ background: 'rgba(13,10,5,0.85)', border: '1px solid rgba(201,168,108,0.3)', color: gold }}>
+          <Radio className="w-3 h-3" style={{ color: gold }} />
+          {product.categoryLabel}
+        </div>
+
+        {/* NFC chip badge */}
+        <div className="absolute top-3 right-3 flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold"
+          style={{ background: 'rgba(13,10,5,0.85)', border: '1px solid rgba(201,168,108,0.2)', color: goldDim }}>
+          <Zap className="w-3 h-3" style={{ color: gold }} />
+          {product.specs.chipType?.split(' ')[1] ?? 'NFC'}
+        </div>
+
+        {/* Color swatches */}
+        {product.colors && product.colors.length > 0 && (
+          <div className="absolute bottom-3 left-3 flex items-center gap-2 p-1.5 rounded-full"
+            style={{ background: 'rgba(13,10,5,0.85)', border: '1px solid rgba(201,168,108,0.2)' }}>
+            {product.colors.map(c => (
+              <button key={c} onClick={e => { e.stopPropagation(); setColor(c); }}
+                title={COLOR_META[c].label}
+                className="w-5 h-5 rounded-full transition-all cursor-pointer"
+                style={{
+                  background: COLOR_META[c].swatch,
+                  outline: color === c ? `2px solid ${gold}` : 'none',
+                  outlineOffset: '2px',
+                  transform: color === c ? 'scale(1.2)' : 'scale(1)',
+                }} />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* ── CONTENT ── */}
+      <div className="flex flex-col flex-1 p-6 gap-4">
+        {/* Badge row */}
+        <div className="flex items-center gap-2 flex-wrap">
           {product.badge && (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 border border-amber-500/40 text-amber-300">
-              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-              {product.badge}
+            <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold"
+              style={{ background: 'rgba(201,168,108,0.12)', border: '1px solid rgba(201,168,108,0.35)', color: gold }}>
+              <Sparkles className="w-3 h-3" /> {product.badge}
+            </span>
+          )}
+          {isBundle && (
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold"
+              style={{ background: 'rgba(201,168,108,0.08)', border: '1px solid rgba(201,168,108,0.2)', color: goldDim }}>
+              Hepsi Bir Arada
             </span>
           )}
         </div>
 
-        {/* Product Visual Container */}
-        <div className="relative w-full h-56 rounded-2xl overflow-hidden bg-neutral-950 border border-neutral-800 mb-6 group/img">
-          <Image
-            src={currentImage}
-            alt={product.name}
-            fill
-            sizes="(max-width: 768px) 100vw, 33vw"
-            className="object-cover object-center transition-transform duration-500 group-hover/img:scale-105"
-          />
-
-          <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-transparent opacity-70" />
-
-          {/* NFC Holographic Tap Icon */}
-          <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/80 border border-white/20 text-xs font-semibold text-white shadow-lg">
-            <Zap className="w-3.5 h-3.5 text-cyan-400" />
-            <span>NFC Tap</span>
-          </div>
-
-          {/* Color Switcher Pills */}
-          {product.colors && product.colors.length > 0 && (
-            <div className="absolute bottom-3 left-3 z-10 flex items-center gap-2 p-1.5 rounded-full bg-black/80 border border-neutral-700">
-              {product.colors.map((color) => {
-                const isSelected = selectedColor === color;
-                return (
-                  <button
-                    key={color}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedColor(color);
-                    }}
-                    title={COLOR_NAMES[color].label}
-                    className={`w-6 h-6 rounded-full transition-all flex items-center justify-center cursor-pointer ${
-                      COLOR_NAMES[color].dot
-                    } ${isSelected ? 'ring-2 ring-purple-400 ring-offset-2 ring-offset-black scale-110' : 'opacity-80 hover:opacity-100'}`}
-                  />
-                );
-              })}
-            </div>
-          )}
-
-          {/* Chip Badge */}
-          {product.specs.chipType && (
-            <div className="absolute bottom-3 right-3 z-10 flex items-center gap-1 px-2.5 py-1 rounded-md bg-black/80 border border-neutral-700 text-[11px] font-mono font-bold text-purple-300">
-              <Cpu className="w-3.5 h-3.5 text-purple-400" />
-              <span>{product.specs.chipType.split(' ')[1] || 'NTAG213'}</span>
-            </div>
-          )}
+        {/* Title & tagline */}
+        <div>
+          <h3 className="text-xl font-black tracking-tight mb-1.5 transition-colors group-hover:text-[#E2C99A]"
+            style={{ color: '#F0E6D3', lineHeight: 1.25 }}>
+            {product.name}
+          </h3>
+          <p className="text-sm leading-relaxed line-clamp-2" style={{ color: 'rgba(180,152,104,0.75)' }}>
+            {product.tagline}
+          </p>
         </div>
 
-        {/* Title & Tagline */}
-        <h3 className="text-xl font-bold text-white tracking-tight mb-2">
-          {product.name}
-        </h3>
-
-        <p className="text-sm text-slate-300 leading-relaxed line-clamp-2 mb-4">
-          {product.tagline}
-        </p>
-
-        {/* Feature Checkpoints */}
-        <div className="space-y-2 mb-6">
-          {product.features.slice(0, 4).map((feat, idx) => (
-            <div key={idx} className="flex items-start gap-2.5 text-xs text-neutral-200">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-              <span className="leading-snug">{feat}</span>
+        {/* Features */}
+        <div className="space-y-2">
+          {product.features.slice(0, isBundle ? 5 : 3).map((f, i) => (
+            <div key={i} className="flex items-start gap-2 text-xs" style={{ color: 'rgba(200,178,140,0.85)' }}>
+              <CheckCircle2 className="w-3.5 h-3.5 shrink-0 mt-0.5" style={{ color: '#C9A86C' }} />
+              <span className="leading-snug">{f}</span>
             </div>
           ))}
         </div>
 
-        {/* Expandable Hardware Specifications (Accordion) */}
-        <div className="border-t border-neutral-800 pt-3 mb-6">
-          <button
-            onClick={() => setShowSpecs(!showSpecs)}
-            className="w-full flex items-center justify-between text-xs font-bold text-neutral-300 hover:text-white transition-colors py-1 cursor-pointer"
-          >
+        {/* Tech spec accordion */}
+        <div style={{ borderTop: '1px solid rgba(201,168,108,0.1)' }} className="pt-3">
+          <button onClick={() => setSpecsOpen(!specsOpen)}
+            className="w-full flex items-center justify-between text-xs font-bold cursor-pointer transition-colors hover:text-[#C9A86C]"
+            style={{ color: 'rgba(180,152,104,0.6)' }}>
             <span className="flex items-center gap-1.5">
-              <Layers className="w-3.5 h-3.5 text-purple-400" />
-              Teknik Özellikler & Detaylar
+              <Layers className="w-3.5 h-3.5" style={{ color: gold }} />
+              Teknik Özellikler
             </span>
-            <ChevronDown
-              className={`w-4 h-4 transition-transform duration-300 text-purple-400 ${showSpecs ? 'rotate-180' : ''}`}
-            />
+            <ChevronDown className="w-4 h-4 transition-transform" style={{ transform: specsOpen ? 'rotate(180deg)' : 'none', color: gold }} />
           </button>
 
           <AnimatePresence>
-            {showSpecs && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.25 }}
-                className="overflow-hidden space-y-2 pt-3 text-xs"
-              >
-                <div className="flex justify-between py-1 border-b border-neutral-800">
-                  <span className="text-neutral-400">Materyal:</span>
-                  <span className="font-semibold text-white text-right">{product.specs.material}</span>
-                </div>
-                {product.specs.chipType && (
-                  <div className="flex justify-between py-1 border-b border-neutral-800">
-                    <span className="text-neutral-400">NFC Çipi:</span>
-                    <span className="font-semibold text-purple-300 text-right">{product.specs.chipType}</span>
+            {specsOpen && (
+              <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }}
+                className="overflow-hidden pt-3 space-y-2 text-xs">
+                {[
+                  ['Materyal', product.specs.material],
+                  ...(product.specs.chipType ? [['NFC Çipi', product.specs.chipType]] : []),
+                  ['Ebatlar', product.specs.dimensions],
+                  ...(product.specs.finish ? [['Yüzey', product.specs.finish]] : []),
+                ].map(([k, v]) => (
+                  <div key={k} className="flex justify-between py-1" style={{ borderBottom: '1px solid rgba(201,168,108,0.07)' }}>
+                    <span style={{ color: 'rgba(180,152,104,0.5)' }}>{k}</span>
+                    <span className="font-semibold text-right max-w-[55%]" style={{ color: '#D4BC96' }}>{v}</span>
                   </div>
-                )}
-                <div className="flex justify-between py-1 border-b border-neutral-800">
-                  <span className="text-neutral-400">Ebatlar:</span>
-                  <span className="font-semibold text-white text-right">{product.specs.dimensions}</span>
-                </div>
-                {product.specs.finish && (
-                  <div className="flex justify-between py-1">
-                    <span className="text-neutral-400">Yüzey:</span>
-                    <span className="font-semibold text-white text-right">{product.specs.finish}</span>
-                  </div>
-                )}
+                ))}
               </motion.div>
             )}
           </AnimatePresence>
         </div>
-      </div>
 
-      {/* Pricing & Order CTA Footer */}
-      <div className="border-t border-neutral-800 pt-5 mt-auto">
-        <div className="flex items-baseline justify-between mb-4">
-          <div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-black text-white tracking-tight">
-                {defaultPricing.unitPrice.toLocaleString('tr-TR')} {product.currency}
-              </span>
-              {product.originalPrice && (
-                <span className="text-sm text-neutral-400 line-through font-medium">
-                  {product.originalPrice.toLocaleString('tr-TR')} {product.currency}
+        {/* Pricing + CTA */}
+        <div className="mt-auto pt-4" style={{ borderTop: '1px solid rgba(201,168,108,0.1)' }}>
+          <div className="flex items-end justify-between mb-4">
+            <div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-black" style={{ color: '#F0E6D3' }}>
+                  {unitPrice.toLocaleString('tr-TR')} {product.currency}
                 </span>
-              )}
+                {product.originalPrice && (
+                  <span className="text-sm line-through" style={{ color: 'rgba(180,152,104,0.4)' }}>
+                    {product.originalPrice.toLocaleString('tr-TR')} {product.currency}
+                  </span>
+                )}
+              </div>
+              <span className="text-xs" style={{ color: 'rgba(180,152,104,0.5)' }}>
+                {product.isSubscription ? product.billingPeriod ?? '/ Yıl' : 'KDV Dahil'}
+              </span>
             </div>
-            <span className="text-xs text-neutral-400 font-medium">
-              {product.isSubscription
-                ? (product.billingPeriod || '/ Yıl')
-                : '+ KDV Dahil'}
-            </span>
+            {product.bulkTiers && product.bulkTiers.length > 1 && (
+              <span className="text-xs font-bold px-2.5 py-1 rounded-lg"
+                style={{ background: 'rgba(201,168,108,0.1)', border: '1px solid rgba(201,168,108,0.25)', color: gold }}>
+                Toptan İndirimli
+              </span>
+            )}
           </div>
 
-          {product.bulkTiers && product.bulkTiers.length > 1 && (
-            <span className="text-xs font-bold text-emerald-300 bg-emerald-500/20 border border-emerald-500/30 px-2.5 py-1 rounded-lg">
-              Toptan İndirimli
-            </span>
-          )}
+          <button onClick={() => onOrderClick(product, color)}
+            className="w-full py-3.5 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer group/btn"
+            style={{
+              background: isBundle
+                ? 'linear-gradient(135deg, #C9A86C 0%, #8A5C2A 100%)'
+                : 'linear-gradient(135deg, rgba(201,168,108,0.18) 0%, rgba(201,168,108,0.08) 100%)',
+              border: '1px solid rgba(201,168,108,0.4)',
+              color: isBundle ? '#0D0B08' : '#C9A86C',
+              boxShadow: isBundle ? '0 8px 28px rgba(180,130,40,0.35)' : 'none',
+            }}>
+            Özelleştir & Sipariş Ver
+            <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-0.5" />
+          </button>
         </div>
-
-        <button
-          onClick={() => onOrderClick(product, selectedColor)}
-          className="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 hover:from-purple-500 hover:via-pink-500 hover:to-blue-500 text-white font-bold text-sm tracking-wide shadow-lg shadow-purple-600/30 hover:shadow-purple-600/50 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
-        >
-          <span>Özelleştir & Sipariş Ver</span>
-          <ArrowRight className="w-4 h-4" />
-        </button>
       </div>
     </motion.div>
   );
