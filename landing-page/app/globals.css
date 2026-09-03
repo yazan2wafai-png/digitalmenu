@@ -1,9 +1,5 @@
 ﻿@import "tailwindcss";
 
-:root {
-  color-scheme: dark;
-}
-
 html {
   scroll-behavior: smooth;
 }
@@ -18,42 +14,28 @@ body {
 }
 
 ::selection {
-  background: rgba(201,168,108,0.25);
+  background: rgba(201, 168, 108, 0.25);
   color: #F0E6D3;
 }
 
-/* Noise grain overlay */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
-  background-size: 300px 300px;
-  opacity: 0.5;
-}
-
-/* Gold shimmer */
 @keyframes gold-shimmer {
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
 }
 
 @keyframes float-a {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  33% { transform: translateY(-22px) rotate(1.2deg); }
-  66% { transform: translateY(-10px) rotate(-0.6deg); }
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
 }
 
 @keyframes float-b {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-14px) rotate(-0.8deg); }
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-14px); }
 }
 
 @keyframes beacon {
-  0%, 100% { opacity: 0.25; transform: scale(1); }
-  50% { opacity: 0.55; transform: scale(1.08); }
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.12); }
 }
 
 .gold-text {
@@ -65,28 +47,36 @@ body::before {
   animation: gold-shimmer 5s ease-in-out infinite;
 }
 
-.float-slow { animation: float-a 9s ease-in-out infinite; }
-.float-delayed { animation: float-b 11s ease-in-out infinite; animation-delay: -4s; }
-.beacon { animation: beacon 3s ease-in-out infinite; }
+.float-slow {
+  animation: float-a 9s ease-in-out infinite;
+}
 
-/* Glass warm card */
+.float-delayed {
+  animation: float-b 11s ease-in-out infinite;
+  animation-delay: -4s;
+}
+
+.beacon {
+  animation: beacon 3s ease-in-out infinite;
+}
+
 .glass-warm {
-  background: rgba(22, 19, 13, 0.75);
+  background: rgba(22, 18, 10, 0.75);
   backdrop-filter: blur(28px) saturate(160%);
   -webkit-backdrop-filter: blur(28px) saturate(160%);
   border: 1px solid rgba(201, 168, 108, 0.12);
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
+
 .glass-warm:hover {
   border-color: rgba(201, 168, 108, 0.28);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(201,168,108,0.1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(201, 168, 108, 0.1);
 }
 
-/* Scrollbar */
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: #111009; }
 ::-webkit-scrollbar-thumb { background: #3A3020; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(201,168,108,0.4); }
+::-webkit-scrollbar-thumb:hover { background: rgba(201, 168, 108, 0.4); }
 
 .scrollbar-none { scrollbar-width: none; -ms-overflow-style: none; }
 .scrollbar-none::-webkit-scrollbar { display: none; }
