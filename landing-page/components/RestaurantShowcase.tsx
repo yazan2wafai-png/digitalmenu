@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUpRight, X, ChevronRight } from 'lucide-react';
-import type { LiveDemoItem } from '@/app/page';
+import type { LiveDemoItem } from '@/lib/live-demo';
 import type { Locale } from '@/lib/translations';
 
 interface MenuProduct {
@@ -167,7 +167,7 @@ export function RestaurantShowcase({
                   <div className="p-6 space-y-3">
                     <p className="text-xs sm:text-sm text-ink/60 leading-relaxed">{demo.description}</p>
                     <div className="flex flex-wrap gap-2 pt-2">
-                      {demo.highlights.map((badge, bIdx) => (
+                      {demo.highlights.map((badge: string, bIdx: number) => (
                         <span
                           key={bIdx}
                           className="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-ink/5 border border-ink/10 text-ink/70"

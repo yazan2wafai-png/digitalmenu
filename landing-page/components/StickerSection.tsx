@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import type { Locale } from '@/lib/translations';
 import { translations } from '@/lib/translations';
-import type { LiveDemoItem } from '@/app/page';
+import type { LiveDemoItem } from '@/lib/live-demo';
 
 export interface StickerSectionProps {
   locale?: Locale;
