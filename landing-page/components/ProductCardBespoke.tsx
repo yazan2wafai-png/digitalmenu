@@ -19,36 +19,36 @@ import { calculateProductPrice } from '@/lib/products';
 interface ProductCardBespokeProps {
   product: ProductItem;
   onOrderClick: (product: ProductItem, initialColor?: ProductColor) => void;
+  isBundle?: boolean;
 }
 
 const COLOR_NAMES: Record<ProductColor, { label: string; border: string; bg: string; dot: string }> = {
   black: {
     label: 'Mat Siyah',
-    border: 'border-neutral-700 hover:border-neutral-500',
+    border: 'border-neutral-600 hover:border-neutral-400',
     bg: 'bg-neutral-900',
-    dot: 'bg-neutral-900 border border-neutral-700',
+    dot: 'bg-neutral-900 border-2 border-neutral-600',
   },
   white: {
     label: 'Parlak Beyaz',
-    border: 'border-white/30 hover:border-white/80',
+    border: 'border-neutral-300 hover:border-white',
     bg: 'bg-neutral-100',
-    dot: 'bg-white border border-neutral-300',
+    dot: 'bg-white border-2 border-neutral-300',
   },
   transparent: {
     label: 'Kristal Şeffaf',
-    border: 'border-cyan-500/40 hover:border-cyan-400',
-    bg: 'bg-cyan-950/40 backdrop-blur-md',
-    dot: 'bg-gradient-to-tr from-cyan-400/40 to-white/40 border border-cyan-400/60',
+    border: 'border-cyan-400/60 hover:border-cyan-300',
+    bg: 'bg-cyan-950/60',
+    dot: 'bg-gradient-to-tr from-cyan-400/50 to-white/60 border-2 border-cyan-400',
   },
 };
 
-export function ProductCardBespoke({ product, onOrderClick }: ProductCardBespokeProps) {
+export function ProductCardBespoke({ product, onOrderClick, isBundle = false }: ProductCardBespokeProps) {
   const [selectedColor, setSelectedColor] = useState<ProductColor>(
     product.colors && product.colors.length > 0 ? product.colors[0] : 'black',
   );
   const [showSpecs, setShowSpecs] = useState(false);
 
-  // Dynamic image preview based on color
   const currentImage =
     product.images[selectedColor] ||
     product.images.default ||
@@ -58,55 +58,53 @@ export function ProductCardBespoke({ product, onOrderClick }: ProductCardBespoke
 
   return (
     <motion.div
-      className="group relative flex flex-col justify-between rounded-3xl bg-gradient-to-b from-white/[0.07] via-white/[0.03] to-black/40 border border-white/10 hover:border-white/25 backdrop-blur-xl p-6 transition-all duration-500 shadow-2xl hover:shadow-[0_20px_50px_rgba(168,85,247,0.15)] overflow-hidden"
-      initial={{ opacity: 0, y: 30 }}
+      className={`group relative flex flex-col justify-between rounded-3xl p-6 transition-all duration-300 shadow-2xl overflow-hidden ${
+        isBundle
+          ? 'bg-[#151324] border-2 border-purple-500/60 shadow-[0_0_40px_rgba(168,85,247,0.2)] md:col-span-2 lg:col-span-3'
+          : 'bg-[#11131C] border border-neutral-800 hover:border-neutral-700'
+      }`}
+      initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-50px' }}
-      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      viewport={{ once: true, margin: '-40px' }}
+      transition={{ duration: 0.5 }}
     >
-      {/* Ambient Top Glow on Hover */}
-      <div
-        className="absolute -top-24 left-1/2 -translate-x-1/2 w-64 h-32 bg-gradient-to-b from-purple-500/20 via-pink-500/10 to-transparent blur-3xl pointer-events-none transition-opacity duration-500 opacity-0 group-hover:opacity-100"
-      />
-
       {/* Top Header Badge & Category */}
       <div>
         <div className="flex items-center justify-between gap-2 mb-4">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-purple-500/10 border border-purple-500/25 text-purple-300">
-            <Radio className="w-3 h-3 text-purple-400 animate-pulse" />
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-purple-500/20 border border-purple-500/40 text-purple-300">
+            <Radio className="w-3 h-3 text-purple-400" />
             {product.categoryLabel}
           </span>
 
           {product.badge && (
-            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 text-amber-300">
-              <Sparkles className="w-3 h-3 text-amber-400" />
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 border border-amber-500/40 text-amber-300">
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
               {product.badge}
             </span>
           )}
         </div>
 
-        {/* Product Visual Container with 3D Float */}
-        <div className="relative w-full h-56 rounded-2xl overflow-hidden bg-neutral-950/80 border border-white/10 mb-6 group/img">
+        {/* Product Visual Container */}
+        <div className="relative w-full h-56 rounded-2xl overflow-hidden bg-neutral-950 border border-neutral-800 mb-6 group/img">
           <Image
             src={currentImage}
             alt={product.name}
             fill
             sizes="(max-width: 768px) 100vw, 33vw"
-            className="object-cover object-center transition-transform duration-700 ease-out group-hover/img:scale-105"
+            className="object-cover object-center transition-transform duration-500 group-hover/img:scale-105"
           />
 
-          {/* Frosted Gradient Glass Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/30 to-transparent opacity-80" />
+          <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-transparent opacity-70" />
 
           {/* NFC Holographic Tap Icon */}
-          <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-[11px] font-medium text-white/90 shadow-lg">
+          <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/80 border border-white/20 text-xs font-semibold text-white shadow-lg">
             <Zap className="w-3.5 h-3.5 text-cyan-400" />
             <span>NFC Tap</span>
           </div>
 
-          {/* Live Color Variant Preview Pills in Corner */}
+          {/* Color Switcher Pills */}
           {product.colors && product.colors.length > 0 && (
-            <div className="absolute bottom-3 left-3 z-10 flex items-center gap-1.5 p-1 rounded-full bg-black/70 backdrop-blur-md border border-white/15">
+            <div className="absolute bottom-3 left-3 z-10 flex items-center gap-2 p-1.5 rounded-full bg-black/80 border border-neutral-700">
               {product.colors.map((color) => {
                 const isSelected = selectedColor === color;
                 return (
@@ -117,55 +115,55 @@ export function ProductCardBespoke({ product, onOrderClick }: ProductCardBespoke
                       setSelectedColor(color);
                     }}
                     title={COLOR_NAMES[color].label}
-                    className={`w-6 h-6 rounded-full transition-all flex items-center justify-center ${
+                    className={`w-6 h-6 rounded-full transition-all flex items-center justify-center cursor-pointer ${
                       COLOR_NAMES[color].dot
-                    } ${isSelected ? 'ring-2 ring-purple-400 ring-offset-2 ring-offset-black scale-110' : 'opacity-70 hover:opacity-100'}`}
+                    } ${isSelected ? 'ring-2 ring-purple-400 ring-offset-2 ring-offset-black scale-110' : 'opacity-80 hover:opacity-100'}`}
                   />
                 );
               })}
             </div>
           )}
 
-          {/* Hardware Spec Quick Badge */}
+          {/* Chip Badge */}
           {product.specs.chipType && (
-            <div className="absolute bottom-3 right-3 z-10 flex items-center gap-1 px-2.5 py-1 rounded-md bg-black/70 backdrop-blur-md border border-white/15 text-[10px] font-mono text-purple-300">
-              <Cpu className="w-3 h-3 text-purple-400" />
+            <div className="absolute bottom-3 right-3 z-10 flex items-center gap-1 px-2.5 py-1 rounded-md bg-black/80 border border-neutral-700 text-[11px] font-mono font-bold text-purple-300">
+              <Cpu className="w-3.5 h-3.5 text-purple-400" />
               <span>{product.specs.chipType.split(' ')[1] || 'NTAG213'}</span>
             </div>
           )}
         </div>
 
         {/* Title & Tagline */}
-        <h3 className="text-xl font-bold text-white tracking-tight mb-2 group-hover:text-purple-200 transition-colors">
+        <h3 className="text-xl font-bold text-white tracking-tight mb-2">
           {product.name}
         </h3>
 
-        <p className="text-sm text-white/60 leading-relaxed line-clamp-2 mb-4">
+        <p className="text-sm text-slate-300 leading-relaxed line-clamp-2 mb-4">
           {product.tagline}
         </p>
 
         {/* Feature Checkpoints */}
         <div className="space-y-2 mb-6">
-          {product.features.slice(0, 3).map((feat, idx) => (
-            <div key={idx} className="flex items-start gap-2.5 text-xs text-white/75">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+          {product.features.slice(0, 4).map((feat, idx) => (
+            <div key={idx} className="flex items-start gap-2.5 text-xs text-neutral-200">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
               <span className="leading-snug">{feat}</span>
             </div>
           ))}
         </div>
 
         {/* Expandable Hardware Specifications (Accordion) */}
-        <div className="border-t border-white/10 pt-3 mb-6">
+        <div className="border-t border-neutral-800 pt-3 mb-6">
           <button
             onClick={() => setShowSpecs(!showSpecs)}
-            className="w-full flex items-center justify-between text-xs font-semibold text-white/50 hover:text-white/80 transition-colors py-1"
+            className="w-full flex items-center justify-between text-xs font-bold text-neutral-300 hover:text-white transition-colors py-1 cursor-pointer"
           >
             <span className="flex items-center gap-1.5">
               <Layers className="w-3.5 h-3.5 text-purple-400" />
-              Teknik Özellikler & Materyal
+              Teknik Özellikler & Detaylar
             </span>
             <ChevronDown
-              className={`w-4 h-4 transition-transform duration-300 ${showSpecs ? 'rotate-180 text-purple-400' : ''}`}
+              className={`w-4 h-4 transition-transform duration-300 text-purple-400 ${showSpecs ? 'rotate-180' : ''}`}
             />
           </button>
 
@@ -175,27 +173,27 @@ export function ProductCardBespoke({ product, onOrderClick }: ProductCardBespoke
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3 }}
-                className="overflow-hidden space-y-1.5 pt-2 text-[11px] text-white/60"
+                transition={{ duration: 0.25 }}
+                className="overflow-hidden space-y-2 pt-3 text-xs"
               >
-                <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-white/40">Materyal:</span>
-                  <span className="font-medium text-white/80 text-right">{product.specs.material}</span>
+                <div className="flex justify-between py-1 border-b border-neutral-800">
+                  <span className="text-neutral-400">Materyal:</span>
+                  <span className="font-semibold text-white text-right">{product.specs.material}</span>
                 </div>
                 {product.specs.chipType && (
-                  <div className="flex justify-between py-1 border-b border-white/5">
-                    <span className="text-white/40">NFC Çipi:</span>
-                    <span className="font-medium text-white/80 text-right">{product.specs.chipType}</span>
+                  <div className="flex justify-between py-1 border-b border-neutral-800">
+                    <span className="text-neutral-400">NFC Çipi:</span>
+                    <span className="font-semibold text-purple-300 text-right">{product.specs.chipType}</span>
                   </div>
                 )}
-                <div className="flex justify-between py-1 border-b border-white/5">
-                  <span className="text-white/40">Ebatlar:</span>
-                  <span className="font-medium text-white/80 text-right">{product.specs.dimensions}</span>
+                <div className="flex justify-between py-1 border-b border-neutral-800">
+                  <span className="text-neutral-400">Ebatlar:</span>
+                  <span className="font-semibold text-white text-right">{product.specs.dimensions}</span>
                 </div>
                 {product.specs.finish && (
                   <div className="flex justify-between py-1">
-                    <span className="text-white/40">Yüzey / Baskı:</span>
-                    <span className="font-medium text-white/80 text-right">{product.specs.finish}</span>
+                    <span className="text-neutral-400">Yüzey:</span>
+                    <span className="font-semibold text-white text-right">{product.specs.finish}</span>
                   </div>
                 )}
               </motion.div>
@@ -205,7 +203,7 @@ export function ProductCardBespoke({ product, onOrderClick }: ProductCardBespoke
       </div>
 
       {/* Pricing & Order CTA Footer */}
-      <div className="border-t border-white/10 pt-5 mt-auto">
+      <div className="border-t border-neutral-800 pt-5 mt-auto">
         <div className="flex items-baseline justify-between mb-4">
           <div>
             <div className="flex items-baseline gap-2">
@@ -213,32 +211,31 @@ export function ProductCardBespoke({ product, onOrderClick }: ProductCardBespoke
                 {defaultPricing.unitPrice.toLocaleString('tr-TR')} {product.currency}
               </span>
               {product.originalPrice && (
-                <span className="text-sm text-white/40 line-through">
-                  {product.originalPrice} {product.currency}
+                <span className="text-sm text-neutral-400 line-through font-medium">
+                  {product.originalPrice.toLocaleString('tr-TR')} {product.currency}
                 </span>
               )}
             </div>
-            <span className="text-[11px] text-white/40">
+            <span className="text-xs text-neutral-400 font-medium">
               {product.isSubscription
-                ? (product.billingPeriod || '/ Ay')
-                : '+ KDV Dahil / Başlangıç'}
+                ? (product.billingPeriod || '/ Yıl')
+                : '+ KDV Dahil'}
             </span>
           </div>
 
-          {/* Bulk Tier Hint Badge */}
           {product.bulkTiers && product.bulkTiers.length > 1 && (
-            <span className="text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md">
-              %35'e varan toptan indirim
+            <span className="text-xs font-bold text-emerald-300 bg-emerald-500/20 border border-emerald-500/30 px-2.5 py-1 rounded-lg">
+              Toptan İndirimli
             </span>
           )}
         </div>
 
         <button
           onClick={() => onOrderClick(product, selectedColor)}
-          className="w-full relative group/btn flex items-center justify-center gap-2.5 py-3.5 px-5 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 hover:from-purple-500 hover:via-pink-500 hover:to-blue-500 text-white font-bold text-sm tracking-wide shadow-lg shadow-purple-600/25 hover:shadow-purple-600/40 transition-all duration-300 transform active:scale-[0.98] cursor-pointer"
+          className="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 hover:from-purple-500 hover:via-pink-500 hover:to-blue-500 text-white font-bold text-sm tracking-wide shadow-lg shadow-purple-600/30 hover:shadow-purple-600/50 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
         >
           <span>Özelleştir & Sipariş Ver</span>
-          <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
+          <ArrowRight className="w-4 h-4" />
         </button>
       </div>
     </motion.div>

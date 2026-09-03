@@ -1,34 +1,21 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
-/* ── NFC myplace Brand Identity ──
-   Krem #F7EFE4 · Bej #E7DAC0 · Mürekkep #2B2118 · Terracotta #C1691E · Zeytin #6B6650
-   Space Grotesk (display/headings) · Manrope (body/UI) */
 :root {
-  --color-cream: #F7EFE4;
-  --color-beige: #E7DAC0;
-  --color-ink: #2B2118;
-  --color-terracotta: #B5651D;
-  --color-terracotta-light: #CB9361;
-  --color-olive: #6B6650;
-}
-
-@theme inline {
-  --color-cream: var(--color-cream);
-  --color-beige: var(--color-beige);
-  --color-ink: var(--color-ink);
-  --color-terracotta: var(--color-terracotta);
-  --color-terracotta-light: var(--color-terracotta-light);
-  --color-olive: var(--color-olive);
-  --font-display: var(--font-display);
-  --font-body: var(--font-body);
+  color-scheme: dark;
+  --background: #0A0C10;
+  --foreground: #F8FAFC;
 }
 
 body {
-  font-family: var(--font-body), Arial, Helvetica, sans-serif;
+  background-color: #0A0C10;
+  color: #F8FAFC;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  overflow-x: hidden;
 }
 
-h1, h2, h3, h4, h5, h6, .font-display {
-  font-family: var(--font-display), var(--font-body), sans-serif;
+::selection {
+  background-color: #9333ea;
+  color: #ffffff;
 }
 
 .scrollbar-none {

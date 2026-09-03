@@ -4,99 +4,138 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import {
-  Sparkles,
   Zap,
   Star,
   Smartphone,
   Radio,
-  ArrowRight,
   CheckCircle2,
-  ThumbsUp,
   RotateCcw,
+  ShoppingBag,
+  Flame,
+  Coffee,
+  Sparkles,
 } from 'lucide-react';
 
-export function NfcTapSimulator() {
-  const [activeMode, setActiveMode] = useState<'google' | 'menu'>('google');
+export type SimulatorScreen = 'google' | 'baltazar' | 'erenkoy' | 'actnoir';
+
+interface NfcTapSimulatorProps {
+  initialScreen?: SimulatorScreen;
+}
+
+export function NfcTapSimulator({ initialScreen = 'google' }: NfcTapSimulatorProps) {
+  const [activeScreen, setActiveScreen] = useState<SimulatorScreen>(initialScreen);
   const [hasTapped, setHasTapped] = useState(false);
   const [rating, setRating] = useState(5);
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
 
-  const handleTap = () => {
+  const handleTap = (screen?: SimulatorScreen) => {
+    if (screen) setActiveScreen(screen);
     setHasTapped(true);
     confetti({
-      particleCount: 60,
+      particleCount: 50,
       spread: 60,
       origin: { y: 0.6 },
-      colors: activeMode === 'google' ? ['#f59e0b', '#ef4444', '#3b82f6', '#10b981'] : ['#a855f7', '#ec4899', '#3b82f6'],
+      colors: ['#a855f7', '#ec4899', '#3b82f6', '#10b981', '#f59e0b'],
     });
   };
 
   const handleReset = () => {
     setHasTapped(false);
     setReviewSubmitted(false);
+    setCartCount(0);
     setRating(5);
   };
 
   return (
-    <section className="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+    <section className="relative py-24 px-4 sm:px-6 lg:px-8 overflow-hidden z-10">
       <div className="max-w-6xl mx-auto">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-12 space-y-4">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 text-purple-300">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-purple-500/10 border border-purple-500/20 text-purple-300">
             <Radio className="w-3.5 h-3.5 text-purple-400 animate-pulse" />
-            Canlı İnteraktif Simülatör
+            Canlı İnteraktif NFC & Menü Deneyimi
           </div>
           <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
-            Telefonunuzu Yaklaştırın.{' '}
-            <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
-              Sihir 0.2 Saniyede Başlasın.
+            Dokununca Telefonda Ne Açılır?{' '}
+            <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent">
+              Canlıda Test Edin.
             </span>
           </h2>
           <p className="text-base text-white/60">
-            Müşterilerinizin mekanınızda yaşayacağı sıfır sürtünmeli NFC deneyimini aşağıdaki simülatörde canlı deneyin.
+            Aşağıdaki menülerden birini seçin ve karta tıklayarak telefonun o menüyü nasıl açtığını 0.2 saniyede görün.
           </p>
 
-          {/* Mode Switcher Buttons */}
-          <div className="flex items-center justify-center gap-3 pt-2">
+          {/* Preset Buttons for Real Venues */}
+          <div className="flex flex-wrap items-center justify-center gap-2.5 pt-2">
             <button
               onClick={() => {
-                setActiveMode('google');
-                handleReset();
+                setActiveScreen('google');
+                setHasTapped(true);
               }}
-              className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                activeMode === 'google'
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                activeScreen === 'google'
                   ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-[0_0_20px_rgba(245,158,11,0.2)]'
                   : 'bg-white/5 text-white/60 hover:text-white border border-white/10'
               }`}
             >
-              ⭐ Google 5 Yıldız Değerlendirme Modu
+              ⭐ Google Değerlendirme
             </button>
+
             <button
               onClick={() => {
-                setActiveMode('menu');
-                handleReset();
+                setActiveScreen('baltazar');
+                setHasTapped(true);
               }}
-              className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                activeMode === 'menu'
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                activeScreen === 'baltazar'
+                  ? 'bg-red-500/20 text-red-300 border border-red-500/40 shadow-[0_0_20px_rgba(239,68,68,0.2)]'
+                  : 'bg-white/5 text-white/60 hover:text-white border border-white/10'
+              }`}
+            >
+              🍔 Baltazar Burger Menüsü
+            </button>
+
+            <button
+              onClick={() => {
+                setActiveScreen('erenkoy');
+                setHasTapped(true);
+              }}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                activeScreen === 'erenkoy'
                   ? 'bg-purple-500/20 text-purple-300 border border-purple-500/40 shadow-[0_0_20px_rgba(168,85,247,0.2)]'
                   : 'bg-white/5 text-white/60 hover:text-white border border-white/10'
               }`}
             >
-              🍽️ Akıllı Masadan Sipariş Modu
+              ☕ Kahve Erenköy Menüsü
+            </button>
+
+            <button
+              onClick={() => {
+                setActiveScreen('actnoir');
+                setHasTapped(true);
+              }}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                activeScreen === 'actnoir'
+                  ? 'bg-blue-500/20 text-blue-300 border border-blue-500/40 shadow-[0_0_20px_rgba(59,130,246,0.2)]'
+                  : 'bg-white/5 text-white/60 hover:text-white border border-white/10'
+              }`}
+            >
+              🥐 Act Noir Café Menüsü
             </button>
           </div>
         </div>
 
         {/* Interactive Playground Canvas */}
-        <div className="relative rounded-3xl bg-gradient-to-b from-white/[0.06] to-black/60 border border-white/15 p-6 sm:p-10 backdrop-blur-2xl overflow-hidden shadow-2xl">
+        <div className="relative rounded-3xl bg-neutral-900/60 border border-white/15 p-6 sm:p-10 backdrop-blur-2xl overflow-hidden shadow-2xl">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            {/* Left: Interactive NFC Card / Stand Touch Target */}
-            <div className="lg:col-span-6 flex flex-col items-center justify-center p-6 sm:p-8 rounded-2xl bg-neutral-950/60 border border-white/10 relative overflow-hidden">
-              {/* Pulsing Concentric Aura */}
+            {/* Left: Physical NFC Acrylic Stand / Card */}
+            <div className="lg:col-span-6 flex flex-col items-center justify-center p-6 sm:p-8 rounded-2xl bg-neutral-950/80 border border-white/10 relative overflow-hidden">
+              {/* Pulsing NFC Aura */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <motion.div
                   className="w-48 h-48 rounded-full border border-purple-500/20"
-                  animate={{ scale: [1, 1.4, 1], opacity: [0.3, 0.7, 0.3] }}
+                  animate={{ scale: [1, 1.3, 1], opacity: [0.2, 0.5, 0.2] }}
                   transition={{ duration: 3, repeat: Infinity }}
                 />
               </div>
@@ -105,12 +144,9 @@ export function NfcTapSimulator() {
               <motion.div
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
-                onClick={handleTap}
+                onClick={() => handleTap()}
                 className="cursor-pointer relative w-72 h-44 rounded-2xl p-5 bg-gradient-to-tr from-neutral-900 via-neutral-800 to-neutral-900 border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.8)] flex flex-col justify-between group select-none"
               >
-                {/* Holographic Sheen */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl pointer-events-none" />
-
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-black tracking-wider text-white">NFC MY PLACE</span>
                   <Zap className="w-5 h-5 text-amber-400 animate-pulse" />
@@ -123,9 +159,12 @@ export function NfcTapSimulator() {
                     ))}
                   </div>
                   <span className="text-xs font-bold text-white block">
-                    {activeMode === 'google' ? 'Google Değerlendirme' : 'Kahve Erenköy Menü'}
+                    {activeScreen === 'google' && 'Google Değerlendirme Kartı'}
+                    {activeScreen === 'baltazar' && 'Baltazar Burger Masadan Sipariş'}
+                    {activeScreen === 'erenkoy' && 'Kahve Erenköy Akıllı Menü'}
+                    {activeScreen === 'actnoir' && 'Act Noir Café Masadan Menü'}
                   </span>
-                  <span className="text-[10px] text-white/50 block">Dokun ve Keşfet (NFC)</span>
+                  <span className="text-[10px] text-purple-300 block">Karta Dokunun (NFC Tap)</span>
                 </div>
 
                 <div className="flex items-center justify-between text-[9px] text-white/40">
@@ -136,22 +175,22 @@ export function NfcTapSimulator() {
 
               <p className="text-xs text-purple-300 font-semibold mt-6 flex items-center gap-1.5 animate-bounce">
                 <Smartphone className="w-4 h-4" />
-                Kartın üstüne tıklayarak telefon dokunuşunu simüle edin!
+                Karta tıklayarak telefondaki açılış tepkisini tetikleyin!
               </p>
             </div>
 
-            {/* Right: Simulated Mobile Phone Screen Result */}
+            {/* Right: Live Interactive Phone Screen Rendering the Real Menu */}
             <div className="lg:col-span-6 flex justify-center">
-              <div className="relative w-full max-w-[320px] h-[520px] rounded-[40px] bg-black border-4 border-neutral-800 shadow-[0_25px_60px_rgba(0,0,0,0.9)] p-4 flex flex-col justify-between overflow-hidden">
-                {/* iPhone Dynamic Island Mockup */}
+              <div className="relative w-full max-w-[330px] h-[560px] rounded-[44px] bg-black border-4 border-neutral-800 shadow-[0_25px_60px_rgba(0,0,0,0.9)] p-4 flex flex-col justify-between overflow-hidden">
+                {/* iPhone Dynamic Island */}
                 <div className="w-24 h-5 bg-neutral-900 rounded-full mx-auto mb-2 flex items-center justify-center">
                   <div className="w-2 h-2 rounded-full bg-blue-500/80 mr-2" />
                 </div>
 
-                {/* Phone Display Area */}
-                <div className="flex-1 flex flex-col justify-center items-center text-center p-3 relative">
+                {/* Live Display Area */}
+                <div className="flex-1 flex flex-col justify-start items-center text-left p-1 relative overflow-y-auto scrollbar-none w-full">
                   {!hasTapped ? (
-                    <div className="space-y-4 text-white/40">
+                    <div className="my-auto space-y-4 text-center text-white/40">
                       <motion.div
                         className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto"
                         animate={{ y: [0, -6, 0] }}
@@ -159,108 +198,249 @@ export function NfcTapSimulator() {
                       >
                         <Zap className="w-8 h-8 text-purple-400" />
                       </motion.div>
-                      <p className="text-xs">Sol taraftaki NFC karta tıklayarak telefona gelen anlık bildirimi görün.</p>
+                      <p className="text-xs px-4">
+                        Soldaki NFC karta tıklayın veya yukarıdaki menü butonlarına basarak telefon ekranındaki anlık menüyü görün.
+                      </p>
                     </div>
-                  ) : activeMode === 'google' ? (
-                    /* Google Review Interactive Modal on Phone */
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.85, y: 30 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      className="w-full bg-neutral-900 border border-white/15 rounded-2xl p-4 text-left space-y-3 shadow-xl"
-                    >
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center font-bold text-xs text-white">
-                          G
-                        </div>
-                        <div>
-                          <span className="text-xs font-bold text-white block">Baltazar Burger</span>
-                          <span className="text-[10px] text-white/50">Google İşletme Profili</span>
-                        </div>
-                      </div>
+                  ) : (
+                    <AnimatePresence mode="wait">
+                      {/* SCREEN 1: GOOGLE REVIEW */}
+                      {activeScreen === 'google' && (
+                        <motion.div
+                          key="google"
+                          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0 }}
+                          className="w-full bg-neutral-900 border border-white/15 rounded-2xl p-4 space-y-3 shadow-xl my-auto"
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center font-bold text-sm text-white">
+                              G
+                            </div>
+                            <div>
+                              <span className="text-xs font-bold text-white block">Baltazar Burger Karaköy</span>
+                              <span className="text-[10px] text-white/50">Google Haritalar Profili</span>
+                            </div>
+                          </div>
 
-                      {reviewSubmitted ? (
-                        <div className="text-center py-4 space-y-2">
-                          <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
-                          <span className="text-xs font-bold text-white block">5 Yıldızlı Yorumunuz İletildi!</span>
-                          <p className="text-[10px] text-white/60">İşletmeye desteğiniz için teşekkürler.</p>
-                        </div>
-                      ) : (
-                        <>
-                          <p className="text-xs text-white/80 font-medium">Bu mekanı değerlendirin:</p>
-                          <div className="flex gap-1.5 justify-center py-1">
-                            {[1, 2, 3, 4, 5].map((star) => (
+                          {reviewSubmitted ? (
+                            <div className="text-center py-4 space-y-2">
+                              <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
+                              <span className="text-xs font-bold text-white block">5 Yıldızlı Yorumunuz İletildi!</span>
+                              <p className="text-[10px] text-white/60">İşletmeye desteğiniz için teşekkürler.</p>
+                            </div>
+                          ) : (
+                            <>
+                              <p className="text-xs text-white/80 font-medium">Bu mekanı değerlendirin:</p>
+                              <div className="flex gap-1.5 justify-center py-1">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                  <button
+                                    key={star}
+                                    type="button"
+                                    onClick={() => setRating(star)}
+                                    className="p-1 hover:scale-125 transition-transform cursor-pointer"
+                                  >
+                                    <Star
+                                      className={`w-6 h-6 ${
+                                        star <= rating
+                                          ? 'text-amber-400 fill-amber-400'
+                                          : 'text-neutral-600'
+                                      }`}
+                                    />
+                                  </button>
+                                ))}
+                              </div>
+
                               <button
-                                key={star}
-                                type="button"
-                                onClick={() => setRating(star)}
-                                className="p-1 hover:scale-125 transition-transform"
+                                onClick={() => setReviewSubmitted(true)}
+                                className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-md cursor-pointer"
                               >
-                                <Star
-                                  className={`w-6 h-6 ${
-                                    star <= rating
-                                      ? 'text-amber-400 fill-amber-400'
-                                      : 'text-neutral-600'
-                                  }`}
-                                />
+                                Yorumu Gönder
                               </button>
-                            ))}
+                            </>
+                          )}
+                        </motion.div>
+                      )}
+
+                      {/* SCREEN 2: BALTAZAR BURGER LIVE MENU */}
+                      {activeScreen === 'baltazar' && (
+                        <motion.div
+                          key="baltazar"
+                          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0 }}
+                          className="w-full space-y-2.5"
+                        >
+                          {/* Top Restaurant Header */}
+                          <div className="p-3 rounded-2xl bg-red-950/40 border border-red-500/20 flex items-center justify-between">
+                            <div>
+                              <span className="text-xs font-black text-white block">Baltazar Burger</span>
+                              <span className="text-[10px] text-red-400">Masa 12 Aktif • TR/EN/AR</span>
+                            </div>
+                            <span className="text-[10px] bg-red-500/20 text-red-300 px-2 py-0.5 rounded-full font-bold">
+                              Karaköy
+                            </span>
+                          </div>
+
+                          {/* Menu Items */}
+                          <div className="space-y-2">
+                            <div className="p-2.5 rounded-xl bg-neutral-900 border border-white/10 flex items-center justify-between">
+                              <div>
+                                <span className="font-bold text-xs text-white block">Truffle Smash Burger</span>
+                                <span className="text-[10px] text-white/40">Karamelize Soğan, Trüf Mayonez</span>
+                                <span className="text-[11px] font-bold text-red-400 block mt-0.5">340 TL</span>
+                              </div>
+                              <button
+                                onClick={() => setCartCount((c) => c + 1)}
+                                className="px-2.5 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-white font-bold text-[10px] cursor-pointer"
+                              >
+                                + Ekle
+                              </button>
+                            </div>
+
+                            <div className="p-2.5 rounded-xl bg-neutral-900 border border-white/10 flex items-center justify-between">
+                              <div>
+                                <span className="font-bold text-xs text-white block">Cheddar Loaded Fries</span>
+                                <span className="text-[10px] text-white/40">Eritilmiş Cheddar, Çıtır Soğan</span>
+                                <span className="text-[11px] font-bold text-red-400 block mt-0.5">180 TL</span>
+                              </div>
+                              <button
+                                onClick={() => setCartCount((c) => c + 1)}
+                                className="px-2.5 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-white font-bold text-[10px] cursor-pointer"
+                              >
+                                + Ekle
+                              </button>
+                            </div>
                           </div>
 
                           <button
-                            onClick={() => setReviewSubmitted(true)}
-                            className="w-full py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-md"
+                            onClick={() => alert(`Baltazar Masa 12 için ${cartCount > 0 ? cartCount : 1} adet ürün siparişi iletildi!`)}
+                            className="w-full py-2.5 rounded-xl bg-gradient-to-r from-red-600 to-orange-600 text-white font-bold text-xs shadow-md flex items-center justify-center gap-2 cursor-pointer mt-2"
                           >
-                            Yorumu Gönder
+                            <ShoppingBag className="w-3.5 h-3.5" />
+                            <span>Siparişi Ver {cartCount > 0 && `(${cartCount} Ürün)`}</span>
                           </button>
-                        </>
+                        </motion.div>
                       )}
-                    </motion.div>
-                  ) : (
-                    /* Digital Menu Table Ordering on Phone */
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.85, y: 30 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      className="w-full bg-neutral-900 border border-white/15 rounded-2xl p-4 text-left space-y-3 shadow-xl"
-                    >
-                      <div className="flex items-center justify-between border-b border-white/10 pb-2">
-                        <div>
-                          <span className="text-xs font-bold text-white block">Kahve Erenköy</span>
-                          <span className="text-[10px] text-emerald-400">Masa 4 Aktif</span>
-                        </div>
-                        <span className="text-[10px] bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full font-semibold">
-                          Canlı Menü
-                        </span>
-                      </div>
 
-                      <div className="space-y-2 text-xs">
-                        <div className="p-2 rounded-xl bg-white/5 flex items-center justify-between">
-                          <div>
-                            <span className="font-bold text-white block">Limon Ristretto</span>
-                            <span className="text-[10px] text-white/40">220 TL</span>
+                      {/* SCREEN 3: KAHVE ERENKOY LIVE MENU */}
+                      {activeScreen === 'erenkoy' && (
+                        <motion.div
+                          key="erenkoy"
+                          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0 }}
+                          className="w-full space-y-2.5"
+                        >
+                          <div className="p-3 rounded-2xl bg-purple-950/40 border border-purple-500/20 flex items-center justify-between">
+                            <div>
+                              <span className="text-xs font-black text-white block">Kahve Erenköy</span>
+                              <span className="text-[10px] text-purple-300">Masa 4 Aktif • Nitelikli Kahve</span>
+                            </div>
+                            <span className="text-[10px] bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full font-bold">
+                              Erenköy
+                            </span>
                           </div>
-                          <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-md font-bold">
-                            + Sepete Ekle
-                          </span>
-                        </div>
 
-                        <div className="p-2 rounded-xl bg-white/5 flex items-center justify-between">
-                          <div>
-                            <span className="font-bold text-white block">San Sebastian</span>
-                            <span className="text-[10px] text-white/40">160 TL</span>
+                          <div className="space-y-2">
+                            <div className="p-2.5 rounded-xl bg-neutral-900 border border-white/10 flex items-center justify-between">
+                              <div>
+                                <span className="font-bold text-xs text-white block">V60 Ethiopia Yirgacheffe</span>
+                                <span className="text-[10px] text-white/40">Çiçeksi, Narenciye, Bergamot</span>
+                                <span className="text-[11px] font-bold text-purple-400 block mt-0.5">170 TL</span>
+                              </div>
+                              <button
+                                onClick={() => setCartCount((c) => c + 1)}
+                                className="px-2.5 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-bold text-[10px] cursor-pointer"
+                              >
+                                + Ekle
+                              </button>
+                            </div>
+
+                            <div className="p-2.5 rounded-xl bg-neutral-900 border border-white/10 flex items-center justify-between">
+                              <div>
+                                <span className="font-bold text-xs text-white block">San Sebastian Cheesecake</span>
+                                <span className="text-[10px] text-white/40">Karamelize Kabuk, Akışkan Doku</span>
+                                <span className="text-[11px] font-bold text-purple-400 block mt-0.5">160 TL</span>
+                              </div>
+                              <button
+                                onClick={() => setCartCount((c) => c + 1)}
+                                className="px-2.5 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-bold text-[10px] cursor-pointer"
+                              >
+                                + Ekle
+                              </button>
+                            </div>
                           </div>
-                          <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-md font-bold">
-                            + Sepete Ekle
-                          </span>
-                        </div>
-                      </div>
 
-                      <button
-                        onClick={() => alert('Sipariş masadan garsona iletildi!')}
-                        className="w-full py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-md"
-                      >
-                        Siparişi Ver & Garson Çağır
-                      </button>
-                    </motion.div>
+                          <button
+                            onClick={() => alert(`Kahve Erenköy Masa 4 için sipariş iletildi!`)}
+                            className="w-full py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-xs shadow-md flex items-center justify-center gap-2 cursor-pointer mt-2"
+                          >
+                            <ShoppingBag className="w-3.5 h-3.5" />
+                            <span>Siparişi Onayla {cartCount > 0 && `(${cartCount} Ürün)`}</span>
+                          </button>
+                        </motion.div>
+                      )}
+
+                      {/* SCREEN 4: ACT NOIR LIVE MENU */}
+                      {activeScreen === 'actnoir' && (
+                        <motion.div
+                          key="actnoir"
+                          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0 }}
+                          className="w-full space-y-2.5"
+                        >
+                          <div className="p-3 rounded-2xl bg-blue-950/40 border border-blue-500/20 flex items-center justify-between">
+                            <div>
+                              <span className="text-xs font-black text-white block">Act Noir Café</span>
+                              <span className="text-[10px] text-blue-300">Moda • Butik Bakery</span>
+                            </div>
+                            <span className="text-[10px] bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded-full font-bold">
+                              Moda
+                            </span>
+                          </div>
+
+                          <div className="space-y-2">
+                            <div className="p-2.5 rounded-xl bg-neutral-900 border border-white/10 flex items-center justify-between">
+                              <div>
+                                <span className="font-bold text-xs text-white block">Flat White (Double Shot)</span>
+                                <span className="text-[10px] text-white/40">Kadifemsi Mikro Köpük</span>
+                                <span className="text-[11px] font-bold text-blue-400 block mt-0.5">140 TL</span>
+                              </div>
+                              <button
+                                onClick={() => setCartCount((c) => c + 1)}
+                                className="px-2.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-[10px] cursor-pointer"
+                              >
+                                + Ekle
+                              </button>
+                            </div>
+
+                            <div className="p-2.5 rounded-xl bg-neutral-900 border border-white/10 flex items-center justify-between">
+                              <div>
+                                <span className="font-bold text-xs text-white block">Bademli Kruvasan</span>
+                                <span className="text-[10px] text-white/40">Fransız Tereyağlı, Günlük Taze</span>
+                                <span className="text-[11px] font-bold text-blue-400 block mt-0.5">110 TL</span>
+                              </div>
+                              <button
+                                onClick={() => setCartCount((c) => c + 1)}
+                                className="px-2.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-[10px] cursor-pointer"
+                              >
+                                + Ekle
+                              </button>
+                            </div>
+                          </div>
+
+                          <button
+                            onClick={() => alert(`Act Noir için sipariş iletildi!`)}
+                            className="w-full py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-xs shadow-md flex items-center justify-center gap-2 cursor-pointer mt-2"
+                          >
+                            <ShoppingBag className="w-3.5 h-3.5" />
+                            <span>Siparişi Ver {cartCount > 0 && `(${cartCount} Ürün)`}</span>
+                          </button>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   )}
                 </div>
 
@@ -268,10 +448,10 @@ export function NfcTapSimulator() {
                 {hasTapped && (
                   <button
                     onClick={handleReset}
-                    className="w-full py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white/70 hover:text-white text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-colors"
+                    className="w-full py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white/70 hover:text-white text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                   >
                     <RotateCcw className="w-3 h-3" />
-                    Tekrar Dene
+                    Simülatörü Sıfırla
                   </button>
                 )}
               </div>
