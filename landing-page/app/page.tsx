@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowRight, ArrowUpRight, CheckCircle2,
-  Zap, Globe2, Layers, Sparkles, Radio,
+  Zap, Globe2, Layers, Sparkles, Radio, Star,
 } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
 import { InteractiveBackground } from '@/components/InteractiveBackground';
@@ -154,7 +154,9 @@ export default function LandingPage() {
                   </div>
                   <div className="text-center space-y-1">
                     <div className="flex justify-center gap-1">
-                      {[1,2,3,4,5].map(s => <span key={s} className="text-sm" style={{ color: '#C9A86C' }}>★</span>)}
+                      {[1,2,3,4,5].map(s => (
+                        <Star key={s} className="w-3.5 h-3.5" style={{ color: '#C9A86C', fill: '#C9A86C' }} />
+                      ))}
                     </div>
                     <span className="text-xs font-bold block" style={{ color: 'rgba(240,230,211,0.9)' }}>Google Değerlendirme</span>
                   </div>

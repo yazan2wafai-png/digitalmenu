@@ -338,7 +338,7 @@ export function ProductOrderModal({
 
                     {pricing.discountAmount > 0 && (
                       <p className="text-[11px] text-emerald-400/90 font-medium">
-                        ✨ Tebrikler! Toplamda {pricing.discountAmount.toLocaleString('tr-TR')} TL tasarruf ediyorsunuz.
+                        Toplamda {pricing.discountAmount.toLocaleString('tr-TR')} TL tasarruf ediyorsunuz.
                       </p>
                     )}
                   </div>

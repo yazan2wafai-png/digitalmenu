@@ -114,10 +114,10 @@ export const MAIN_PRODUCTS: ProductItem[] = [
       'Restoran, kafe, otel, klinik ve güzellik merkezleri için ideal',
     ],
     images: {
-      black: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&auto=format&fit=crop&q=80',
-      white: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=800&auto=format&fit=crop&q=80',
-      transparent: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop&q=80',
-      default: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&auto=format&fit=crop&q=80',
+      black: '/products/lstand-mockup.png',
+      white: '/products/lstand-mockup.png',
+      transparent: '/products/lstand-mockup.png',
+      default: '/products/lstand-mockup.png',
     },
     bulkTiers: [
       { minQty: 1, discountPercentage: 0, label: '1 Adet (1.700 TL)' },
@@ -195,10 +195,10 @@ export const MAIN_PRODUCTS: ProductItem[] = [
       'Ücretsiz Kurumsal Logo & Tasarım Desteği ve Öncelikli Kargo',
     ],
     images: {
-      black: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&auto=format&fit=crop&q=80',
-      white: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=800&auto=format&fit=crop&q=80',
-      transparent: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop&q=80',
-      default: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&auto=format&fit=crop&q=80',
+      black: '/products/lstand-mockup.png',
+      white: '/products/lstand-mockup.png',
+      transparent: '/products/lstand-mockup.png',
+      default: '/products/lstand-mockup.png',
     },
     bulkTiers: [
       { minQty: 1, discountPercentage: 0, label: '1 Şube Paketi (6.900 TL)' },
@@ -252,7 +252,7 @@ export const ALL_PRODUCTS: ProductItem[] = [
     },
     features: ['Masaya özel numara basımı', 'Kimyasala dayanıklı', 'Hızlı ve pratik uygulama'],
     images: {
-      default: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=800&auto=format&fit=crop&q=80',
+      default: '/products/masa-stickeri-mockup.png',
     },
   },
   {
