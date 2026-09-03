@@ -15,6 +15,7 @@ export interface AdminCategory {
   name: MultilingualText;
   sortOrder: number;
   restaurantId: string;
+  photoUrl?: string | null;
   products: AdminProduct[];
 }
 

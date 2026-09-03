@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import type { Product } from '@/types/menu';
 import { addToCart } from '@/lib/cart';
+import { resolveImageUrl } from '@/lib/image-url';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://digitalmenu-backend-production.up.railway.app';
 
@@ -17,6 +18,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product, themeColor, onSelect, categoryName, slug, enableOrdering }: ProductCardProps) {
   const [justAdded, setJustAdded] = useState(false);
+  const resolvedPhoto = resolveImageUrl(product.photoUrl);
 
   function handleQuickAdd(e: React.MouseEvent) {
     e.stopPropagation();

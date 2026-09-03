@@ -177,7 +177,7 @@ export default function CategoriesAdminPage() {
                 <tr className="border-b border-gray-100 bg-gray-50 text-xs text-gray-500 font-semibold uppercase tracking-wider">
                   <th className="px-6 py-3.5 text-left">{t.categories.thOrder}</th>
                   <th className="px-6 py-3.5 text-left">Fotoğraf</th>
-                  <th className="px-6 py-3.5 text-left">{t.categories.thTr}</th>
+                  <th className="px-6 py-3.5 text-left">{t.categories.thName}</th>
                   <th className="px-6 py-3.5 text-left">{t.categories.thEn}</th>
                   <th className="px-6 py-3.5 text-left">{t.categories.thAr}</th>
                   <th className="px-6 py-3.5 text-left">{t.categories.thProducts}</th>
