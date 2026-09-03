@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Space_Grotesk, Manrope } from "next/font/google";
 import "./globals.css";
 
@@ -17,146 +17,80 @@ const manrope = Manrope({
 const siteUrl = "https://nfcmyplace.com";
 const title = "NFCMyPlace® | NFC & QR Google Yorum Kartı, Dijital Menü";
 const description =
-  "Restoranlar ve kafeler için NFC & QR kodlu Google yorum kartı, akrilik masa stickerı (NFC menü) ve yönetim panelli dijital menü SaaS altyapısı. Fiziksel dünyayı dijitalle buluşturun.";
+  "Restoranlar ve kafeler için NFC & QR kodlu Google yorum kartı, akrilik masa stickerı ve yönetim panelli dijital menü SaaS altyapısı.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: {
-    default: title,
-    template: "%s | NFCMyPlace",
-  },
+  title: { default: title, template: "%s | NFCMyPlace" },
   description,
-  keywords: [
-    "nfc google yorum kartı",
-    "google yorum kartı",
-    "google yorum standı",
-    "google puanlama kartı",
-    "nfc dijital kartvizit",
-    "nfc menü sticker",
-    "qr menü",
-    "dijital menü",
-    "karekod menü",
-    "restoran dijital menü sistemi",
-    "restoran qr menü",
-    "temassız menü",
-  ],
-  applicationName: "NFCMyPlace",
-  alternates: {
-    canonical: siteUrl,
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-image-preview": "large",
-    },
-  },
-  openGraph: {
-    title,
-    description:
-      "Masalarınızı tek dokunuşla Google yorum kartına, dijital menüye ve sipariş sistemine bağlayın.",
-    url: siteUrl,
-    siteName: "NFCMyPlace",
-    locale: "tr_TR",
-    type: "website",
-    images: [
-      {
-        url: "/products/lstand-mockup.png",
-        width: 1200,
-        height: 1500,
-        alt: "NFC ve QR kodlu Google yorum kartı - L-Stand",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title,
-    description,
-    images: ["/products/lstand-mockup.png"],
-  },
-  icons: {
-    icon: '/icon',
-    shortcut: '/icon',
-    apple: '/icon',
-  },
+  robots: { index: true, follow: true },
+  openGraph: { title, description, url: siteUrl, siteName: "NFCMyPlace", locale: "tr_TR", type: "website" },
 };
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Organization",
-      "@id": `${siteUrl}/#organization`,
-      name: "NFCMyPlace",
-      url: siteUrl,
-      logo: `${siteUrl}/icon.svg`,
-      description,
-      areaServed: "TR",
-    },
-    {
-      "@type": "Product",
-      name: "NFC & QR Google Yorum Standı",
-      description:
-        "75° ergonomik açılı monolitik akrilik gövde, NTAG213 temassız çip ve restoranınıza özel kurumsal tasarım baskı ile Google yorumlarınızı artırın.",
-      image: `${siteUrl}/products/lstand-mockup.png`,
-      brand: { "@type": "Brand", name: "NFCMyPlace" },
-      offers: {
-        "@type": "Offer",
-        priceCurrency: "TRY",
-        price: "1750",
-        availability: "https://schema.org/InStock",
-        url: siteUrl,
-      },
-    },
-    {
-      "@type": "Product",
-      name: "Akrilik Masa Stickerı (NFC + QR Menü)",
-      description:
-        "Ultra dayanıklı 2mm pleksi akrilik, 3M endüstriyel VHB yapışkan ve IP68 sıvı geçirmez koruma ile masalarınızı tek dokunuşla dijital menünüze bağlayın.",
-      image: `${siteUrl}/products/masa-stickeri-mockup.png`,
-      brand: { "@type": "Brand", name: "NFCMyPlace" },
-      offers: {
-        "@type": "Offer",
-        priceCurrency: "TRY",
-        price: "175",
-        availability: "https://schema.org/InStock",
-        url: siteUrl,
-      },
-    },
-    {
-      "@type": "Service",
-      name: "Restoran Dijital Menü SaaS Altyapısı",
-      description:
-        "Sıfır komisyon, anlık bulut yönetim paneli, çoklu dil desteği (TR/EN/AR) ve alerjen bilgilendirmeli mobil 3D kart arayüzü ile eksiksiz restoran dijital menü altyapısı.",
-      provider: { "@type": "Organization", name: "NFCMyPlace" },
-      areaServed: "TR",
-      offers: {
-        "@type": "Offer",
-        priceCurrency: "TRY",
-        price: "3000",
-        url: siteUrl,
-      },
-    },
-  ],
-};
-
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="tr"
-      className={`${spaceGrotesk.variable} ${manrope.variable} h-full antialiased scroll-smooth`}
-    >
-      <body className="min-h-full flex flex-col bg-cream text-ink font-body selection:bg-terracotta selection:text-cream">
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-        />
+    <html lang="tr" className={`${spaceGrotesk.variable} ${manrope.variable}`}
+      style={{ scrollBehavior: "smooth" }}>
+      <head>
+        <style>{`
+          *, *::before, *::after { box-sizing: border-box; }
+          html { scroll-behavior: smooth; }
+          body {
+            margin: 0;
+            background: #0D0B08;
+            color: #F0E6D3;
+            font-family: var(--font-body), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+          }
+          ::selection { background: rgba(201,168,108,0.25); color: #F0E6D3; }
+
+          @keyframes gold-shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+          }
+          @keyframes float-a {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+          }
+          @keyframes float-b {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-14px); }
+          }
+          @keyframes beacon-pulse {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.15); }
+          }
+
+          .gold-text {
+            background: linear-gradient(135deg, #B8925A 0%, #E8CC85 40%, #C9A86C 65%, #8A6835 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gold-shimmer 5s ease-in-out infinite;
+          }
+          .float-slow { animation: float-a 9s ease-in-out infinite; }
+          .float-delayed { animation: float-b 11s ease-in-out infinite; animation-delay: -4s; }
+          .beacon { animation: beacon-pulse 3s ease-in-out infinite; }
+
+          .glass-warm {
+            background: rgba(22, 18, 10, 0.75);
+            backdrop-filter: blur(28px) saturate(160%);
+            -webkit-backdrop-filter: blur(28px) saturate(160%);
+            border: 1px solid rgba(201, 168, 108, 0.12);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+          }
+          .glass-warm:hover {
+            border-color: rgba(201, 168, 108, 0.28);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+          }
+          .scrollbar-none { scrollbar-width: none; -ms-overflow-style: none; }
+          .scrollbar-none::-webkit-scrollbar { display: none; }
+        `}</style>
+      </head>
+      <body style={{ minHeight: "100vh" }}>
         {children}
       </body>
     </html>
