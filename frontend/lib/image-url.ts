@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Resolves an image URL safely.
  * - If the URL is an ISP-blocked *.r2.dev development domain, proxies it via backend streaming endpoint.
  * - If the URL is relative (/uploads/...), prefixes with API URL or proxy.

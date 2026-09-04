@@ -1,4 +1,4 @@
-﻿export type ProductColor = 'black' | 'white' | 'transparent';
+export type ProductColor = 'black' | 'white' | 'transparent';
 
 export interface BulkTier {
   minQty: number;
